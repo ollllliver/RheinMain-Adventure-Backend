@@ -1,0 +1,66 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.6'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id "application"
+    id "jacoco"           // fuer Test-Coverage
+    id "org.ysb33r.doxygen" version "0.7.0"
+    id "org.sonarqube" version "3.3"
+}
+
+group = 'de.hsrm.mi.swt'
+version = '0.0.2-SNAPSHOT'
+sourceCompatibility = '11'
+mainClassName = "de.hsrm.mi.swt.campusadventure03.CampusAdventure03Application"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    runtimeOnly 'com.h2database:h2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.1'
+    testRuntimeOnly    'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+// https://docs.gradle.org/current/userguide/jacoco_plugin.html
+jacoco {
+    toolVersion = "0.8.7"
+}
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+    }
+}
+doxygen {
+    source new File(projectDir,'src/main/java')
+    // Optionen vgl Doxyfile-Dokumentation, aber in Kleinschrift
+    // https://www.stack.nl/~dimitri/doxygen/manual/config.html
+    generate_html true
+    generate_latex false
+    javadoc_autobrief true
+    optimize_output_java true
+    tab_size 4
+    brief_member_desc true
+    markdown_support true
+    autolink_support true
+    extract_all true
+    inline_info true
+    inline_sources true
+    source_tooltips true
+    class_diagrams true
+    have_dot true
+    generate_treeview true
+}
