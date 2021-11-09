@@ -1,38 +1,7 @@
-
-RhodeCode
-
-        This repo
-        ?
-    Home
-    Journal
-    Gists
-    Admin
-    0
-    frosk001
-
-2020web » 2020web-frosk001 » backend
-RSS Unwatch
-
-    Summary
-    Commits
-    Files
-    Compare
-    Pull Requests 0
-    Artifacts 0
-
-Letzte Aufgabe fertig bekommen
-Friedrich Roskosch - Mon, 01 Jun 2020 14:59:16 - Load All Authors
-r28:621d7db7c323 master
-Show More
-Download file
-.gitignore
-34 lines | 357 B | text/plain | TextLexer
-/ .gitignore
-History | Annotation | Raw |Copy content |Copy permalink
 HELP.md
 .gradle
 build/
-!gradle/wrapper/gradle-wrapper.jar
+/gradle/wrapper/
 !**/src/main/**
 !**/src/test/**
 
@@ -63,6 +32,3 @@ out/
 .vscode/
 /bin
 /src/test/
-
-RhodeCode 4.26.0 Community Edition | Support | Documentation
-/gradle/wrapper/
