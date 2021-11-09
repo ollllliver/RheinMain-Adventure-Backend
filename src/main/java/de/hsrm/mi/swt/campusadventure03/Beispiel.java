@@ -12,6 +12,12 @@ class Beispiel {
 
   Logger lg = LoggerFactory.getLogger(Beispiel.class);
 
+  /**
+   * Erzeugt Logging-Ausgabe, wenn auf '/' zugegriffen wird.
+   * Enthält absichtlich einen Benennungskonventionsfehler, um SonarQube zu testen.
+   *
+   * @return Nichts, da nur Logging erzeugt werden soll
+   */
   @GetMapping("/")
   public String Lebenszeichen() {
     lg.info("Aufruf wurde erkannt. Hurra!");
