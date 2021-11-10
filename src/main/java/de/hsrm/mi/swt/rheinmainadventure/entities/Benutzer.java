@@ -2,10 +2,7 @@ package de.hsrm.mi.swt.rheinmainadventure.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.StringJoiner;
 
 
@@ -16,8 +13,8 @@ import java.util.StringJoiner;
 public class Benutzer {
 
   @Id
-  @GeneratedValue
-  private long id;
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long id;
 
   @Column(unique = true, nullable = false)
   private String benutzername;
@@ -25,6 +22,14 @@ public class Benutzer {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Column(nullable = false)
   private String passwort;
+
+  public Benutzer() {
+  }
+
+  public Benutzer(String benutzername, String passwort) {
+    this.benutzername = benutzername;
+    this.passwort = passwort;
+  }
 
   @Override
   public String toString() {

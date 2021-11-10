@@ -1,8 +1,10 @@
 package de.hsrm.mi.swt.rheinmainadventure.entities;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface BenutzerRepository extends JpaRepository<Benutzer, Long> {
+@Repository
+public interface BenutzerRepository extends CrudRepository<Benutzer, Long> {
   Benutzer findByBenutzername(String benutzername);
 
 }
