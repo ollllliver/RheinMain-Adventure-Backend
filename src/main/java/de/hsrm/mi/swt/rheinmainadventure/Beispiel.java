@@ -1,4 +1,4 @@
-package de.hsrm.mi.swt.campusadventure03;
+package de.hsrm.mi.swt.rheinmainadventure;
 
 
 import org.slf4j.Logger;
@@ -16,12 +16,12 @@ class Beispiel {
    * Erzeugt Logging-Ausgabe, wenn auf '/' zugegriffen wird.
    * Enthält absichtlich einen Benennungskonventionsfehler, um SonarQube zu testen.
    *
-   * @return Nichts, da nur Logging erzeugt werden soll
+   * @return Hallo Welt.html, da nur Logging erzeugt werden soll
    */
   @GetMapping("/")
-  public String Lebenszeichen() {
+  public String lebenszeichen() {
     lg.info("Aufruf wurde erkannt. Hurra!");
-    return "";
+    return "Hallo Welt";
   }
 
 }
