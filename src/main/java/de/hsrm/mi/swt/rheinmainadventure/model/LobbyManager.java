@@ -1,4 +1,4 @@
-package de.hsrm.mi.swt.rheinmainadventure.Lobby.LobbyModel;
+package de.hsrm.mi.swt.rheinmainadventure.model;
 
 import java.util.ArrayList;
 
