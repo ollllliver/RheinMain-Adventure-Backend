@@ -30,4 +30,5 @@ class LobbyController {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(lobbyService.getLobbies());
     }
+
 }
