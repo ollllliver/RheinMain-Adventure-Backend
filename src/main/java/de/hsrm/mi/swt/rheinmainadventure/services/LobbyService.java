@@ -3,7 +3,6 @@ package de.hsrm.mi.swt.rheinmainadventure.services;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.ApplicationScope;
 
 import de.hsrm.mi.swt.rheinmainadventure.model.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.model.Player;
@@ -28,6 +27,15 @@ public class LobbyService {
 
     public ArrayList<Lobby> getLobbies() {
         return this.lobbies;
+    }
+
+    public Lobby getLobbyById(String Id){
+        for(Lobby currLobby : lobbies){
+            if(currLobby.getlobbyID() == Id){
+                return currLobby;
+            }
+        }
+        return null;
     }
 
 }
