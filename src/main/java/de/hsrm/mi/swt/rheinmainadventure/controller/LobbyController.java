@@ -25,9 +25,10 @@ class LobbyController {
         this.lobbyService = lobbyService;
     }
 
-    @MessageMapping("/lobby/create")
-    @SendTo("/topic/lobby/created")
-    public String createLobby() throws Exception {
+    @MessageMapping("/topic/lobby/create")
+    @SendTo("/topic/lobby/create")
+    public String createLobby(String msg) throws Exception {
+        lg.info(msg);
         lobbyService.createLobby();
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(lobbyService.getLobbies());
