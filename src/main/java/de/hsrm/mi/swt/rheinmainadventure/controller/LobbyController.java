@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import de.hsrm.mi.swt.rheinmainadventure.model.Lobby;
@@ -45,18 +46,23 @@ class LobbyController {
     }
 
     @GetMapping("/lobby/{lobbyId}")
-    public void joinLobby(@PathVariable String lobbyId,@SessionAttribute("username") String username){
+    @ResponseBody
+    public void joinLobby(@PathVariable String lobbyId/*,@SessionAttribute("username") String username*/){
+
         Lobby currLobby = lobbyService.getLobbyById(lobbyId);
 
-        
-        if(currLobby.getIstGestartet() && !currLobby.getIstVoll()){
-            //Neue "Benutzer"-Instant erstellen und anhand von Session ID username abgleichen und diesen User in die Lobby Stellen
-            //Player tempPlayer = PlayerService.getPlayerByUsername(username);
-
-            //Unter der Kondition dass das Spielerlimit noch nicht erreicht wurde, wird ein neuer Spieler hinzugefügt.
-            if(currLobby.getPlayerList().size()<currLobby.getSpielerlimit()){
-                //currLobby.getPlayerList().add(tempPlayer);
+        if(currLobby != null){
+            if(currLobby.getIstGestartet() && !currLobby.getIstVoll()){
+                //Neue "Benutzer"-Instant erstellen und anhand von Session ID username abgleichen und diesen User in die Lobby Stellen
+                //Player tempPlayer = PlayerService.getPlayerByUsername(username);
+    
+                //Unter der Kondition dass das Spielerlimit noch nicht erreicht wurde, wird ein neuer Spieler hinzugefügt.
+                if(currLobby.getPlayerList().size()<currLobby.getSpielerlimit()){
+                    //currLobby.getPlayerList().add(tempPlayer);
+                }
             }
+        }else{
+            lg.info("Ungueltige Lobby: " + lobbyId);
         }
     }
 
