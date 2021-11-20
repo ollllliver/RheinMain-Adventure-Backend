@@ -1,22 +1,37 @@
 package de.hsrm.mi.swt.rheinmainadventure.model;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.services.LobbyService;
 
 public class Lobby {
     private String lobbyID;
     private ArrayList<Player> playerList;
+    private ArrayList<Benutzer> benutzerListe;
     private Player host;
     private boolean istVoll;
     private boolean istGestartet;
-    private int spielerlimit = 0;
+    private boolean istPrivat;
+    private int spielerlimit;
+    private Timer timer;
+    
+    private LobbyService lobbyService;
 
-
-    public Lobby(String lobbyID, ArrayList<Player> playerList, Player host) {
+    //Aktuellen LobbyService reinreichen lassen da ich nicht weiß wie man bei einer nicht Component Klasse Autowired.
+    public Lobby(String lobbyID, ArrayList<Player> playerList, Player host,LobbyService lobbyService) {
         this.lobbyID = lobbyID;
         this.playerList = playerList;
+        this.benutzerListe = new ArrayList<Benutzer>();
         this.host = host;
         this.istVoll = false;
         this.istGestartet = false;
+        this.istPrivat = true;
+        this.spielerlimit = 4;
+        this.lobbyService = lobbyService;
+        starteTimer();
     }
 
     public ArrayList<Player> getPlayerList() {
@@ -28,6 +43,7 @@ public class Lobby {
     }
 
     public boolean getIstVoll(){
+        istVoll = (benutzerListe.size()>=spielerlimit);
         return this.istVoll;
     }
 
@@ -66,6 +82,46 @@ public class Lobby {
         this.spielerlimit = spielerlimit;
     }
 
+    public ArrayList<Benutzer> getBenutzerListe() {
+        return benutzerListe;
+    }
+
+    public void setBenutzerListe(ArrayList<Benutzer> benutzerListe) {
+        this.benutzerListe = benutzerListe;
+    }
+
+    public boolean getIstPrivat() {
+        return istPrivat;
+    }
+
+    public void setIstPrivat(boolean istPrivat) {
+        this.istPrivat = istPrivat;
+    }
+
+    //Methode zum Löschen einer Lobby nach 10 Minuten
+    public void starteTimer(){
+        this.timer = new Timer();
+        TimerTask task = new TimerTask() {
+
+            public void run(){
+                if(!istGestartet){
+
+                    for(Benutzer tempNutzer : benutzerListe){
+                        //TODO : Popup für Nutzer mit "Lobby wurde aufgelöst" und "Home" Button triggern 
+                    }
+                    lobbyService.deleteLobbyById(lobbyID);
+                    
+                }
+            }
+
+        };
+        timer.schedule(task,10*60*1000);
+    }
+
+    public void nutzerHinzufuegen(Benutzer nutzer){
+        benutzerListe.add(nutzer);
+        istVoll = (benutzerListe.size()>=spielerlimit);
+    }
     
 
 }

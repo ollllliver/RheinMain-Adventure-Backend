@@ -1,17 +1,22 @@
 package de.hsrm.mi.swt.rheinmainadventure.services;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import de.hsrm.mi.swt.rheinmainadventure.model.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.model.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class LobbyService {
 
     ArrayList<Lobby> lobbies = new ArrayList<Lobby>();
+    Logger lg = LoggerFactory.getLogger(LobbyService.class);
 
     public String GenerateLobbyID(String benutzerName){
 
@@ -49,7 +54,7 @@ public class LobbyService {
 
     public Lobby createLobby() {
 
-        // TODO Name vom Spieler bekommen
+        //TODO : Name vom Spieler bekommen
         String spielerName = "Player1";
 
         Player host = new Player(0, spielerName);
@@ -57,8 +62,8 @@ public class LobbyService {
         players.add(host);
 
         String lobbyID = GenerateLobbyID(spielerName);
-        Lobby lobby = new Lobby(lobbyID, players, host);
-
+        Lobby lobby = new Lobby(lobbyID, players, host,this);
+        lg.info("Lobby mit Lobby ID :"+lobby.getlobbyID()+" wurde erstellt.");
         lobbies.add(lobby);
 
         return lobby;
@@ -77,4 +82,19 @@ public class LobbyService {
         return null;
     }
 
+    public void deleteLobbyById(String Id){
+
+      new Thread(() -> {
+        
+      Lobby zuEntfernendeLobby = null;
+      for(Lobby currLobby : lobbies){
+        if(currLobby.getlobbyID() == Id){
+          zuEntfernendeLobby = currLobby;
+        }
+      }
+      
+      if (zuEntfernendeLobby!=null) lobbies.remove(zuEntfernendeLobby);
+
+    }).start();
+    }
 }
