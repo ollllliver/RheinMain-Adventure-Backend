@@ -75,7 +75,7 @@ public class LobbyService {
 
     public Lobby getLobbyById(String Id){
         for(Lobby currLobby : lobbies){
-            if(currLobby.getlobbyID() == Id){
+            if(currLobby.getlobbyID().equals(Id)){
                 return currLobby;
             }
         }

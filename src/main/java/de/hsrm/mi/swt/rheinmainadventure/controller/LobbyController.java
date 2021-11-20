@@ -86,7 +86,12 @@ class LobbyController {
         Legt benutzer Instanz an wenn man einen User mit dem aktuellen Session Benutzernamen findet.
         Benutzer tempNutzer = benutzerService.getBenutzerByUsername(username); */
         Benutzer testNutzer = new Benutzer("jerry","testy");
-        if (tempLobby!=null) tempLobby.nutzerHinzufuegen(testNutzer);
+        if (tempLobby!=null){
+            tempLobby.nutzerHinzufuegen(testNutzer);
+        }else{
+            lg.info("Ungueltige Lobby ID wurde angegeben.");
+            //TODO : Redirect zur Homepage und Fehlermeldung Popup mit dem Logger Infotext.
+        }
     }
 
 }
