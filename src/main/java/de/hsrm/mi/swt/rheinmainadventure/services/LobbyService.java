@@ -1,4 +1,4 @@
-package de.hsrm.mi.swt.rheinmainadventure.Services;
+package de.hsrm.mi.swt.rheinmainadventure.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
