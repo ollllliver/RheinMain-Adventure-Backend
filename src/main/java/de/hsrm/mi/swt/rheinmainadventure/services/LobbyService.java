@@ -72,18 +72,15 @@ public class LobbyService {
         return lobby;
     }
 
-
+    /* Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby Schließt*/
     public void starteTimer(Lobby lobby){
       Timer timer = new Timer();
       TimerTask task = new TimerTask() {
 
           public void run(){
               if(!lobby.getIstGestartet()){
-                  /*
-                  for(Benutzer tempNutzer : lobby.getBenutzerListe()){
-                      //TODO : Popup für Nutzer mit "Lobby wurde aufgelöst" und "Home" Button triggern 
-                  }
-                  */
+
+                  //TODO : per STOMP Service allen Nutzern die auf diese Aktuelle lobbyID Subscribed sind eine Fehlermeldung per Publish senden und im Frontend abfangen.  
                   lobbies.remove(lobby);
                   
               }
