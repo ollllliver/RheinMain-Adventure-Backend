@@ -29,6 +29,7 @@ public class Benutzer {
   public Benutzer(String benutzername, String passwort) {
     this.benutzername = benutzername;
     this.passwort = passwort;
+    this.id = 3l; //TODO : RAUSLÖSCHEN IST NUR ZUM TESTEN GEDACHT
   }
 
   @Override

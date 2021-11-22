@@ -1,11 +1,8 @@
 package de.hsrm.mi.swt.rheinmainadventure.model;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
-import de.hsrm.mi.swt.rheinmainadventure.services.LobbyService;
 
 public class Lobby {
     private String lobbyID;
@@ -16,12 +13,10 @@ public class Lobby {
     private boolean istGestartet;
     private boolean istPrivat;
     private int spielerlimit;
-    private Timer timer;
-    
-    private LobbyService lobbyService;
+
 
     //Aktuellen LobbyService reinreichen lassen da ich nicht weiß wie man bei einer nicht Component Klasse Autowired.
-    public Lobby(String lobbyID, ArrayList<Player> playerList, Player host,LobbyService lobbyService) {
+    public Lobby(String lobbyID, ArrayList<Player> playerList, Player host) {
         this.lobbyID = lobbyID;
         this.playerList = playerList;
         this.benutzerListe = new ArrayList<Benutzer>();
@@ -30,8 +25,6 @@ public class Lobby {
         this.istGestartet = false;
         this.istPrivat = true;
         this.spielerlimit = 4;
-        this.lobbyService = lobbyService;
-        starteTimer();
     }
 
     public ArrayList<Player> getPlayerList() {
@@ -96,26 +89,6 @@ public class Lobby {
 
     public void setIstPrivat(boolean istPrivat) {
         this.istPrivat = istPrivat;
-    }
-
-    //Methode zum Löschen einer Lobby nach 10 Minuten
-    public void starteTimer(){
-        this.timer = new Timer();
-        TimerTask task = new TimerTask() {
-
-            public void run(){
-                if(!istGestartet){
-
-                    for(Benutzer tempNutzer : benutzerListe){
-                        //TODO : Popup für Nutzer mit "Lobby wurde aufgelöst" und "Home" Button triggern 
-                    }
-                    lobbyService.deleteLobbyById(lobbyID);
-                    
-                }
-            }
-
-        };
-        timer.schedule(task,10*60*1000);
     }
 
     public void nutzerHinzufuegen(Benutzer nutzer){

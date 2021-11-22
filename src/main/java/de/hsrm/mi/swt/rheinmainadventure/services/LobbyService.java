@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import de.hsrm.mi.swt.rheinmainadventure.model.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.model.Player;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class LobbyService {
@@ -62,12 +64,35 @@ public class LobbyService {
         players.add(host);
 
         String lobbyID = GenerateLobbyID(spielerName);
-        Lobby lobby = new Lobby(lobbyID, players, host,this);
+        Lobby lobby = new Lobby(lobbyID, players, host);
         lg.info("Lobby mit Lobby ID :"+lobby.getlobbyID()+" wurde erstellt.");
+        starteTimer(lobby);
         lobbies.add(lobby);
 
         return lobby;
     }
+
+
+    public void starteTimer(Lobby lobby){
+      Timer timer = new Timer();
+      TimerTask task = new TimerTask() {
+
+          public void run(){
+              if(!lobby.getIstGestartet()){
+                  /*
+                  for(Benutzer tempNutzer : lobby.getBenutzerListe()){
+                      //TODO : Popup für Nutzer mit "Lobby wurde aufgelöst" und "Home" Button triggern 
+                  }
+                  */
+                  lobbies.remove(lobby);
+                  
+              }
+          }
+
+      };
+      timer.schedule(task,10*60*1000);
+  }
+
 
     public ArrayList<Lobby> getLobbies() {
         return this.lobbies;
@@ -80,21 +105,5 @@ public class LobbyService {
             }
         }
         return null;
-    }
-
-    public void deleteLobbyById(String Id){
-
-      new Thread(() -> {
-        
-      Lobby zuEntfernendeLobby = null;
-      for(Lobby currLobby : lobbies){
-        if(currLobby.getlobbyID() == Id){
-          zuEntfernendeLobby = currLobby;
-        }
-      }
-      
-      if (zuEntfernendeLobby!=null) lobbies.remove(zuEntfernendeLobby);
-
-    }).start();
     }
 }

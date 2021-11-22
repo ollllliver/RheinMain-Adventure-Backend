@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
@@ -35,29 +35,34 @@ class LobbyController {
     }
 
     @MessageMapping("/topic/lobby/create")
-    @SendTo("/topic/lobby/create")
-    public String createLobby(String msg) throws Exception {
-        lg.info(msg);
+    @SendTo("/topic/lobby/USERNAMEVONHOSTGEHASHED") //Hier noch HASH Anpassen
+    public String createLobby(String lobbyId) throws Exception {
+        lg.info(lobbyId);
         //Lobby Initialisieren und dem LobbyService in der LobbyListe hinzufügen
-        lobbyService.createLobby();
+        lobbyService.createLobby().setIstGestartet(true);
+
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(lobbyService.getLobbies());
     }
 
     //Initialisiert das Starten einer Lobby also von Lobby -> Interner Spielwechsel
     @MessageMapping("/lobby/{lobbyId}/start")
-    @SendTo("/topic/lobby/started")
-    public int startGame(@PathVariable String lobbyId) throws Exception {
+    @SendTo("/lobby/{lobbyId}")
+    public int startGame(@DestinationVariable String lobbyId) throws Exception {
         int lobbyStartCountdown = 10;
+        
+        //TODO Lobby-Countdown Starten
 
         Lobby currLobby = lobbyService.getLobbyById(lobbyId);
         currLobby.setIstGestartet(true);
+
         return lobbyStartCountdown;
     }
 
     //Unter der nutzung eines Lobby-Links wird ein nutzer der jeweiligen Lobby zugewiesen.
-    @GetMapping("/lobby/{lobbyId}")
-    public void lobbieBeitretenMitLink(@PathVariable String lobbyId,@SessionAttribute("username") String username){
+    @SubscribeMapping("/topic/lobby/{lobbyId}")
+    @SendTo("/topic/lobby/{lobbyId}")
+    public String lobbieBeitretenMitLink(@DestinationVariable String lobbyId/*,@SessionAttribute("username") String username*/) throws Exception{
         Lobby currLobby = lobbyService.getLobbyById(lobbyId);
         if(!currLobby.getIstGestartet() && !currLobby.getIstVoll()){
             /*
@@ -69,6 +74,9 @@ class LobbyController {
             //Unter der Kondition dass das Spielerlimit noch nicht erreicht wurde, wird ein neuer Spieler hinzugefügt.
             currLobby.nutzerHinzufuegen(testNutzer);
         }
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        return "Sie sind der Lobby "+currLobby.getlobbyID()+" gejoined "+ objectMapper.writeValueAsString(lobbyService.getLobbies());
     }
 
     //Post Mapping auf die seite wo sich der Random-Join Button befindet.
