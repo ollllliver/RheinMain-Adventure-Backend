@@ -6,19 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
-
+@RequestMapping("/api")
 @RestController
 public class BenutzerController {
 
     @Autowired
     IntBenutzerRepo benutzerRepo;
 
-
     @GetMapping("/benutzer")
     public ResponseEntity<List<Benutzer>> getAll(){
+
         try {
             List<Benutzer> list = benutzerRepo.findAll();
             if (list.isEmpty() || list.size() == 0){
@@ -43,8 +42,9 @@ public class BenutzerController {
        return new ResponseEntity<Benutzer>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/register")
+    @PostMapping("/benutzer/register")
     public ResponseEntity<Benutzer> register(@RequestBody Benutzer benutzer) {
+        // TODO: JSON Objekt aus Benutzer machen
         try {
             return new ResponseEntity<>(benutzerRepo.save(benutzer), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class BenutzerController {
     }
 
 
-    @PostMapping("/login")
+    @PostMapping("/benutzer/login")
     public ResponseEntity<Benutzer> login(@RequestBody Benutzer benutzer) {
         try {
             if (benutzerRepo.findByBenutzername(benutzer.getBenutzername()).getPasswort().equals(benutzer.getPasswort())){
