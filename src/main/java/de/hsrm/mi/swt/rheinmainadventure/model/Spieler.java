@@ -1,10 +1,10 @@
 package de.hsrm.mi.swt.rheinmainadventure.model;
 
-public class Player {
+public class Spieler {
     private int id;
     private String name;
 
-    public Player(int id, String name) {
+    public Spieler(int id, String name) {
         this.id = id;
         this.name = name;
     }
