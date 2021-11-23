@@ -2,22 +2,23 @@ package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 public class Lobby {
     private String lobbyID;
-    private ArrayList<Player> playerList;
+    private ArrayList<Spieler> teilnehmerliste;
     private ArrayList<Benutzer> benutzerListe;
-    private Player host;
+    private Spieler host;
     private boolean istVoll;
     private boolean istGestartet;
     private boolean istPrivat;
     private int spielerlimit;
 
     //Aktuellen LobbyService reinreichen lassen da ich nicht weiß wie man bei einer nicht Component Klasse Autowired.
-    public Lobby(String lobbyID, ArrayList<Player> playerList, Player host) {
+    public Lobby(String lobbyID, ArrayList<Spieler> teilnehmerliste, Spieler host) {
         this.lobbyID = lobbyID;
-        this.playerList = playerList;
+        this.teilnehmerliste = teilnehmerliste;
         this.benutzerListe = new ArrayList<Benutzer>();
         this.host = host;
         this.istVoll = false;
@@ -37,12 +38,12 @@ public class Lobby {
         }
     }
 
-    public ArrayList<Player> getPlayerList() {
-        return playerList;
+    public ArrayList<Spieler> getSpielerList() {
+        return teilnehmerliste;
     }
 
-    public void setPlayerList(ArrayList<Player> playerList) {
-        this.playerList = playerList;
+    public void setSpielerList(ArrayList<Spieler> teilnehmerliste) {
+        this.teilnehmerliste = teilnehmerliste;
     }
 
     public boolean getIstVoll(){
@@ -69,11 +70,11 @@ public class Lobby {
         this.lobbyID = lobbyID;
     }
 
-    public Player getHost() {
+    public Spieler getHost() {
         return this.host;
     }
 
-    public void setHost(Player host) {
+    public void setHost(Spieler host) {
         this.host = host;
     }
 

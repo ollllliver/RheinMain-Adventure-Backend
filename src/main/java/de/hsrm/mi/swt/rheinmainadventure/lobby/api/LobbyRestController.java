@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 
 @RestController
@@ -40,8 +39,7 @@ public class LobbyRestController {
 // POST /api/lobby/join/{lobbyId} - stoesst beim lobbyservice das hinzufuegen des Sessionscope Users in die mitgegebene Lobby an.
 // TODO dieses Item steht an verschiedenen Stellen, weil es durchgereicht wird, aber noch mal: Spieler soll aus SessionScope gezogen werden.
         logger.info("POST /api/lobby/join/" + lobbyId + "/" + spielername + "/" + spielerid);
-        lobbyservice.joinLobbybyId(lobbyId, new Spieler(spielerid, spielername));
-
+        lobbyservice.joinLobbybyId(lobbyId,spielername);
         return null;
     }
 
