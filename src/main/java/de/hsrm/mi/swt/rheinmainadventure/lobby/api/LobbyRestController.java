@@ -34,6 +34,7 @@ public class LobbyRestController {
         return lobbyservice.getLobbies();
     }
 
+    // TODO: das fliegt Raus!!!
     @PostMapping("/join/{lobbyId}/{spielername}/{spielerid}")
     public List<Lobby> lobbieBeitretenMitLink(@PathVariable String lobbyId,/* eigendlich ohen aber jetzt mit: */@PathVariable String spielername, @PathVariable Integer spielerid) {
 // POST /api/lobby/join/{lobbyId} - stoesst beim lobbyservice das hinzufuegen des Sessionscope Users in die mitgegebene Lobby an.

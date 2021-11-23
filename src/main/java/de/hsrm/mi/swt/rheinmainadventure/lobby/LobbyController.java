@@ -17,6 +17,9 @@ class LobbyController {
     private LobbyService lobbyService;
     Logger lg = LoggerFactory.getLogger(LobbyController.class);
 
+    @Autowired
+    SimpMessagingTemplate broker;  
+
     // LobbyService injected and used as instance
     public LobbyController(LobbyService lobbyService) {
         this.lobbyService = lobbyService;
@@ -40,27 +43,47 @@ class LobbyController {
         return objectMapper.writeValueAsString(lobbyService.getLobbies());
     }
 
+        /* Unter der nutzung eines Lobby-Links wird ein nutzer der jeweiligen Lobby zugewiesen 
+    unter der Kondition dass eine Lobby nicht voll und nicht gestartet ist */
     @GetMapping("/lobby/{lobbyId}")
-    @ResponseBody
-    public void joinLobby(@PathVariable String lobbyId/* ,@SessionAttribute("username") String username */) {
-
+    public void lobbieBeitretenMitLink(@PathVariable String lobbyId/*,@SessionAttribute("username") String username*/) throws Exception{
         Lobby currLobby = lobbyService.getLobbyById(lobbyId);
+        /*
+        * Legt benutzer Instanz an wenn man einen User mit dem aktuellen Session
+        * Benutzernamen findet. 
+        * Benutzer tempNutzer = benutzerService.getBenutzerByUsername(username);
+        */
+        //Dummy User Data da Service nochnicht Implementiert wurde
+        Benutzer testNutzer = new Benutzer("jerry","testy");
 
-        if (currLobby != null) {
-            if (currLobby.getIstGestartet() && !currLobby.getIstVoll()) {
-                // Neue "Benutzer"-Instant erstellen und anhand von Session ID username
-                // abgleichen und diesen User in die Lobby Stellen
-                // Player tempPlayer = PlayerService.getPlayerByUsername(username);
+        currLobby.nutzerHinzufuegen(testNutzer);
+        broker.convertAndSend("/topic/lobby/" + lobbyId, new LobbyMessage("neuerSpieler", lobbyId));
+        /*TODO : Abfangen ob Lobby voll ist oder gestartet und je nach case Fehelermeldung Bauen und per
+        MessageService methode an die passende Lobby {lobbyId} senden.  */	
+        
+    }
 
-                // Unter der Kondition dass das Spielerlimit noch nicht erreicht wurde, wird ein
-                // neuer Spieler hinzugefügt.
-                if (currLobby.getTeilnehmerliste().size() < currLobby.getSpielerlimit()) {
-                    // currLobby.getPlayerList().add(tempPlayer);
-                }
+    /* Handler Methode für das zufaellige joinen einer Lobbie. */
+    @PostMapping("/lobby")
+    public void lobbieBeitretenZufaellig(@SessionAttribute("username") String username){
+
+        Lobby tempLobby = null;
+        for (Lobby currLobby : lobbyService.getLobbies()) {
+            if(!currLobby.getIstGestartet() && !currLobby.getIstVoll() && !currLobby.getIstPrivat()){
+                tempLobby = currLobby;
+                break;
             }
-        } else {
-            lg.info("Ungueltige Lobby: " + lobbyId);
+        }
+        /*Legt benutzer Instanz an wenn man einen User mit dem aktuellen Session Benutzernamen findet.
+        Benutzer tempNutzer = benutzerService.getBenutzerByUsername(username);*/
+        Benutzer testNutzer = new Benutzer("jerry","testy");
+        if (tempLobby!=null){
+            tempLobby.nutzerHinzufuegen(testNutzer);
+        }else{
+            lg.info("Ungueltige Lobby ID wurde angegeben.");
+            //TODO : Redirect zur Homepage und Fehlermeldung Popup mit dem Logger Infotext.
         }
     }
+
 
 }
