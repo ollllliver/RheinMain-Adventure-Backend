@@ -18,7 +18,7 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.services.LobbyService;
 
 @Controller
-class LobbyController {
+public class LobbyController {
 
     @Autowired
     private LobbyService lobbyService;

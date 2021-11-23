@@ -35,6 +35,7 @@ public class LobbyService {
     String zeitHashWert = String.valueOf(Math.abs(aktZeit.hashCode()));
 
     int zaehler = 0;
+
     for (int i = 0; i < 10; i++) {
       if (i % 2 == 0) {
         if (zeitHashWert.length() > zaehler) {
