@@ -2,13 +2,11 @@ package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 public class Lobby {
     private String lobbyID;
     private ArrayList<Spieler> teilnehmerliste;
-    private ArrayList<Benutzer> benutzerListe;
     private Spieler host;
     private boolean istVoll;
     private boolean istGestartet;
@@ -19,23 +17,11 @@ public class Lobby {
     public Lobby(String lobbyID, ArrayList<Spieler> teilnehmerliste, Spieler host) {
         this.lobbyID = lobbyID;
         this.teilnehmerliste = teilnehmerliste;
-        this.benutzerListe = new ArrayList<Benutzer>();
         this.host = host;
         this.istVoll = false;
         this.istGestartet = false;
         this.istPrivat = true;
         this.spielerlimit = 4;
-    }
-
-    public void nutzerHinzufuegen(Spieler teilnehmer) {
-        // Wenn Lobby nicht voll oder im Spiel (oder Spieler nicht schon drinnen), wird
-        // der Spieler in die Teilnehmerliste aufgenommen
-        // und es wird gegebenenfalls istVoll angepasst.
-        // eventuell hier TODO: ueberpruefen, ob der Spieler bereits in der lobby ist.
-        if (!istGestartet && !istVoll) {
-            teilnehmerliste.add(teilnehmer);
-            istVoll = (teilnehmerliste.size() >= spielerlimit);
-        }
     }
 
     public ArrayList<Spieler> getSpielerList() {
@@ -47,7 +33,7 @@ public class Lobby {
     }
 
     public boolean getIstVoll(){
-        istVoll = (benutzerListe.size()>=spielerlimit);
+        istVoll = (teilnehmerliste.size()>=spielerlimit);
         return this.istVoll;
     }
 
@@ -84,14 +70,6 @@ public class Lobby {
 
     public void setSpielerlimit(int spielerlimit) {
         this.spielerlimit = spielerlimit;
-    }
-
-    public ArrayList<Benutzer> getBenutzerListe() {
-        return benutzerListe;
-    }
-
-    public void setBenutzerListe(ArrayList<Benutzer> benutzerListe) {
-        this.benutzerListe = benutzerListe;
     }
 
     public boolean getIstPrivat() {

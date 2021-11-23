@@ -40,7 +40,7 @@ class LobbyController {
 
     @MessageMapping("/lobby/{lobbyId}/start")
     @SendTo("/topic/lobby/started")
-    public String startGame(@PathVariable String lobbyId) throws Exception {
+    public String startGame(@PathVariable String lobbyId){
 
         lobbyService.starteCountdown(lobbyId);
         return "CountdownStarted;AmountInSeconds=10";
@@ -49,10 +49,9 @@ class LobbyController {
     /* Unter der nutzung eines Lobby-Links wird ein nutzer der jeweiligen Lobby zugewiesen 
     unter der Kondition dass eine Lobby nicht voll und nicht gestartet ist */
     @GetMapping("/lobby/{lobbyId}")
-    public String lobbieBeitretenMitLink(@PathVariable String lobbyId/*,@SessionAttribute("username") String username*/) throws Exception{
+    public void lobbieBeitretenMitLink(@PathVariable String lobbyId/*,@SessionAttribute("username") String username*/){
         String dummyUsername = "Hallo";
         lobbyService.joinLobbybyId(lobbyId,dummyUsername);
-        return "Hallo Welt";
     }
 
     /* Handler Methode für das zufaellige joinen einer Lobbie. Benötigt im Frontend noch ein Button der das ganze anstoßen kann per POST auf Pfad oder anderweitig*/

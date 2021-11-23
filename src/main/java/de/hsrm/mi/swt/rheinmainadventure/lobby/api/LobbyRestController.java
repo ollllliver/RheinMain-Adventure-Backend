@@ -49,7 +49,9 @@ public class LobbyRestController {
 // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService 
 // zurueckgesendet wird die neu erstellte Lobbyinstanz, damit das Frontend auf die Lobbyseite mit der im Backend erstellten LobbyID weiterleidten kann.
         logger.info("GET /api/lobby/neu");
-        return ResponseEntity.ok().header("Content-Type: JSON").body(lobbyservice.lobbyErstellen());
+        Lobby Test  = lobbyservice.lobbyErstellen();
+        //Test.setIstGestartet(true); //TESTCOMMENT
+        return ResponseEntity.ok().header("Content-Type: JSON").body(Test);
     }
 
     @GetMapping("/{id}")

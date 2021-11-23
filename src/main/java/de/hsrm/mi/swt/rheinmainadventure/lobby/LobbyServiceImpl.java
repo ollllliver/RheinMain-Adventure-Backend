@@ -95,7 +95,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    timer.schedule(task, 10 * 60 * 1000);
+    //timer.schedule(task, 5 * 1000); //TESTCASE
+    timer.schedule(task,10 * 60 * 1000);
   }
 
 
@@ -185,7 +186,7 @@ public class LobbyServiceImpl implements LobbyService {
     Benutzer tempNutzer = benutzerService.getBenutzerByUsername(username);*/
     Spieler testNutzer = new Spieler(1,"testy");
     if (tempLobby!=null){
-        tempLobby.nutzerHinzufuegen(testNutzer);
+        tempLobby.getSpielerList().add(testNutzer);
         broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new LobbyMessage("neuerSpieler", tempLobby.getlobbyID()));
     }else{
       //broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new LobbyMessage("keineLobbyGefunden", tempLobby.getlobbyID()));
