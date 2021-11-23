@@ -40,7 +40,7 @@ public class Benutzer {
 
   }
 
-  public Benutzer(String benutzername, String passwort, boolean online) {
+  public Benutzer(String benutzername, String passwort) {
     this.benutzername = benutzername;
     this.passwort = passwort;
     this.online = false;

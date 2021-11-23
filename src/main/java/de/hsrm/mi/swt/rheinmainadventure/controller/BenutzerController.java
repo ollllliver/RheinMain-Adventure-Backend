@@ -1,6 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.controller;
 
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.entities.UpdateBenutzer;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,11 @@ public class BenutzerController {
     IntBenutzerRepo benutzerRepo;
 
 
+
+    /**
+     * Gibt alle Nutzer mit ID und Name in einer Liste aus
+     * @return ResponseEntity vom Typ Liste von Benutzern
+     */
     @GetMapping("/benutzer")
     public ResponseEntity<List<Benutzer>> getAll(){
         try {
@@ -32,6 +38,11 @@ public class BenutzerController {
         }
     }
 
+    /**
+     * Gibt Nutzer mit spezifischer ID aus wenn dieser existiert
+     * @param id
+     * @return ResponseEntity vom Typ Benutzer
+     */
     @GetMapping("/benutzer/{id}")
     public ResponseEntity<Benutzer> getByID(@PathVariable Long id){
        Optional<Benutzer> benutzer = benutzerRepo.findById(id);
@@ -43,6 +54,11 @@ public class BenutzerController {
        return new ResponseEntity<Benutzer>(HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Nimmt Benutzer aus und versucht diesen in die Datenbank zu fuettern
+     * @param benutzer
+     * @return ResponseEntity HttpStatus CREATED bzw. CONFLICT wenn schon existiert
+     */ 
     @PostMapping("/register")
     public ResponseEntity<Benutzer> register(@RequestBody Benutzer benutzer) {
         try {
@@ -52,7 +68,11 @@ public class BenutzerController {
         }
     }
 
-
+    /**
+     * Nimmt Benutzer aus und schaut ob dieser existiert und eingeloggt ist, setzt diesen online wenn dies nicht der Fall ist
+     * @param benutzer
+     * @return ResponseEntity ACCEPTED bzw. UNAUTHORIZED
+     */
     @PostMapping("/login")
     public ResponseEntity<Benutzer> login(@RequestBody Benutzer benutzer) {
         try {
@@ -70,15 +90,29 @@ public class BenutzerController {
         }
     }
 
+    /**
+     * Nimmt id aus Linkzugriff und JSON Updatebenutzer mit nur Nutzername und Passwort und updated passwort
+     * @param id
+     * @param benutzer
+     * @return ResponseEntity OK bzw. INTERNAL_SERVER_ERROR
+     */
     @PutMapping("/benutzer/{id}")
-    public ResponseEntity<Benutzer> updateBenutzer(@RequestBody Benutzer benutzer){
+    public ResponseEntity<Benutzer> updateBenutzer(@PathVariable Long id, @RequestBody UpdateBenutzer benutzer){
         try {
-            return new ResponseEntity<Benutzer>(benutzerRepo.save(benutzer), HttpStatus.OK);
+            Benutzer benutzerInfo = benutzerRepo.getById(id);
+            benutzerInfo.setPasswort(benutzer.getPasswort());
+            benutzerRepo.getById(id).setPasswort(benutzer.getPasswort());
+            return new ResponseEntity<Benutzer>(benutzerRepo.save(benutzerInfo), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    /**
+     * Nimmt id aus Linkzugriff und loescht Benutzer mit dieser id
+     * @param id
+     * @return ResponseEntity NO_CONTENT (wurde geloescht) bzw. INTERNAL_SERVER_ERROR
+     */
     @DeleteMapping("/benutzer/{id}")
     public ResponseEntity<HttpStatus> deleteBenutzer (@PathVariable Long id){
         try {

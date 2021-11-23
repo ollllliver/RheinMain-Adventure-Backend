@@ -38,11 +38,11 @@ dependencies {
     //testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.2.0")
 
     // exclude junit 4 obwohl spring boot starter test davon abhaengt
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
-    //testImplementation('org.springframework.boot:spring-boot-starter-test:2.5.6') {
+    //testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
+    // testImplementation('org.springframework.boot:spring-boot-starter-test:2.5.6') {
     //    exclude group: 'junit'
     //    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    //}
+    // }
 
 
 
@@ -58,13 +58,16 @@ dependencies {
     // Security n stuff
     //implementation 'org.springframework.boot:spring-boot-starter-security'
     //implementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // Zum Testen benoetigt
-    //implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-test:2.6.0'
+    // Explizit junit vitage engine updaten weil das anscheinend fehler macht ...
+    implementation 'org.junit.vintage:junit-vintage-engine:5.8.1'
     // Sonst Fehler beim testen...
-    //implementation('org.springframework.boot:spring-boot-starter-test') {
-    //    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    //}
+    // implementation('org.springframework.boot:spring-boot-starter-test:2.6.0') {
+    //     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    // }
     //testCompileOnly("junit:junit:4.12")
 
 
