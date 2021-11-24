@@ -1,36 +1,23 @@
 package de.hsrm.mi.swt.rheinmainadventure.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.StringJoiner;
 
-
-/**
- * Dummy Code, um die Verwendung der Data.sql zu zeigen. Nicht Übernehmen!
- */
 @Entity
-@Getter
-@Setter
-@ToString
+
 @Table(name = "benutzer")
 @DynamicUpdate
 public class Benutzer {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY) /*Sequence For better performance*/
-  private Long id;
-
   @Column(unique = true, nullable = false)
+  @Id
   private String benutzername;
-
-  @Column
-  private boolean online;
 
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Column(nullable = false)
@@ -43,10 +30,10 @@ public class Benutzer {
   public Benutzer(String benutzername, String passwort) {
     this.benutzername = benutzername;
     this.passwort = passwort;
-    this.online = false;
+
   }
 
-  /**
+
   @Override
   public String toString() {
     return new StringJoiner(", ", Benutzer.class.getSimpleName() + "[", "]")
@@ -54,7 +41,7 @@ public class Benutzer {
         .add("passwort='" + passwort + "'")
         .toString();
   }
-  **/
+
 
   /**
    * Zwei Nutzer sind dann gleich, wenn Sie den gleichen Nutzernamen haben.
@@ -75,5 +62,21 @@ public class Benutzer {
   @Override
   public int hashCode() {
     return benutzername.hashCode();
+  }
+
+  public String getBenutzername() {
+    return benutzername;
+  }
+
+  public void setBenutzername(String benutzername) {
+    this.benutzername = benutzername;
+  }
+
+  public String getPasswort() {
+    return passwort;
+  }
+
+  public void setPasswort(String passwort) {
+    this.passwort = passwort;
   }
 }
