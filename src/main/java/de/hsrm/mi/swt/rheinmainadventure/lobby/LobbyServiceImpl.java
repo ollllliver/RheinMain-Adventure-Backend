@@ -163,8 +163,8 @@ public class LobbyServiceImpl implements LobbyService {
       // und es wird gegebenenfalls istVoll angepasst.
       // eventuell hier TODO: ueberpruefen, ob der Spieler bereits in der lobby ist.
       if (!currLobby.getIstGestartet() && !currLobby.getIstVoll()) {
-        currLobby.getSpielerList().add(spieler);
-        currLobby.setIstVoll((currLobby.getSpielerList().size() >= currLobby.getSpielerlimit()));
+        currLobby.getTeilnehmerliste().add(spieler);
+        currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
         broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage("neuerSpieler", Id));
       }else{
         //TODO : Fehlermeldungen anpassen und per Broker senden.
@@ -186,7 +186,7 @@ public class LobbyServiceImpl implements LobbyService {
     Benutzer tempNutzer = benutzerService.getBenutzerByUsername(username);*/
     Spieler testNutzer = new Spieler(1,"testy");
     if (tempLobby!=null){
-        tempLobby.getSpielerList().add(testNutzer);
+        tempLobby.getTeilnehmerliste().add(testNutzer);
         broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new LobbyMessage("neuerSpieler", tempLobby.getlobbyID()));
     }else{
       //broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new LobbyMessage("keineLobbyGefunden", tempLobby.getlobbyID()));

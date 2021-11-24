@@ -24,11 +24,11 @@ public class Lobby {
         this.spielerlimit = 4;
     }
 
-    public ArrayList<Spieler> getSpielerList() {
+    public ArrayList<Spieler> getTeilnehmerliste() {
         return teilnehmerliste;
     }
 
-    public void setSpielerList(ArrayList<Spieler> teilnehmerliste) {
+    public void setTeilnehmerliste(ArrayList<Spieler> teilnehmerliste) {
         this.teilnehmerliste = teilnehmerliste;
     }
 
