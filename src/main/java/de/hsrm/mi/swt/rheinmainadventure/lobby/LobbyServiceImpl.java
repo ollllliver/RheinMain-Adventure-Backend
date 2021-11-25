@@ -24,31 +24,45 @@ public class LobbyServiceImpl implements LobbyService {
   @Autowired
   SimpMessagingTemplate broker;
 
-  // Das ist die Liste, in der Alle Lobbies gehaltenund verwaltet werden.
+  // Das ist die Liste, in der Alle Lobbies gehalten und verwaltet werden.
   ArrayList<Lobby> lobbies = new ArrayList<Lobby>();
-  
-  private String generateLobbyID(String benutzerName) {
-    // private Methode zum generieren der Lobby ID TODO: muss noch richtig gehasht
-    // werden.
+
+  public String generateLobbyID(String benutzerName) {
+
     String lobbyID = "";
 
-    logger.info(benutzerName); // Keine Ahnung warum aber ohne das log geht die Loop nicht, VUe is komisch
+    // Benutzername verschoben um eine Stelle
+    String verschobenerName = "";
+
     for (int i = 0; i < benutzerName.length(); i++) {
-
-      char buchstabe = benutzerName.charAt(i);
-      int newAscii = (int) buchstabe;
-      String ascii = Integer.toString(newAscii);
-
-      char newChar = benutzerName.charAt(i);
-      newChar += 1;
-      lobbyID = lobbyID + ascii + newChar;
-
+      char neuerChar = benutzerName.charAt(i);
+      neuerChar += 1;
+      verschobenerName += neuerChar;
     }
 
-    logger.info("NEW HASH: " + lobbyID);
+    // Hash-Wert aus aktueller Zeit
+    String aktZeit = java.time.LocalTime.now().toString();
+    String zeitHashWert = String.valueOf(Math.abs(aktZeit.hashCode()));
+
+    int zaehler = 0;
+
+    for (int i = 0; i < 10; i++) {
+      if (i % 2 == 0) {
+        if (zeitHashWert.length() > zaehler) {
+          lobbyID += zeitHashWert.charAt(zaehler);
+          zaehler++;
+        }
+      } else {
+        if (verschobenerName.length() > zaehler && Character.isLetterOrDigit(verschobenerName.charAt(zaehler))) {
+          lobbyID += verschobenerName.charAt(zaehler);
+          zaehler++;
+        }
+      }
+    }
 
     return lobbyID;
   }
+
   @Override
   public Lobby lobbyErstellen() {
     // Hier wird eine neue Lobby erstellt. Der Host ist der Benutzer aus dem
