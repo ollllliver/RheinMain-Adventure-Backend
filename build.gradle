@@ -23,7 +23,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
+    implementation 'org.springframework.boot:spring-boot-starter-json'
     runtimeOnly 'com.h2database:h2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.1'
@@ -43,8 +43,6 @@ dependencies {
     //    exclude group: 'junit'
     //    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     //}
-
-
 
 
     // @Setter @Getter...

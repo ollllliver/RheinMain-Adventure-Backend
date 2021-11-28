@@ -1,79 +1,116 @@
 package de.hsrm.mi.swt.rheinmainadventure.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.DynamicUpdate;
-
 
 import javax.persistence.*;
-import java.util.StringJoiner;
 
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 /**
- * Dummy Code, um die Verwendung der Data.sql zu zeigen. Nicht Übernehmen!
+ * Benutzer-Entity für das Benutzer-Repository
  */
 @Entity
-@Getter
-@Setter
-@ToString
-@Table(name = "benutzer")
-@DynamicUpdate
+@Table(name="benutzer")
 public class Benutzer {
 
+  //automatisch generierte ID
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY) /*Sequence For better performance*/
+  @GeneratedValue
   private Long id;
-
-  @Column(unique = true, nullable = false)
+  //Spalte Loginname im Repository
+  @Column(name="BENUTZERNAME", unique=true)
   private String benutzername;
 
-  @Column
-  private boolean online;
-
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  @Column(nullable = false)
+  @JsonProperty(access=Access.WRITE_ONLY)
   private String passwort;
 
-  public Benutzer(){
+  //automatisch generierte Versionsnummer
+  @Version
+  @GeneratedValue
+  @JsonProperty(access=Access.WRITE_ONLY)
+  private Long version;
 
+  //Getter/Setter/hashCode/equals/toString
+  public String getBenutzername() {
+    return benutzername;
   }
 
-  public Benutzer(String benutzername, String passwort, boolean online) {
-    this.benutzername = benutzername;
+  public void setBenutzername(String loginname) {
+    this.benutzername = loginname;
+  }
+
+  public String getPasswort() {
+    return passwort;
+  }
+
+  public void setPasswort(String passwort) {
     this.passwort = passwort;
-    this.online = false;
   }
 
-  /**
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Benutzer.class.getSimpleName() + "[", "]")
-        .add("benutzername='" + benutzername + "'")
-        .add("passwort='" + passwort + "'")
-        .toString();
+  public Long getId() {
+    return id;
   }
-  **/
 
-  /**
-   * Zwei Nutzer sind dann gleich, wenn Sie den gleichen Nutzernamen haben.
-   *
-   * @param o
-   * @return
-   */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    Benutzer benutzer = (Benutzer) o;
+  public Long getVersion() {
+    return version;
+  }
 
-    return benutzername.equals(benutzer.benutzername);
+  public void setVersion(Long version) {
+    this.version = version;
   }
 
   @Override
   public int hashCode() {
-    return benutzername.hashCode();
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((benutzername == null) ? 0 : benutzername.hashCode());
+
+    result = prime * result + ((passwort == null) ? 0 : passwort.hashCode());
+    result = prime * result + ((version == null) ? 0 : version.hashCode());
+    return result;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Benutzer other = (Benutzer) obj;
+    if (id == null) {
+      if (other.id != null)
+        return false;
+    } else if (!id.equals(other.id))
+      return false;
+    if (benutzername == null) {
+      if (other.benutzername != null)
+        return false;
+    } else if (!benutzername.equals(other.benutzername))
+    if (passwort == null) {
+      if (other.passwort != null)
+        return false;
+    } else if (!passwort.equals(other.passwort))
+      return false;
+    if (version == null) {
+      if (other.version != null)
+        return false;
+    } else if (!version.equals(other.version))
+      return false;
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "Benutzer [id=" + id + ", benutzername=" + benutzername
+            + ", passwort=" + passwort + ", version=" + version + "]";
+  }
+
+
 }
