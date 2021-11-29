@@ -13,6 +13,16 @@ public class Lobby {
     private boolean istPrivat;
     private int spielerlimit;
 
+    // Aktuellen LobbyService reinreichen lassen da ich nicht weiß wie man bei einer
+    // nicht Component Klasse Autowired.
+    /**
+     * Erstellt eine Lobby mit einer bestimmten ID
+     * 
+     * @param lobbyID        einmalige LobbyID für eine Lobby
+     * @param teilehmerliste leere Liste der teilnehmer
+     * @param host           ein Spieler der der host der Lobby ist
+     * 
+     */
     public Lobby(String lobbyID, ArrayList<Spieler> teilnehmerliste, Spieler host) {
         this.lobbyID = lobbyID;
         this.teilnehmerliste = teilnehmerliste;
@@ -75,6 +85,9 @@ public class Lobby {
         return true;
     }
 
+    /**
+     * Es folgen nurnoch Getter und Setter
+     */
     public ArrayList<Spieler> getTeilnehmerliste() {
         return teilnehmerliste;
     }
@@ -83,19 +96,20 @@ public class Lobby {
         this.teilnehmerliste = teilnehmerliste;
     }
 
-    public boolean getIstVoll(){
-        istVoll = (teilnehmerliste.size()>=spielerlimit);
+    public boolean getIstVoll() {
+        istVoll = (teilnehmerliste.size() >= spielerlimit);
         return this.istVoll;
     }
 
-    public void setIstVoll(boolean istVollNeu){
+    public void setIstVoll(boolean istVollNeu) {
         this.istVoll = istVollNeu;
     }
 
-    public boolean getIstGestartet(){
+    public boolean getIstGestartet() {
         return this.istGestartet;
     }
-    public void setIstGestartet(boolean istGestartetNeu){
+
+    public void setIstGestartet(boolean istGestartetNeu) {
         this.istGestartet = istGestartetNeu;
     }
 
