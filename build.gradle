@@ -31,6 +31,49 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
     
     runtimeOnly 'com.h2database:h2'
+    implementation 'org.springframework.boot:spring-boot-starter-json'
+    runtimeOnly 'com.h2database:h2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.1'
+    testRuntimeOnly    'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+
+
+    // HANS NEUER SHIT\
+    // junit4 mockito test
+    //testImplementation 'org.mockito:mockito-core:4.0.0'
+    //testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
+    //testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.2.0")
+
+    // exclude junit 4 obwohl spring boot starter test davon abhaengt
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
+    //testImplementation('org.springframework.boot:spring-boot-starter-test:2.5.6') {
+    //    exclude group: 'junit'
+    //    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    //}
+
+
+    // @Setter @Getter...
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+
+    // Security n stuff
+    //implementation 'org.springframework.boot:spring-boot-starter-security'
+    //implementation 'org.springframework.security:spring-security-test'
+
+    // Zum Testen benoetigt
+    //implementation 'org.springframework.boot:spring-boot-starter-test'
+    // Sonst Fehler beim testen...
+    //implementation('org.springframework.boot:spring-boot-starter-test') {
+    //    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    //}
+    //testCompileOnly("junit:junit:4.12")
+
+
 }
 test {
     useJUnitPlatform()
