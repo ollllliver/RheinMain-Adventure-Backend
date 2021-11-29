@@ -68,6 +68,10 @@ public class LobbyErstellen {
         return restLobbies;
     }
 
+    private void logIn(String name) throws Exception {
+        String benutzerJSON = "{benutzername: " + name + ", passwort: " + name + "}";
+        mockmvc.perform(get("/api/benutzer/login").contentType("application/json").content(benutzerJSON)).andReturn();
+    }
 
     // ###############
     // Standardablauf:
@@ -83,6 +87,7 @@ public class LobbyErstellen {
     @Test
     @DisplayName("Eine Lobby ueber REST erstellen.")
     public void UCD_Lobby_erstellen_1() throws Exception {
+        logIn("Oliver");
         lobbyErstellenREST();
         assertTrue(lobbyService.getLobbies().size() == 1);
         assertTrue(lobbyService.getLobbies().get(0).getClass() == Lobby.class);

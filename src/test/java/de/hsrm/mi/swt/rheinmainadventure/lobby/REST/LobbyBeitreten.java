@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+import java.util.ArrayList;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.DisplayName;
@@ -67,11 +69,11 @@ public class LobbyBeitreten {
     @DisplayName("Einer Lobby per ID beitreten.")
     public void UCD_Lobby_beitreten() throws Exception {
         // TODO: Test: Login mit einem Spieler
-        Spieler spieler = new Spieler(17,"Hans"); // So? Wieso ID?
+        Spieler spieler = new Spieler("Hans"); // So?
         // Login...
         Lobby alteLobby = lobbyErstellenREST();
         // TODO: Test: Benutzer wechseln(ueber login oder session scope)
-        Spieler neueSpieler = new Spieler(17,"Peter"); // So?
+        Spieler neueSpieler = new Spieler("Peter"); // So?
         
         Lobby neueLobby = lobbyBeitretenREST(alteLobby.getlobbyID());
 
@@ -114,12 +116,12 @@ public class LobbyBeitreten {
     @DisplayName("Spieler befindet sich bereits in der selben Lobby.")
     public void UCD_Lobby_beitreten_1d_1() throws Exception {
         // TODO: Test: Login mit einem Spieler
-        Spieler spieler = new Spieler(17,"Peter"); // So?
+        Spieler spieler = new Spieler("Peter"); // So?
         // Login...
         Lobby initLobby = lobbyErstellenREST();
         
         // TODO: Test: Login mit einem neuen Spieler
-        Spieler neueSpieler = new Spieler(17,"Peter"); // So?
+        Spieler neueSpieler = new Spieler("Peter"); // So?
         // Login...
         // ein mal beitreten:
         Lobby lobbyNach1malBeitreten = lobbyBeitretenREST(initLobby.getlobbyID());
@@ -134,13 +136,13 @@ public class LobbyBeitreten {
     @DisplayName("Spieler befindet sich bereits in einer anderen Lobby.")
     public void UCD_Lobby_beitreten_1d_2() throws Exception {
         // TODO: Test: Login mit einem Spieler
-        Spieler spieler = new Spieler(17,"Peter"); // So?
+        Spieler spieler = new Spieler("Peter"); // So?
         // Login...
         Lobby ersteLobby = lobbyErstellenREST();
 
         // TODO: Test: Benutzer wechseln(ueber login oder session scope)
         // zweite Lobby mit anderem Spieler erstellen, sodass der Spieler schon in einer Lobby drinnen ist:
-        Spieler neueSpieler = new Spieler(17,"Peter"); // So?
+        Spieler neueSpieler = new Spieler("Peter"); // So?
         Lobby zweitelobby = lobbyErstellenREST();
 
         // erster Lobby mit dem neuen Spieler versuchen beizutreten solte nicht gehen
@@ -157,7 +159,7 @@ public class LobbyBeitreten {
     @DisplayName("Einer Lobby, in der man schon als Host ist, per ID beitreten soll nichts aendern.")
     public void UCD_Lobby_beitreten_1d_3() throws Exception {
         // TODO: Test: Login mit einem Spieler
-        Spieler neueSpieler = new Spieler(17,"Peter"); // So?
+        Spieler neueSpieler = new Spieler("Peter"); // So?
         // Login...
         Lobby lobbyInDerManIst = lobbyErstellenREST();
         // Lobby beitreten, ohne den Benutzer vorher zu wechseln, sollte nichts an der Lobby aendern.

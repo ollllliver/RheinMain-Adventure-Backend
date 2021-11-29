@@ -11,12 +11,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 @Service
 public class LobbyServiceImpl implements LobbyService {
   // Hier werden die Methoden des LobbyServices implementiert.
-  Logger logger = LoggerFactory.getLogger(LobbyController.class);
+  Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
 
   // Der Messagebroker wird hier durch dependencyInjection eingebunden.
   // Ueber ihn koennen Nachrichten ueber STOMP an die interessierten gesendet
@@ -64,16 +65,11 @@ public class LobbyServiceImpl implements LobbyService {
   }
 
   @Override
-  public Lobby lobbyErstellen() {
-    // Hier wird eine neue Lobby erstellt. Der Host ist der Benutzer aus dem
-    // Sessionscope.
-    // TODO Name vom Spieler bekommen (aus sessionscope?)
-    String spielerName = "Player1";
-    // TODO: wo kommt die SpielerID her? ist das Global oder nur in der Lobby? wenn
-    // nur in der Lobby: hochzaehlen?
-    Spieler host = new Spieler(1, spielerName);
+  public Lobby lobbyErstellen(String spielerName) {
+    // Hier wird eine neue Lobby erstellt. Der Host ist der Benutzer aus dem Sessionscope.
+    Spieler host = new Spieler(spielerName);
     ArrayList<Spieler> players = new ArrayList<Spieler>();
-    players.add(host);
+    // players.add(host);
     String lobbyID = generateLobbyID(spielerName);
     Lobby lobby = new Lobby(lobbyID, players, host);
 
@@ -94,12 +90,11 @@ public class LobbyServiceImpl implements LobbyService {
       public void run() {
         if (!lobby.getIstGestartet()) {
 
-          // TODO : per STOMP Service allen Nutzern die auf diese Aktuelle lobbyID
+          // per STOMP Service allen Nutzern die auf diese Aktuelle lobbyID
           // Subscribed sind eine Fehlermeldung per Publish senden und im Frontend
           // abfangen.
           // @Chand das wuerde jetzt so gehen:
-          broker.convertAndSend("/topic/lobby/" + lobby.getlobbyID(),
-              new LobbyMessage("lobbyzeitAbgelaufen", lobby.getlobbyID()));
+          broker.convertAndSend("/topic/lobby/" + lobby.getlobbyID(), new LobbyMessage(NachrichtenCode.LOBBYZEIT_ABGELAUFEN, true));
           // Das sendet an alle, die in der Lobby eingeschrieben sind die message
           // LOBBYZEIT_ABGELAUFEN
 
@@ -109,12 +104,11 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    //timer.schedule(task, 5 * 1000); //TESTCASE
-    timer.schedule(task,10 * 60 * 1000);
+    // timer.schedule(task, 5 * 1000); //TESTCASE
+    timer.schedule(task, 10 * 60 * 1000);
   }
 
-
-  //Startet ein Countdown fürs setzen von IstGestartet bei 10 Sekunden
+  // Startet ein Countdown fürs setzen von IstGestartet bei 10 Sekunden
   @Override
   public void starteCountdown(String lobbyId) {
     Timer timer = new Timer();
@@ -123,7 +117,7 @@ public class LobbyServiceImpl implements LobbyService {
 
       public void run() {
         if (!lobby.getIstGestartet()) {
-            lobby.setIstGestartet(true);
+          lobby.setIstGestartet(true);
         }
       }
 
@@ -153,7 +147,7 @@ public class LobbyServiceImpl implements LobbyService {
   }
 
   @Override
-  public void joinLobbybyId(String Id, String spielername) {
+  public LobbyMessage joinLobbybyId(String Id, String spielername) {
     // Fuegt den Sessionspieler der mitgegebenen Lobby ueber die nutzerHinzufuegen()
     // Funktion der Lobby Klasse hinzu.
     // Eigendlich ohne Spieler. in der Lobby.nutzerHinzufuegen() methode muss der
@@ -161,52 +155,56 @@ public class LobbyServiceImpl implements LobbyService {
     logger.info(spielername + " will der Lobby " + Id + " joinen");
 
     Lobby currLobby = getLobbyById(Id);
-    // TODO ueberpruefen, ob spieler bereits in der Lobby ist. Das sollte sowohl im
-    // Frontend als auch im Backend passieren. Kann auch in der Lobby Klasse Methode
-    // selbst gemacht werden.
-    Spieler spieler = new Spieler(1,spielername);
-    /*
-    * Legt benutzer Instanz an wenn man einen User mit dem aktuellen Session
-    * Benutzernamen findet. 
-    * Benutzer tempNutzer = benutzerService.getBenutzerByUsername(username);
-    */
-
+    // ueberpruefen, ob spieler bereits in der Lobby ist. Das sollte sowohl im
+    if (!currLobby.getTeilnehmerliste().contains(new Spieler(spielername))) {
 
       // Wenn Lobby nicht voll oder im Spiel (oder Spieler nicht schon drinnen), wird
       // der Spieler in die Teilnehmerliste aufgenommen
       // und es wird gegebenenfalls istVoll angepasst.
-      // eventuell hier TODO: ueberpruefen, ob der Spieler bereits in der lobby ist.
-      if (!currLobby.getIstGestartet() && !currLobby.getIstVoll()) {
+      if (currLobby.getIstGestartet()) {
+        return new LobbyMessage(NachrichtenCode.LOBBY_GESTARTET, true);
+      } else if (currLobby.getIstVoll()) {
+        return new LobbyMessage(NachrichtenCode.LOBBY_VOLL, true);
+      } else {
+        Spieler spieler = new Spieler(spielername);
+        /*
+         * Legt benutzer Instanz an wenn man einen User mit dem aktuellen Session
+         * Benutzernamen findet.
+         * Benutzer tempNutzer = benutzerService.getBenutzerByUsername(username);
+         */
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
-        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage("neuerSpieler", Id));
-      }else{
-        //TODO : Fehlermeldungen anpassen und per Broker senden.
-        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage("JoinFailed", Id));
+        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false));
+        return new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false);
       }
-
+    }
+    return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false);
   }
 
   @Override
-  public void lobbieBeitretenZufaellig(String username) {
+  public void lobbieBeitretenZufaellig(String spielername) {
     Lobby tempLobby = null;
     for (Lobby currLobby : lobbies) {
-        if(!currLobby.getIstGestartet() && !currLobby.getIstVoll() && !currLobby.getIstPrivat()){
-            tempLobby = currLobby;
-            break;
-        }
+      if (!currLobby.getIstGestartet() && !currLobby.getIstVoll() && !currLobby.getIstPrivat()) {
+        tempLobby = currLobby;
+        break;
+      }
     }
-    /*Legt benutzer Instanz an wenn man einen User mit dem aktuellen Session Benutzernamen findet.
-    Benutzer tempNutzer = benutzerService.getBenutzerByUsername(username);*/
-    Spieler testNutzer = new Spieler(1,"testy");
-    if (tempLobby!=null){
-        tempLobby.getTeilnehmerliste().add(testNutzer);
-        broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new LobbyMessage("neuerSpieler", tempLobby.getlobbyID()));
-    }else{
-      //broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new LobbyMessage("keineLobbyGefunden", tempLobby.getlobbyID()));
-      //Per Broker an den User der einer Random Lobby joinen wollte Fehlermeldung senden.
+    /*
+     * Legt benutzer Instanz an wenn man einen User mit dem aktuellen Session
+     * Benutzernamen findet.
+     * Benutzer tempNutzer = benutzerService.getBenutzerByUsername(username);
+     */
+    Spieler testNutzer = new Spieler(spielername);
+    if (tempLobby != null) {
+      tempLobby.getTeilnehmerliste().add(testNutzer);
+      broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false));
+    } else {
+      // broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new
+      // LobbyMessage("keineLobbyGefunden", tempLobby.getlobbyID()));
+      // Per Broker an den User der einer Random Lobby joinen wollte Fehlermeldung
+      // senden.
     }
-}
-    
-}
+  }
 
+}

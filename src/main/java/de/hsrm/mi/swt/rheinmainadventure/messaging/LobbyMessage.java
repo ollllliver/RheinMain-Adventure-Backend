@@ -1,36 +1,37 @@
 package de.hsrm.mi.swt.rheinmainadventure.messaging;
 public class LobbyMessage {
-    public static final String NEUER_MITSPIELER = "neuerMitspieler";
-    public static final String LOBBYZEIT_ABGELAUFEN = "lobbyzeitAbgelaufen";
-    private String operation;
-    private String id;
-
+    
+    private NachrichtenCode operation;
+    private Boolean istFehler;
+    
     public LobbyMessage() {
     }
 
-    public LobbyMessage(String op, String id) {
+    public LobbyMessage(NachrichtenCode op, Boolean istFehler) {
         this.operation = op;
-        this.id = id;
+        this.istFehler = istFehler;
     }
-
-    public String getOperation() {
+    
+    public NachrichtenCode getOperation() {
         return operation;
     }
 
-    public void setOperation(String operation) {
+    public void setOperation(NachrichtenCode operation) {
         this.operation = operation;
     }
 
-    public String getId() {
-        return id;
+    public Boolean getIstFehler() {
+        return istFehler;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setIstFehler(Boolean istFehler) {
+        this.istFehler = istFehler;
     }
 
     @Override
     public String toString() {
-        return "LobbyMessage [id=" + id + ", operation=" + operation + "]";
+        return "LobbyMessage [istFehler=" + istFehler + ", operation=" + operation + "]";
     }
+
+
 }

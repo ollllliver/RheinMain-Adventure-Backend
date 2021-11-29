@@ -77,14 +77,14 @@ public class LobbyVerlassen {
     @DisplayName("Eine Lobby, in der man ist, per ID verlassen.")
     public void UCD_Lobby_verlassen() throws Exception {
         // TODO: Login mit einem Spieler
-        Spieler host = new Spieler(17,"Peter"); // So? Wieso ID?
+        Spieler host = new Spieler("Peter"); // So?
         // Login...
 
         // Lobby erstellen
         Lobby lobby = lobbyErstellenREST();
 
         // TODO: Login mit einem Spieler
-        Spieler neueSpieler = new Spieler(17,"Peter"); // So? Wieso ID?
+        Spieler neueSpieler = new Spieler("Peter"); // So?
         // Login...
 
         // Lobby als neuer Spieler beitreten
