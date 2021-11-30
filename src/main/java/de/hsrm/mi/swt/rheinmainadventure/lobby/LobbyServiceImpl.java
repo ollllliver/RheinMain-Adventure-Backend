@@ -28,6 +28,12 @@ public class LobbyServiceImpl implements LobbyService {
   // Das ist die Liste, in der Alle Lobbies gehalten und verwaltet werden.
   ArrayList<Lobby> lobbies = new ArrayList<Lobby>();
 
+  /**
+   * Generiert eine einmalige Lobby-ID aus dem Namen des Spielers, kombiniert mit einem Hashwert des aktuellen Zeitstempels
+   * 
+   * @param benutzerName Der mitgegebene Name des Spielers
+   * @return Gibt die generierte Lobby-ID als String zurueck
+   */
   public String generateLobbyID(String benutzerName) {
 
     String lobbyID = "";
@@ -47,6 +53,7 @@ public class LobbyServiceImpl implements LobbyService {
 
     int zaehler = 0;
 
+    // Kombination von Name und Zeit-Hashwert fuer Lobby-ID
     for (int i = 0; i < 10; i++) {
       if (i % 2 == 0) {
         if (zeitHashWert.length() > zaehler) {
@@ -146,16 +153,22 @@ public class LobbyServiceImpl implements LobbyService {
     return null;
   }
 
+  /**
+   * Fuegt den Sessionspieler der mitgegebenen Lobby (ID) ueber die nutzerHinzufuegen() Funktion der Lobby Klasse hinzu.
+   * 
+   * @param Id mitgegebene Lobby-ID
+   * @param spielername Der mitgegebene Name des Spielers
+   * @return Gibt eine LobbyMessage mit passendem NachrichtenCode, sowie Erfolgsstatus zurueck
+   */
   @Override
   public LobbyMessage joinLobbybyId(String Id, String spielername) {
-    // Fuegt den Sessionspieler der mitgegebenen Lobby ueber die nutzerHinzufuegen()
-    // Funktion der Lobby Klasse hinzu.
-    // Eigendlich ohne Spieler. in der Lobby.nutzerHinzufuegen() methode muss der
+    // Eigentlich ohne Spieler. In der Lobby.nutzerHinzufuegen() Methode muss der
     // Spieler aus der SessionScope geholt werden
     logger.info(spielername + " will der Lobby " + Id + " joinen");
 
     Lobby currLobby = getLobbyById(Id);
-    // ueberpruefen, ob spieler bereits in der Lobby ist. Das sollte sowohl im
+
+    // ueberpruefen, ob Spieler bereits in der Lobby ist
     if (!currLobby.getTeilnehmerliste().contains(new Spieler(spielername))) {
 
       // Wenn Lobby nicht voll oder im Spiel (oder Spieler nicht schon drinnen), wird

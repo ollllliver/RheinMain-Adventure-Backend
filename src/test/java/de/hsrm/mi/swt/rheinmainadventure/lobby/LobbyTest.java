@@ -26,6 +26,10 @@ public class LobbyTest {
         lobbyService = new LobbyServiceImpl();
     }
 
+    /**
+     * Testet die generierte Lobby-ID mit verschiedenen Namen und prueft sie auf laenge, 
+     * Einmaligkeit und ob sie nur aus Buchstaben und Zahlen besteht.
+     */
     @Test
     public void testLobbyID() {
 
@@ -46,6 +50,11 @@ public class LobbyTest {
 
             // jede ID ist einmalig
             assertTrue(idSet.add(id));
+
+            // die ID besteht nur aus Zahlen und Buchstaben
+            for(var c : id.toCharArray()){
+                assertTrue(Character.isLetterOrDigit(c));
+            }
         }
     }
 
