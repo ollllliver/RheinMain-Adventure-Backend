@@ -47,8 +47,8 @@ public class Benutzertests {
         Benutzer ben = new Benutzer();
         ben.setBenutzername(TESTLOGINNAME);
         ben.setPasswort(TESTPASSWORT);
-
-        assertThat(benutzerService.findeBenutzer(TESTLOGINNAME)).isEqualTo(TESTLOGINNAME);
+        final Benutzer managed = benutzerService.registriereBenutzer(ben);
+        assertThat(benutzerService.findeBenutzer(TESTLOGINNAME).getBenutzername()).isEqualTo(TESTLOGINNAME);
     }
 
     @Test
@@ -128,7 +128,8 @@ public class Benutzertests {
         Benutzer ben2 = new Benutzer();
         ben2.setBenutzername("schnorchelnasenbaer");
         ben2.setPasswort("schnorchelnasenbaer19");
-
+        benutzerrepo.save(ben);
+        benutzerrepo.save(ben2);
         assertThat(benutzerService.pruefeLogin("willi", "willi5")).isTrue();
         assertThat(benutzerService.pruefeLogin("schnorchelnasenbaer", "schnorchelnasenbaer19")).isTrue();
     }

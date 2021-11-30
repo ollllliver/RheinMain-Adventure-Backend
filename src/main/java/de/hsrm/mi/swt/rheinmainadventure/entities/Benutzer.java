@@ -1,5 +1,6 @@
 package de.hsrm.mi.swt.rheinmainadventure.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 /**
  * Benutzer-Entity für das Benutzer-Repository
  */
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name="benutzer")
 public class Benutzer {
@@ -21,7 +23,6 @@ public class Benutzer {
   @Column(name="BENUTZERNAME", unique=true)
   private String benutzername;
 
-  @JsonProperty(access=Access.WRITE_ONLY)
   private String passwort;
 
   //automatisch generierte Versionsnummer
