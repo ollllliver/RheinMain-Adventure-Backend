@@ -16,5 +16,5 @@ public interface LobbyService {
     public List<Lobby> getLobbies();
     public LobbyMessage joinLobbybyId(String id, String benutzername);
     public void starteCountdown(String lobbyId);
-    public void lobbieBeitretenZufaellig(String username);
+    public LobbyMessage lobbieBeitretenZufaellig(String username);
 }
