@@ -120,11 +120,17 @@ public class LobbyServiceImpl implements LobbyService {
   public void starteCountdown(String lobbyId) {
     Timer timer = new Timer();
     Lobby lobby = getLobbyById(lobbyId);
+
+    broker.convertAndSend("/topic/lobby/" + lobbyId, new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false));
+
     TimerTask task = new TimerTask() {
 
       public void run() {
         if (!lobby.getIstGestartet()) {
           lobby.setIstGestartet(true);
+
+          //TODO : Hier nach Spielcountdown Ansicht wechseln 
+
         }
       }
 
@@ -195,7 +201,7 @@ public class LobbyServiceImpl implements LobbyService {
   }
 
   @Override
-  public void lobbieBeitretenZufaellig(String spielername) {
+  public LobbyMessage lobbieBeitretenZufaellig(String spielername) {
     Lobby tempLobby = null;
     for (Lobby currLobby : lobbies) {
       if (!currLobby.getIstGestartet() && !currLobby.getIstVoll() && !currLobby.getIstPrivat()) {
@@ -203,21 +209,12 @@ public class LobbyServiceImpl implements LobbyService {
         break;
       }
     }
-    /*
-     * Legt benutzer Instanz an wenn man einen User mit dem aktuellen Session
-     * Benutzernamen findet.
-     * Benutzer tempNutzer = benutzerService.getBenutzerByUsername(username);
-     */
-    Spieler testNutzer = new Spieler(spielername);
-    if (tempLobby != null) {
-      tempLobby.getTeilnehmerliste().add(testNutzer);
-      broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false));
-    } else {
-      // broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new
-      // LobbyMessage("keineLobbyGefunden", tempLobby.getlobbyID()));
-      // Per Broker an den User der einer Random Lobby joinen wollte Fehlermeldung
-      // senden.
+    if(tempLobby != null){
+      return joinLobbybyId(tempLobby.getlobbyID(), spielername);
+    }else{
+      return new LobbyMessage(NachrichtenCode.KEINE_LOBBY_FREI,true);
     }
+
   }
 
 }
