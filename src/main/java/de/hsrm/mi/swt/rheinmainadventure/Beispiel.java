@@ -16,11 +16,11 @@ class Beispiel {
    *
    * @return Hallo Welt.html, da nur Logging erzeugt werden soll
    */
-  @GetMapping("/")
+  /*@GetMapping("/")
   public String lebenszeichen() {
     lg.info("Aufruf wurde erkannt. Hurra!");
     return "Hallo Welt";
-  }
+  }*/
 
   @GetMapping("/login")
   public String login() {
