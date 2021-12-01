@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +19,22 @@ import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 
+/**
+ * Rest Controller für /abi/lobby/*
+ * 
+ * Alle REST aufrufe zum Thema Lobby kommen hier an, werden zum verarbeiten an
+ * den LobbyService weitergeleitet und hier wieder als Antwort zurück gesendet.
+ * 
+ * Es gibt:
+ * GET - api/lobby/alle
+ * POST - api/lobby/join{id}
+ * POST - api/lobby/neu
+ * GET - api/lobby/{id}
+ * 
+ */
 @RestController
-@RequestMapping(value = { "/api/lobby/*", "/api/lobby" })
-@SessionAttributes(names = {"loggedinBenutzername"})
+@RequestMapping(value = { "/api/lobby/*" })
+@SessionAttributes(names = { "loggedinBenutzername" })
 public class LobbyRestController {
     // Hier ist die REST Schnittstelle fuer /api/lobby/... Jede REST Anfrage auf
     // diese Domain geht hierueber und wird in dieser Klasse bearbeitet.
@@ -39,17 +53,26 @@ public class LobbyRestController {
     }
 
     /**
-     * stoesst beim lobbyservice das hinzufuegen des Sessionscope Users in die mitgegebene Lobby an
-     * @param lobbyId
-     * @param m
-     * @return
+     * api/lobby/join/{id} stößt beim lobbyservice das hinzufügen des Sessionscope
+     * Users (später des Prinzipal Users) in die Lobby mit der mitgegebene ID an.
+     * 
+     * @param lobbyId, zu der der eingeloggte User hinzugefügt werden soll.
+     * @param m später Prinzipal prinz (eingeloggter User)
+     * @return LobbyMessage mit Nachrichtencode
+     * 
      */
-    @PostMapping("/join/{lobbyId}")
-    public ResponseEntity<LobbyMessage> lobbieBeitretenMitLink(@PathVariable String lobbyId,Model m) {
+    @PostMapping(value="/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public LobbyMessage lobbieBeitretenMitLink(@PathVariable String lobbyId, Model m) {
         logger.info("POST /api/lobby/join/" + lobbyId);
-        return ResponseEntity.ok().header("Content-Type: JSON").body(lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString()));
+        return lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
 
+    /**
+     * api/lobby/neu stößt beim lobbyservice das erstellen einer neuen Lobby an und gibt diese zurück.
+     * 
+     * @param m später Prinzipal prinz (eingeloggter User)
+     * @return neu erstellte Lobby
+     */
     @PostMapping("neu")
     public ResponseEntity<Lobby> neueLobbyErstellen(Model m) {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
@@ -60,6 +83,12 @@ public class LobbyRestController {
         return ResponseEntity.ok().header("Content-Type: JSON").body(lobby);
     }
 
+    /**
+     * Anfrage nach der Lobby mit mitgegebener ID.
+     * 
+     * @param id der gesuchten Lobby 
+     * @return angefragte Lobby
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Lobby> getLobbyById(@PathVariable String id) {
         // GET /api/lobby/{id} - gibt die Lobby ueber die ID zurueck
@@ -68,19 +97,19 @@ public class LobbyRestController {
     }
 
     // @Chand work in progress
-    
+
     // @PostMapping("/lobby")
-    // public void lobbieBeitretenZufaellig(@SessionAttribute("username") String username){
-    //     lobbyService.lobbieBeitretenZufaellig(username);
+    // public void lobbieBeitretenZufaellig(@SessionAttribute("username") String
+    // username){
+    // lobbyService.lobbieBeitretenZufaellig(username);
     // }
 
     // @MessageMapping("/lobby/{lobbyId}/start")
     // @SendTo("/topic/lobby/started")
     // public String startGame(@PathVariable String lobbyId){
 
-    //     lobbyService.starteCountdown(lobbyId);
-    //     return "CountdownStarted;AmountInSeconds=10";
+    // lobbyService.starteCountdown(lobbyId);
+    // return "CountdownStarted;AmountInSeconds=10";
     // }
-
 
 }

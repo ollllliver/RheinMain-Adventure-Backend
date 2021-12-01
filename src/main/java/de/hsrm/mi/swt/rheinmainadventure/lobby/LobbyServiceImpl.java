@@ -14,21 +14,27 @@ import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
+/**
+ * Lobby Service für das verwalten aller Lobbys.
+ * 
+ */
 @Service
 public class LobbyServiceImpl implements LobbyService {
-  // Hier werden die Methoden des LobbyServices implementiert.
   Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
 
-  // Der Messagebroker wird hier durch dependencyInjection eingebunden.
-  // Ueber ihn koennen Nachrichten ueber STOMP an die interessierten gesendet
-  // werden.
+  /**
+   * Der Messagebroker wird hier durch dependencyInjection eingebunden. Über ihn
+   * koennen Nachrichten ueber STOMP an die Subscriber gesendet werden
+   */
   @Autowired
   SimpMessagingTemplate broker;
 
-  // Das ist die Liste, in der Alle Lobbies gehalten und verwaltet werden.
+  /**
+   * Liste aller Lobbyinstanzen.
+   */
   ArrayList<Lobby> lobbies = new ArrayList<Lobby>();
 
-  public String generateLobbyID(String benutzerName) {
+  private String generateLobbyID(String benutzerName) {
 
     String lobbyID = "";
 
@@ -64,9 +70,16 @@ public class LobbyServiceImpl implements LobbyService {
     return lobbyID;
   }
 
+  /**
+   * Erstellt eine neue Lobby mit dem mitgegebenen Spieler(namen) als Host.
+   * 
+   * @param spielerName des Lobby Erstellers
+   * @return neu erstellte Lobby
+   */
   @Override
   public Lobby lobbyErstellen(String spielerName) {
-    // Hier wird eine neue Lobby erstellt. Der Host ist der Benutzer aus dem Sessionscope.
+    // Hier wird eine neue Lobby erstellt. Der Host ist der Benutzer aus dem
+    // Sessionscope.
     Spieler host = new Spieler(spielerName);
     ArrayList<Spieler> players = new ArrayList<Spieler>();
     // players.add(host);
@@ -83,7 +96,7 @@ public class LobbyServiceImpl implements LobbyService {
    * Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby
    * Schließt
    */
-  public void starteTimeout(Lobby lobby) {
+  private void starteTimeout(Lobby lobby) {
     Timer timer = new Timer();
     TimerTask task = new TimerTask() {
 
@@ -94,7 +107,8 @@ public class LobbyServiceImpl implements LobbyService {
           // Subscribed sind eine Fehlermeldung per Publish senden und im Frontend
           // abfangen.
           // @Chand das wuerde jetzt so gehen:
-          broker.convertAndSend("/topic/lobby/" + lobby.getlobbyID(), new LobbyMessage(NachrichtenCode.LOBBYZEIT_ABGELAUFEN, true));
+          broker.convertAndSend("/topic/lobby/" + lobby.getlobbyID(),
+              new LobbyMessage(NachrichtenCode.LOBBYZEIT_ABGELAUFEN, true));
           // Das sendet an alle, die in der Lobby eingeschrieben sind die message
           // LOBBYZEIT_ABGELAUFEN
 
@@ -125,8 +139,11 @@ public class LobbyServiceImpl implements LobbyService {
     timer.schedule(task, 10 * 1000);
   }
 
+  /**
+   * Gibt ALLE aktuellen Lobbies als Array zurueck.
+   * 
+   */
   public ArrayList<Lobby> getLobbies() {
-    // Gibt ALLE Lobbies als Array zurueck
     logger.info("Anzahl lobbies:" + this.lobbies.size());
     return this.lobbies;
     // Bsp.:
@@ -135,6 +152,13 @@ public class LobbyServiceImpl implements LobbyService {
     // {"lobbyID":"5r4l2P44","playerList":[{"id":0,"name":"Player1"}],"host":{"id":0,"name":"Player1"},"istVoll":false,"istGestartet":false,"spielerlimit":0}]
   }
 
+
+  /**
+   * Gibt die eine Lobby mit der übergebenen id zurück.
+   * 
+   * @param Id ist die Lobby ID der gewünschten Lobby
+   * @return Lobby mit der mitgegebenen ID
+   */
   public Lobby getLobbyById(String Id) {
     // Gibt die Lobby mit uebergebener ID zurueck. Wenn nicht vorhanden, dann return
     // 0.
@@ -198,7 +222,8 @@ public class LobbyServiceImpl implements LobbyService {
     Spieler testNutzer = new Spieler(spielername);
     if (tempLobby != null) {
       tempLobby.getTeilnehmerliste().add(testNutzer);
-      broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false));
+      broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(),
+          new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false));
     } else {
       // broker.convertAndSend("/topic/lobby/" + tempLobby.getlobbyID(), new
       // LobbyMessage("keineLobbyGefunden", tempLobby.getlobbyID()));

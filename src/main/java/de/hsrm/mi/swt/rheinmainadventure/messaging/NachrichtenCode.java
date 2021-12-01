@@ -1,5 +1,9 @@
 package de.hsrm.mi.swt.rheinmainadventure.messaging;
 
+/**
+ * Enum für deffinierte Nachrichtencodes.
+ * Bei änderungen auch die Nachrichtencodes im Frontend ändern!
+ */
 public enum NachrichtenCode {
     NEUER_MITSPIELER,
     LOBBYZEIT_ABGELAUFEN,
