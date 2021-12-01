@@ -20,7 +20,7 @@ import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 
 @RestController
 @RequestMapping(value = { "/api/lobby/*", "/api/lobby" })
-@SessionAttributes(names = {"loggedinBenutzername"})
+@SessionAttributes(names = { "loggedinBenutzername" })
 public class LobbyRestController {
     // Hier ist die REST Schnittstelle fuer /api/lobby/... Jede REST Anfrage auf
     // diese Domain geht hierueber und wird in dieser Klasse bearbeitet.
@@ -39,18 +39,27 @@ public class LobbyRestController {
     }
 
     /**
-     * stoesst beim lobbyservice das hinzufuegen des Sessionscope Users in die mitgegebene Lobby an
+     * stoesst beim lobbyservice das hinzufuegen des Sessionscope Users in die
+     * mitgegebene Lobby an
+     * 
      * @param lobbyId
      * @param m
      * @return
      */
-    @PostMapping(value = "/join/{lobbyId}", produces=MediaType.APPLICATION_JSON_VALUE)
-    public LobbyMessage lobbieBeitretenMitLink(@PathVariable String lobbyId,Model m) {
+    @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public LobbyMessage lobbieBeitretenMitLink(@PathVariable String lobbyId, Model m) {
         logger.info("POST /api/lobby/join/" + lobbyId);
         return lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
 
-    @PostMapping(value = "neu", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{lobbyId}/leave", produces = MediaType.APPLICATION_JSON_VALUE)
+    public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m) {
+        logger.info("POST /api/lobby/" + lobbyId + "/leave/");
+        logger.info("USER " + m.getAttribute("loggedinBenutzername").toString() + " will die Lobby verlassen");
+        return lobbyservice.spielerVerlaesstLobby(lobbyId, m.getAttribute("loggedinBenutzername").toString());
+    }
+
+    @PostMapping(value = "/neu", produces = MediaType.APPLICATION_JSON_VALUE)
     public Lobby neueLobbyErstellen(Model m) {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
         // zurueckgesendet wird die neu erstellte Lobbyinstanz, damit das Frontend auf
@@ -60,24 +69,23 @@ public class LobbyRestController {
         return lobby;
     }
 
-    @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Lobby getLobbyById(@PathVariable String id) {
         // GET /api/lobby/{id} - gibt die Lobby ueber die ID zurueck
         logger.info("GET /api/lobby/" + id);
         return lobbyservice.getLobbyById(id);
     }
 
-    //@Chand work in progress
-    
-    @PostMapping(value = "/joinRandom", produces=MediaType.APPLICATION_JSON_VALUE)
-    public LobbyMessage lobbieBeitretenZufaellig(Model m){
+    // @Chand work in progress
+
+    @PostMapping(value = "/joinRandom", produces = MediaType.APPLICATION_JSON_VALUE)
+    public LobbyMessage lobbieBeitretenZufaellig(Model m) {
         return lobbyservice.lobbieBeitretenZufaellig(m.getAttribute("loggedinBenutzername").toString());
     }
 
     @PostMapping("/{lobbyId}/start")
-    public void startGame(@PathVariable String lobbyId){
+    public void startGame(@PathVariable String lobbyId) {
         lobbyservice.starteCountdown(lobbyId);
     }
-
 
 }

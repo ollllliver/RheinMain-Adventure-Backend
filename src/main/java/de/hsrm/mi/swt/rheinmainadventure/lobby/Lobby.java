@@ -32,7 +32,7 @@ public class Lobby {
         this.istPrivat = true;
         this.spielerlimit = 2;
     }
-    
+
     public Lobby() {
     }
 
@@ -88,6 +88,7 @@ public class Lobby {
     /**
      * Es folgen nurnoch Getter und Setter
      */
+
     public ArrayList<Spieler> getTeilnehmerliste() {
         return teilnehmerliste;
     }
