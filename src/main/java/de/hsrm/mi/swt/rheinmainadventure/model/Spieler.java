@@ -1,5 +1,11 @@
 package de.hsrm.mi.swt.rheinmainadventure.model;
 
+/**
+ * Spielerklasse für die Lobbies. Hat nix mit LogIn zu tun!
+ * Ein Spieler wird dann erstellt, wenn er einer Lobby hinzugefügt werden soll.
+ * Er nutzt nur quasi zufällig praktischerweise den eingeloggten Nutzernamen des
+ * Benutzers, ist aber UNABHÄNGIG vom Benutzer.
+ */
 public class Spieler {
     private String name;
 
@@ -42,7 +48,5 @@ public class Spieler {
             return false;
         return true;
     }
-
-    
 
 }

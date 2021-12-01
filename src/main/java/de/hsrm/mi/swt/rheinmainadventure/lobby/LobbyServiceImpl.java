@@ -16,18 +16,24 @@ import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
+/**
+ * Lobby Service für das verwalten aller Lobbys.
+ * 
+ */
 @Service
 public class LobbyServiceImpl implements LobbyService {
-  // Hier werden die Methoden des LobbyServices implementiert.
   Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
 
-  // Der Messagebroker wird hier durch dependencyInjection eingebunden.
-  // Ueber ihn koennen Nachrichten ueber STOMP an die interessierten gesendet
-  // werden.
+  /**
+   * Der Messagebroker wird hier durch dependencyInjection eingebunden. Über ihn
+   * koennen Nachrichten ueber STOMP an die Subscriber gesendet werden
+   */
   @Autowired
   SimpMessagingTemplate broker;
 
-  // Das ist die Liste, in der Alle Lobbies gehalten und verwaltet werden.
+  /**
+   * Liste aller Lobbyinstanzen.
+   */
   ArrayList<Lobby> lobbies = new ArrayList<Lobby>();
 
   /**
@@ -38,7 +44,8 @@ public class LobbyServiceImpl implements LobbyService {
    * @return Gibt die generierte Lobby-ID als String zurueck
    */
   public String generateLobbyID(String benutzerName) {
-
+    // TODO: Methode soll privat sein! dadurch werden die Tests dazu hinfällig, es
+    // soll die Schnittstellenmethode getestet werden, also api/lobby/join @andre
     String lobbyID = "";
 
     // Benutzername verschoben um eine Stelle
@@ -74,6 +81,12 @@ public class LobbyServiceImpl implements LobbyService {
     return lobbyID;
   }
 
+  /**
+   * Erstellt eine neue Lobby mit dem mitgegebenen Spieler(namen) als Host.
+   * 
+   * @param spielerName des Lobby Erstellers
+   * @return neu erstellte Lobby
+   */
   @Override
   public Lobby lobbyErstellen(String spielerName) {
     // Hier wird eine neue Lobby erstellt. Der Host ist der Benutzer aus dem
@@ -113,7 +126,7 @@ public class LobbyServiceImpl implements LobbyService {
    * Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby
    * Schließt
    */
-  public void starteTimeout(Lobby lobby) {
+  private void starteTimeout(Lobby lobby) {
     Timer timer = new Timer();
     TimerTask task = new TimerTask() {
 
@@ -162,8 +175,11 @@ public class LobbyServiceImpl implements LobbyService {
     timer.schedule(task, 10 * 1000);
   }
 
+  /**
+   * Gibt ALLE aktuellen Lobbies als Array zurueck.
+   * 
+   */
   public ArrayList<Lobby> getLobbies() {
-    // Gibt ALLE Lobbies als Array zurueck
     logger.info("Anzahl lobbies:" + this.lobbies.size());
     return this.lobbies;
     // Bsp.:
@@ -172,6 +188,12 @@ public class LobbyServiceImpl implements LobbyService {
     // {"lobbyID":"5r4l2P44","playerList":[{"id":0,"name":"Player1"}],"host":{"id":0,"name":"Player1"},"istVoll":false,"istGestartet":false,"spielerlimit":0}]
   }
 
+  /**
+   * Gibt die eine Lobby mit der übergebenen id zurück.
+   * 
+   * @param Id ist die Lobby ID der gewünschten Lobby
+   * @return Lobby mit der mitgegebenen ID
+   */
   public Lobby getLobbyById(String Id) {
     // Gibt die Lobby mit uebergebener ID zurueck. Wenn nicht vorhanden, dann return
     // 0.

@@ -18,8 +18,18 @@ import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 
+/**
+ * Rest Controller für /abi/lobby/*
+ * 
+ * Alle REST aufrufe zum Thema Lobby kommen hier an, werden zum verarbeiten an
+ * den LobbyService weitergeleitet und hier wieder als Antwort zurück gesendet.
+ * 
+ * Es gibt: GET - api/lobby/alle POST - api/lobby/join{id} POST - api/lobby/neu
+ * GET - api/lobby/{id}
+ * 
+ */
 @RestController
-@RequestMapping(value = { "/api/lobby/*", "/api/lobby" })
+@RequestMapping(value = { "/api/lobby/*" })
 @SessionAttributes(names = { "loggedinBenutzername" })
 public class LobbyRestController {
     // Hier ist die REST Schnittstelle fuer /api/lobby/... Jede REST Anfrage auf
@@ -39,12 +49,13 @@ public class LobbyRestController {
     }
 
     /**
-     * stoesst beim lobbyservice das hinzufuegen des Sessionscope Users in die
-     * mitgegebene Lobby an
+     * api/lobby/join/{id} stößt beim lobbyservice das hinzufügen des Sessionscope
+     * Users (später des Prinzipal Users) in die Lobby mit der mitgegebene ID an.
      * 
-     * @param lobbyId
-     * @param m
-     * @return
+     * @param lobbyId, zu der der eingeloggte User hinzugefügt werden soll.
+     * @param m        später Prinzipal prinz (eingeloggter User)
+     * @return LobbyMessage mit Nachrichtencode
+     * 
      */
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage lobbieBeitretenMitLink(@PathVariable String lobbyId, Model m) {
@@ -59,7 +70,14 @@ public class LobbyRestController {
         return lobbyservice.spielerVerlaesstLobby(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
 
-    @PostMapping(value = "/neu", produces = MediaType.APPLICATION_JSON_VALUE)
+    /**
+     * api/lobby/neu stößt beim lobbyservice das erstellen einer neuen Lobby an und
+     * gibt diese zurück.
+     * 
+     * @param m später Prinzipal prinz (eingeloggter User)
+     * @return neu erstellte Lobby
+     */
+    @PostMapping(value = "neu", produces = MediaType.APPLICATION_JSON_VALUE)
     public Lobby neueLobbyErstellen(Model m) {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
         // zurueckgesendet wird die neu erstellte Lobbyinstanz, damit das Frontend auf
@@ -69,6 +87,12 @@ public class LobbyRestController {
         return lobby;
     }
 
+    /**
+     * Anfrage nach der Lobby mit mitgegebener ID.
+     * 
+     * @param id der gesuchten Lobby
+     * @return angefragte Lobby
+     */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Lobby getLobbyById(@PathVariable String id) {
         // GET /api/lobby/{id} - gibt die Lobby ueber die ID zurueck
