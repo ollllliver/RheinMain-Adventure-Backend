@@ -152,15 +152,15 @@ public class LobbyServiceImpl implements LobbyService {
 
   // Startet ein Countdown fürs setzen von IstGestartet bei 10 Sekunden
   @Override
-  public void starteCountdown(String lobbyId) {
+  public LobbyMessage starteCountdown(String lobbyId) {
     Timer timer = new Timer();
-    Lobby lobby = getLobbyById(lobbyId);
 
     broker.convertAndSend("/topic/lobby/" + lobbyId, new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false));
 
     TimerTask task = new TimerTask() {
 
       public void run() {
+        Lobby lobby = getLobbyById(lobbyId);
         if (!lobby.getIstGestartet()) {
           lobby.setIstGestartet(true);
 
@@ -171,6 +171,7 @@ public class LobbyServiceImpl implements LobbyService {
 
     };
     timer.schedule(task, 10 * 1000);
+    return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false,"Sekunden=10");  
   }
 
   /**

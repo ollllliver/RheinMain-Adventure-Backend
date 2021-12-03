@@ -108,8 +108,8 @@ public class LobbyRestController {
     }
 
     @PostMapping("/{lobbyId}/start")
-    public void startGame(@PathVariable String lobbyId) {
-        lobbyservice.starteCountdown(lobbyId);
+    public LobbyMessage startGame(@PathVariable String lobbyId) {
+        return lobbyservice.starteCountdown(lobbyId);
     }
 
 }

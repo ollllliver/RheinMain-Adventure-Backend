@@ -19,7 +19,7 @@ public interface LobbyService {
 
     public LobbyMessage joinLobbybyId(String id, String benutzername);
 
-    public void starteCountdown(String lobbyId);
+    public LobbyMessage starteCountdown(String lobbyId);
 
     public LobbyMessage lobbieBeitretenZufaellig(String username);
 
