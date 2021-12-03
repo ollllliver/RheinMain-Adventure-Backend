@@ -83,7 +83,7 @@ public class LobbyServiceImplTest {
         assertFalse(lobbyService.getLobbyById(chandsLobby.getlobbyID())!=null);
         /* 
         TODO : Timeout Test
-        Test für wenn Lobby gestartet ist, soll die lobby nach 10 Sekunden immernoch da sein weil kein Timeout wenn gestartet
+        Test für wenn Lobby gestartet ist, soll die lobby nach 15 Sekunden immernoch da sein weil kein Timeout wenn gestartet
         */
     }
 
