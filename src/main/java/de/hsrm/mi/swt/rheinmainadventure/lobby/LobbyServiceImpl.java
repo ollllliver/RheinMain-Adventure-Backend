@@ -144,8 +144,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    // timer.schedule(task, 5 * 1000); //TESTCASE
-    timer.schedule(task, 10 * 60 * 1000);
+    timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
+    //timer.schedule(task, 10 * 60 * 1000);
   }
 
   // Startet ein Countdown fürs setzen von IstGestartet bei 10 Sekunden
@@ -168,7 +168,7 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    timer.schedule(task, 10 * 1000);
+    timer.schedule(task, 10 * 1000); 
     return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false,"Sekunden=10");  
   }
 
