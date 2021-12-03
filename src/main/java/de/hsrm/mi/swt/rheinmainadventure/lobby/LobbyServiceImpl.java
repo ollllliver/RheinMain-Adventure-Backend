@@ -144,8 +144,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
-    //timer.schedule(task, 10 * 60 * 1000);
+    //timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
+    timer.schedule(task, 10 * 60 * 1000);
   }
 
   // Startet ein Countdown fürs setzen von IstGestartet bei 10 Sekunden
@@ -240,7 +240,7 @@ public class LobbyServiceImpl implements LobbyService {
          */
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
-        //broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID()));
+        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID()));
         return new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID());
       }
     }
