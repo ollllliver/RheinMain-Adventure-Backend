@@ -115,8 +115,8 @@ public class LobbyServiceImpl implements LobbyService {
       // TODO Else noch abdecken
     }
 
-    broker.convertAndSend("/topic/lobby/" + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLÄSST, false));
-    return new LobbyMessage(NachrichtenCode.MITSPIELER_VERLÄSST, false);
+    broker.convertAndSend("/topic/lobby/" + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
+    return new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false);
 
   }
 
@@ -218,9 +218,11 @@ public class LobbyServiceImpl implements LobbyService {
     // Eigentlich ohne Spieler. In der Lobby.nutzerHinzufuegen() Methode muss der
     // Spieler aus der SessionScope geholt werden
     logger.info(spielername + " will der Lobby " + Id + " joinen");
-
+    
     Lobby currLobby = getLobbyById(Id);
-
+    if(currLobby==null){
+      return new LobbyMessage(NachrichtenCode.BEITRETEN_FEHLGESCHLAGEN, true);
+    }
     // ueberpruefen, ob Spieler bereits in der Lobby ist
     if (!currLobby.getTeilnehmerliste().contains(new Spieler(spielername))) {
 
