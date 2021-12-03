@@ -41,9 +41,7 @@ public class LobbyServiceImpl implements LobbyService {
    * @param benutzerName Der mitgegebene Name des Spielers
    * @return Gibt die generierte Lobby-ID als String zurueck
    */
-  public String generateLobbyID(String benutzerName) {
-    // TODO: Methode soll privat sein! dadurch werden die Tests dazu hinfällig, es
-    // soll die Schnittstellenmethode getestet werden, also api/lobby/join @andre
+  private String generateLobbyID(String benutzerName) {
     String lobbyID = "";
 
     // Benutzername verschoben um eine Stelle
