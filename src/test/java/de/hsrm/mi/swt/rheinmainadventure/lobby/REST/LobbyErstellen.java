@@ -3,11 +3,14 @@ package de.hsrm.mi.swt.rheinmainadventure.lobby.REST;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -41,12 +46,15 @@ public class LobbyErstellen {
     @Autowired
     private MockMvc mockmvc;
 
+    private final String ERSTER_SPIELER = "Chand";
+    private final String ZWEITER_SPIELER = "Chand";
+
     // ###############
     // Hilfsfunktionen
     // ###############
 
-    private Lobby lobbyErstellenREST() throws Exception {
-        MvcResult  result = mockmvc.perform(post("/api/lobby/neu").contentType("application/json")).andReturn();
+    private Lobby lobbyErstellenREST(MockHttpSession session) throws Exception {
+        MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
         Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
         assertTrue(lobby instanceof Lobby);
@@ -68,9 +76,20 @@ public class LobbyErstellen {
         return restLobbies;
     }
 
-    private void logIn(String name) throws Exception {
-        String benutzerJSON = "{benutzername: " + name + ", passwort: " + name + "}";
-        mockmvc.perform(get("/api/benutzer/login").contentType("application/json").content(benutzerJSON)).andReturn();
+    private MockHttpSession logIn(String name, String password) throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        ObjectNode json = JsonNodeFactory.instance.objectNode();
+        json.put("benutzername", name);
+        json.put("passwort", password);
+        String TESTLOGINJSON = json.toString();
+            
+        logger.info(mockmvc.perform(
+                post("/api/benutzer/login").session(session)
+                        .content(TESTLOGINJSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful()).andReturn().toString());
+        logger.info("msg");
+        return session;
     }
 
     // ###############
@@ -81,14 +100,16 @@ public class LobbyErstellen {
     @DisplayName("Am Anfang sollte keine Lobby vorhanden sein.")
     public void vorabtest() throws Exception {
         assertTrue(lobbyService.getLobbies().size() == 0);
+        assertTrue(lobbiesAbfragenREST().size() == 0);
     }
     
     
     @Test
     @DisplayName("Eine Lobby ueber REST erstellen.")
     public void UCD_Lobby_erstellen_1() throws Exception {
-        logIn("Oliver");
-        lobbyErstellenREST();
+        // einloggen:
+        MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        lobbyErstellenREST(session);
         assertTrue(lobbyService.getLobbies().size() == 1);
         assertTrue(lobbyService.getLobbies().get(0).getClass() == Lobby.class);
     }
@@ -96,7 +117,9 @@ public class LobbyErstellen {
     @Test
     @DisplayName("Eine Lobby ueber REST erstellen UND auch ueber REST die Anzahl der Lobbies ueberpruefen.")
     public void UCD_Lobby_erstellen_2() throws Exception {
-        lobbyErstellenREST();
+        // einloggen:
+        MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        lobbyErstellenREST(session);
         ArrayList<Lobby> lobbies = lobbiesAbfragenREST();
         assertTrue(lobbies.size() == 1);
     }
@@ -115,24 +138,33 @@ public class LobbyErstellen {
     @Test
     @DisplayName(" Spieler will Lobby hosten, ist aber bereits HOST einer anderen Lobby")
     public void UCD_Lobby_erstellen_1a_2_1() throws Exception {
-        lobbyErstellenREST();
-        lobbyErstellenREST();
+        // einloggen:
+        MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        lobbyErstellenREST(session);
+        lobbyErstellenREST(session);
         assertTrue(lobbyService.getLobbies().size() == 1);
     }
 
     @Test
     @DisplayName("Viele Lobbies ueber REST erstellen und auch ueber REST die Anzahl der Lobbies ueberpruefen.")
     public void UCD_Lobby_erstellen_1a_2_2() throws Exception {
-        lobbyErstellenREST();
-        lobbyErstellenREST();
+        // einloggen:
+        MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        lobbyErstellenREST(session1);
+        // einloggen:
+        MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
+        lobbyErstellenREST(session2);
+
         ArrayList<Lobby> lobbies = lobbiesAbfragenREST();
-        assertTrue(lobbies.size() == 1);
+        assertTrue(lobbies.size() == 2);
     }
 
     @Test
     @DisplayName("Eine Lobby ueber REST erstellen und ueber die ID ueber REST wieder abfragen.")
     public void get_api_id() throws Exception {
-        Lobby lobby = lobbyErstellenREST();
+        // einloggen:
+        MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        Lobby lobby = lobbyErstellenREST(session);
         String lobbyID = lobby.getlobbyID();
         Lobby restLobby = lobbyAbfragenREST(lobbyID);
         assertTrue(restLobby.equals(lobby));

@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,12 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -44,30 +50,52 @@ public class LobbyVerlassen {
     // Hilfsfunktionen
     // ###############
 
-    private Lobby lobbyErstellenREST() throws Exception {
-        MvcResult  result = mockmvc.perform(post("/api/lobby/neu").contentType("application/json")).andReturn();
+    private final String ERSTER_SPIELER = "Oliver";
+    private final String ZWEITER_SPIELER = "Chand";
+
+    // ###############
+    // Hilfsfunktionen
+    // ###############
+
+    private Lobby lobbyErstellenREST(MockHttpSession session) throws Exception {
+        MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
         Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
         assertTrue(lobby instanceof Lobby);
         return lobby;
     }
 
-    private Lobby lobbyBeitretenREST(String lobbyID) throws Exception {
-        MvcResult  result = mockmvc.perform(post("/api/lobby/join/" + lobbyID).contentType("application/json")).andReturn();
+    private LobbyMessage lobbyBeitretenREST(MockHttpSession session, String lobbyID) throws Exception {
+        MvcResult result = mockmvc.perform(post("/api/lobby/join/" + lobbyID).session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
-        assertTrue(lobby instanceof Lobby);
-        return lobby;
+        LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        assertTrue(lobbymessage instanceof LobbyMessage);
+        return lobbymessage;
     }
 
-    private Lobby lobbyVerlassenREST(String lobbyID) throws Exception {
-        MvcResult result = mockmvc.perform(delete("/api/lobby/leave/" + lobbyID).contentType("application/json")).andReturn();
+    private LobbyMessage lobbyVerlassenREST(MockHttpSession session, String lobbyID) throws Exception {
+        MvcResult result = mockmvc.perform(delete("/api/lobby/leave/" + lobbyID).session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
-        assertTrue(lobby instanceof Lobby);
-        return lobby;
+        LobbyMessage lm = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        assertTrue(lm instanceof LobbyMessage);
+        return lm;
     }
 
+    private MockHttpSession logIn(String name, String password) throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        ObjectNode json = JsonNodeFactory.instance.objectNode();
+        json.put("benutzername", name);
+        json.put("passwort", password);
+        String TESTLOGINJSON = json.toString();
+            
+        logger.info(mockmvc.perform(
+                post("/api/benutzer/login").session(session)
+                        .content(TESTLOGINJSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful()).andReturn().toString());
+        logger.info("msg");
+        return session;
+    }
 
     // ###############
     // Standardablauf:
@@ -76,25 +104,20 @@ public class LobbyVerlassen {
     @Test
     @DisplayName("Eine Lobby, in der man ist, per ID verlassen.")
     public void UCD_Lobby_verlassen() throws Exception {
-        // TODO: Login mit einem Spieler
-        Spieler host = new Spieler("Peter"); // So?
-        // Login...
+        // einloggen, lobby erstellen und beitreten:
+        MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        Lobby lobby = lobbyErstellenREST(session1);
+        lobbyBeitretenREST(session1, lobby.getlobbyID());
+        lobby = lobbyService.getLobbyById(lobby.getlobbyID());
 
-        // Lobby erstellen
-        Lobby lobby = lobbyErstellenREST();
-
-        // TODO: Login mit einem Spieler
-        Spieler neueSpieler = new Spieler("Peter"); // So?
-        // Login...
-
-        // Lobby als neuer Spieler beitreten
-        lobbyBeitretenREST(lobby.getlobbyID());
+        // einloggen:
+        MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
+        lobbyBeitretenREST(session2, lobby.getlobbyID());
 
         // beigetretene Lobby verlassen
-        lobby = lobbyVerlassenREST(lobby.getlobbyID());
+        LobbyMessage lm = lobbyVerlassenREST(session2, lobby.getlobbyID());
 
-        assertFalse(lobby.getTeilnehmerliste().contains(neueSpieler));
-        assertFalse(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().contains(neueSpieler));
+        assertFalse(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
         assertTrue(lobby.equals(lobbyService.getLobbyById(lobby.getlobbyID())));
     }
 
