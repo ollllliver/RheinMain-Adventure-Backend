@@ -34,11 +34,11 @@ public class LobbyTest {
     public void testLobbyID() {
 
         // zu testende Benutzernamen
-        String lobbyID1 = lobbyService.generateLobbyID("Oliver");
-        String lobbyID2 = lobbyService.generateLobbyID("Chand");
-        String lobbyID3 = lobbyService.generateLobbyID("Raoul");
-        String lobbyID4 = lobbyService.generateLobbyID("Andreas");
-        String lobbyID5 = lobbyService.generateLobbyID("");
+        String lobbyID1 = lobbyService.lobbyErstellen("Oliver").getlobbyID();
+        String lobbyID2 = lobbyService.lobbyErstellen("Chand").getlobbyID();
+        String lobbyID3 = lobbyService.lobbyErstellen("Raoul").getlobbyID();
+        String lobbyID4 = lobbyService.lobbyErstellen("Andreas").getlobbyID();
+        String lobbyID5 = lobbyService.lobbyErstellen("").getlobbyID();
 
         String[] idWerte = { lobbyID1, lobbyID2, lobbyID3, lobbyID4, lobbyID5 };
 
@@ -64,7 +64,7 @@ public class LobbyTest {
         Spieler host = new Spieler(spielerName);
         ArrayList<Spieler> players = new ArrayList<Spieler>();
         players.add(host);
-        String lobbyID = lobbyService.generateLobbyID(spielerName);
+        String lobbyID = lobbyService.lobbyErstellen(spielerName).getlobbyID();
         Lobby lobby = new Lobby(lobbyID, players, host);
 
         assertNotNull(lobby);
@@ -80,7 +80,7 @@ public class LobbyTest {
             Spieler host = new Spieler(spielerName);
             ArrayList<Spieler> players = new ArrayList<Spieler>();
             players.add(host);
-            String lobbyID = lobbyService.generateLobbyID(spielerName);
+            String lobbyID = lobbyService.lobbyErstellen(spielerName).getlobbyID();
             Lobby lobby = new Lobby(lobbyID, players, host);
             lobbyList.add(lobby);
             assertNotNull(lobby);

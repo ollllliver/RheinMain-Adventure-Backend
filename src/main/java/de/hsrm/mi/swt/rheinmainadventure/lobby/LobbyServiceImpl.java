@@ -41,9 +41,7 @@ public class LobbyServiceImpl implements LobbyService {
    * @param benutzerName Der mitgegebene Name des Spielers
    * @return Gibt die generierte Lobby-ID als String zurueck
    */
-  public String generateLobbyID(String benutzerName) {
-    // TODO: Methode soll privat sein! dadurch werden die Tests dazu hinfällig, es
-    // soll die Schnittstellenmethode getestet werden, also api/lobby/join @andre
+  private String generateLobbyID(String benutzerName) {
     String lobbyID = "";
 
     // Benutzername verschoben um eine Stelle
@@ -146,8 +144,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    // timer.schedule(task, 5 * 1000); //TESTCASE
-    timer.schedule(task, 10 * 60 * 1000);
+    timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
+    //timer.schedule(task, 10 * 60 * 1000);
   }
 
   // Startet ein Countdown fürs setzen von IstGestartet bei 10 Sekunden
@@ -170,7 +168,7 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    timer.schedule(task, 10 * 1000);
+    timer.schedule(task, 10 * 1000); 
     return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false,"Sekunden=10");  
   }
 
