@@ -118,9 +118,10 @@ public class LobbyServiceImpl implements LobbyService {
 
   }
 
-  /*
-   * Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby
-   * Schließt
+  /** 
+   * Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby schliesst
+   * 
+   * @param lobby Lobby dessen Timeout gestartet wird.
    */
   private void starteTimeout(Lobby lobby) {
     Timer timer = new Timer();
@@ -148,12 +149,16 @@ public class LobbyServiceImpl implements LobbyService {
     //timer.schedule(task, 10 * 60 * 1000);
   }
 
-  // Startet ein Countdown fürs setzen von IstGestartet bei 10 Sekunden
+  /**Startet den Countdown fuer den Spielstart einer Lobby - setzt die IstGestartet Variable
+   * nach 10 Sekunden auf true.
+   *@param lobbyId ID der Lobby dessen Countdown gestartet wird.
+   *@return gibt eine LobbyMessage zurueck die aussagt das der Countdown gestartet worden ist.
+   */ 
   @Override
   public LobbyMessage starteCountdown(String lobbyId) {
     Timer timer = new Timer();
 
-    broker.convertAndSend("/topic/lobby/" + lobbyId, new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false));
+    broker.convertAndSend("/topic/lobby/" + lobbyId, new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false,"Sekunden=10"));
 
     TimerTask task = new TimerTask() {
 
@@ -247,6 +252,10 @@ public class LobbyServiceImpl implements LobbyService {
     return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false);
   }
 
+  /** Laesst einen Spieler einer zufaelligen freien Lobby beitreten
+   * @param spielername Name des spielers der einer zufaelligen Lobby beitritt
+   * @retun Gibt einene LobbyMessage mit dem ergebnis des beitretens zurueck
+   */
   @Override
   public LobbyMessage lobbieBeitretenZufaellig(String spielername) {
     Lobby tempLobby = null;
