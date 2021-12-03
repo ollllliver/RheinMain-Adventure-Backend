@@ -13,6 +13,7 @@ public class LobbyMessage {
 
     private NachrichtenCode operation;
     private Boolean istFehler;
+    private String payload;
 
     public LobbyMessage() {
     }
@@ -20,6 +21,13 @@ public class LobbyMessage {
     public LobbyMessage(NachrichtenCode op, Boolean istFehler) {
         this.operation = op;
         this.istFehler = istFehler;
+        this.payload = "";
+    }
+
+    public LobbyMessage(NachrichtenCode op, Boolean istFehler,String payload) {
+        this.operation = op;
+        this.istFehler = istFehler;
+        this.payload = payload;
     }
 
     public NachrichtenCode getOperation() {
@@ -43,4 +51,13 @@ public class LobbyMessage {
         return "LobbyMessage [istFehler=" + istFehler + ", operation=" + operation + "]";
     }
 
+    public String getPayload() {
+        return payload;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
+    }
+
+            
 }

@@ -1,6 +1,5 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
@@ -241,8 +239,8 @@ public class LobbyServiceImpl implements LobbyService {
          */
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
-        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false));
-        return new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false);
+        //broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID()));
+        return new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID());
       }
     }
     return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false);

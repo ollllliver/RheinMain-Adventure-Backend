@@ -82,7 +82,7 @@ public class LobbyRestController {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
         // zurueckgesendet wird die neu erstellte Lobbyinstanz, damit das Frontend auf
         // die Lobbyseite mit der im Backend erstellten LobbyID weiterleidten kann.
-        logger.info("POST /api/lobby/neu");
+        logger.info("POST /api/lobby/neu  Von : "+m.getAttribute("loggedinBenutzername").toString());
         Lobby lobby = lobbyservice.lobbyErstellen(m.getAttribute("loggedinBenutzername").toString());
         return lobby;
     }

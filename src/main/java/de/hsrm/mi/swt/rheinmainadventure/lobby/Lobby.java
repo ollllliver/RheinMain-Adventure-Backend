@@ -29,7 +29,7 @@ public class Lobby {
         this.host = host;
         this.istVoll = false;
         this.istGestartet = false;
-        this.istPrivat = true;
+        this.istPrivat = false;
         this.spielerlimit = 2;
     }
 
