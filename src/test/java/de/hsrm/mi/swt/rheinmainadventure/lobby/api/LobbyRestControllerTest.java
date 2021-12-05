@@ -86,7 +86,7 @@ public class LobbyRestControllerTest {
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         assertTrue(lobbymessage instanceof LobbyMessage);
         assertTrue(lobbymessage.getIstFehler() == false);
-        assertTrue(lobbymessage.getOperation() == NachrichtenCode.NEUER_MITSPIELER);
+        assertTrue(lobbymessage.getTyp() == NachrichtenCode.NEUER_MITSPIELER);
         assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size() == 1);
     }
 
@@ -112,7 +112,7 @@ public class LobbyRestControllerTest {
         assertTrue(lobbymessage instanceof LobbyMessage);
         assertTrue(lobbymessage instanceof LobbyMessage);
         assertTrue(lobbymessage.getIstFehler() == false);
-        assertTrue(lobbymessage.getOperation() == NachrichtenCode.MITSPIELER_VERLAESST);
+        assertTrue(lobbymessage.getTyp() == NachrichtenCode.MITSPIELER_VERLAESST);
         assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size() == 0);
     }
     

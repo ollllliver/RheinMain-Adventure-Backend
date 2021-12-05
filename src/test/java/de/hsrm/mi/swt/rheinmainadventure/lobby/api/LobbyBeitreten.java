@@ -105,7 +105,7 @@ public class LobbyBeitreten {
         alteLobby.getTeilnehmerliste().add(new Spieler(ZWEITER_SPIELER));
 
         assertTrue(!lm.getIstFehler());
-        assertTrue(lm.getOperation() == NachrichtenCode.NEUER_MITSPIELER);
+        assertTrue(lm.getTyp() == NachrichtenCode.NEUER_MITSPIELER);
         assertTrue(neueLobby.getClass() == Lobby.class);
         assertTrue(neueLobby.equals(alteLobby));
     }
@@ -127,7 +127,7 @@ public class LobbyBeitreten {
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         LobbyMessage lm = lobbyBeitretenREST(session, "lobbyIDgibtEsNicht123");
         assertTrue(lm.getIstFehler());
-        assertTrue(lm.getOperation() == NachrichtenCode.BEITRETEN_FEHLGESCHLAGEN);
+        assertTrue(lm.getTyp() == NachrichtenCode.BEITRETEN_FEHLGESCHLAGEN);
     }
 
     @Test
@@ -161,9 +161,9 @@ public class LobbyBeitreten {
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertTrue(lobbyNach1malBeitreten.equals(lobbyNach2malBeitreten));
         assertTrue(lm1.getIstFehler() == false);
-        assertTrue(lm1.getOperation() == NachrichtenCode.NEUER_MITSPIELER);
+        assertTrue(lm1.getTyp() == NachrichtenCode.NEUER_MITSPIELER);
         assertTrue(lm2.getIstFehler() == false);
-        assertTrue(lm2.getOperation() == NachrichtenCode.SCHON_BEIGETRETEN);
+        assertTrue(lm2.getTyp() == NachrichtenCode.SCHON_BEIGETRETEN);
     }
 
     @Test
