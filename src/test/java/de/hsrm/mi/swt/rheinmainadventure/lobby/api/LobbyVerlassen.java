@@ -1,4 +1,4 @@
-package de.hsrm.mi.swt.rheinmainadventure.lobby.REST;
+package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -115,7 +115,7 @@ public class LobbyVerlassen {
         lobbyBeitretenREST(session2, lobby.getlobbyID());
 
         // beigetretene Lobby verlassen
-        LobbyMessage lm = lobbyVerlassenREST(session2, lobby.getlobbyID());
+        lobbyVerlassenREST(session2, lobby.getlobbyID());
 
         assertFalse(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
         assertTrue(lobby.equals(lobbyService.getLobbyById(lobby.getlobbyID())));
@@ -128,7 +128,7 @@ public class LobbyVerlassen {
     @Test
     @DisplayName("Als Lobbyhost einen Mitspieler aus seiner Lobby entfernen.")
     public void UCD_Lobby_verlassen_1c2() throws Exception {
-        // TODO: Test: Als Lobbyhost einen Mitspieler aus seiner Lobby entfernen.
+        // TODO: TEST: Als Lobbyhost einen Mitspieler aus seiner Lobby entfernen.
     }
 
     @Test
@@ -140,26 +140,26 @@ public class LobbyVerlassen {
     @Test
     @DisplayName("Als Lobbyhost UND letzter Teilnehmer Lobby verlassen.")
     public void UCD_Lobby_verlassen_1e() throws Exception {
-        // TODO: Test: Lobby muss danach gelöscht werden.
+        // TODO: TEST: Lobby muss danach gelöscht werden.
     }
 
     
     @Test
     @DisplayName("Als NICHT Lobbyhost einen Mitspieler aus seiner Lobby entfernen (REST manipulation!).")
     public void UCD_Lobby_verlassen_manipuliert_1() throws Exception {
-        //TODO: Test: Als NICHT Lobbyhost einen Mitspieler aus seiner Lobby entfernen (REST manipulation!).
+        //TODO: TEST: Als NICHT Lobbyhost einen Mitspieler aus seiner Lobby entfernen (REST manipulation!).
     }
 
     @Test
     @DisplayName("Als Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen (REST manipulation!).")
     public void UCD_Lobby_verlassen_manipuliert_2() throws Exception {
-        // TODO: Test: Als Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen (REST manipulation!).
+        // TODO: TEST: Als Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen (REST manipulation!).
     }
 
     @Test
     @DisplayName("Als NICHT Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen (REST manipulation!).")
     public void UCD_Lobby_verlassen_manipuliert_3() throws Exception {
-        // TODO: Test: Als NICHT Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen (REST manipulation!).
+        // TODO: TEST: Als NICHT Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen (REST manipulation!).
     }
 
 }

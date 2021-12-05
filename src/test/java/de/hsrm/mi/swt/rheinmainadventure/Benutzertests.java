@@ -1,10 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
-import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerServiceImpl;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.web.servlet.MockMvc;
+
+import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
+import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerServiceImpl;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 
 /**
  * Tests für den BenutzerService
@@ -47,7 +48,7 @@ public class Benutzertests {
         Benutzer ben = new Benutzer();
         ben.setBenutzername(TESTLOGINNAME);
         ben.setPasswort(TESTPASSWORT);
-        final Benutzer managed = benutzerService.registriereBenutzer(ben);
+        benutzerService.registriereBenutzer(ben);
         assertThat(benutzerService.findeBenutzer(TESTLOGINNAME).getBenutzername()).isEqualTo(TESTLOGINNAME);
     }
 

@@ -1,4 +1,4 @@
-package de.hsrm.mi.swt.rheinmainadventure.lobby.REST;
+package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -117,7 +117,7 @@ public class LobbyBeitreten {
     @Test
     @DisplayName("Die ausgewählte Lobby ist nicht mehr verfügbar.")
     public void UCD_Lobby_beitreten_1a1() throws Exception {
-        // TODO: Kommt in einem anderen Sprint. Lobbies werden noch nicht gelöscht.
+        // TODO: TEST: Kommt in einem anderen Sprint. Lobbies werden noch nicht gelöscht.
         // Test: Die ausgewählte Lobby ist nicht mehr verfügbar. 
     }
 
@@ -133,13 +133,13 @@ public class LobbyBeitreten {
     @Test
     @DisplayName("Spieler bekommt Beitrittslink von einem Mitspieler gesendet.")
     public void UCD_Lobby_beitreten_1b() throws Exception {
-        // TODO: Test: Spieler bekommt Beitrittslink von einem Mitspieler gesendet. Das ist eher ein Frontendtest oder?
+        // TODO: TEST: Spieler bekommt Beitrittslink von einem Mitspieler gesendet. Das ist eher ein Frontendtest oder?
     }
 
     @Test
     @DisplayName("Spieler wählt zufälliger Lobby beitreten aus.")
     public void UCD_Lobby_beitreten_1c() throws Exception {
-        // TODO: Test: Spieler wählt zufälliger Lobby beitreten aus.
+        // TODO: TEST: Spieler wählt zufälliger Lobby beitreten aus.
     }
 
     @Test
@@ -189,7 +189,7 @@ public class LobbyBeitreten {
     @Test
     @DisplayName("Einer Lobby, in der man schon als Host ist, per ID beitreten soll nichts aendern.")
     public void UCD_Lobby_beitreten_1d_3() throws Exception {
-        // // TODO: todo für eine spätere userstorry/ späterer sprint
+        // // TODO: TEST: für eine spätere userstorry/ späterer sprint
         // Spieler neueSpieler = new Spieler("Peter"); // So?
         // // Login...
         // Lobby lobbyInDerManIst = lobbyErstellenREST();

@@ -1,4 +1,4 @@
-package de.hsrm.mi.swt.rheinmainadventure.lobby.REST;
+package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -132,7 +132,7 @@ public class LobbyErstellen {
     @Test
     @DisplayName("Spieler will Lobby hosten, ist aber bereits Mitglied einer anderen Lobby.")
     public void UCD_Lobby_erstellen_1a_1() throws Exception {
-        // TODO: Test: Spieler will Lobby hosten, ist aber bereits Mitglied einer anderen Lobby.
+        // TODO: TEST: Spieler will Lobby hosten, ist aber bereits Mitglied einer anderen Lobby.
     }
 
     @Test
