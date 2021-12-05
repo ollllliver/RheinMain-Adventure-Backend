@@ -59,7 +59,7 @@ public class LobbyRestController {
      * 
      */
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public LobbyMessage lobbieBeitretenMitLink(@PathVariable String lobbyId, Model m) {
+    public LobbyMessage lobbieBeitretenByID(@PathVariable String lobbyId, Model m) {
         logger.info("POST /api/lobby/join/" + lobbyId);
         return lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }

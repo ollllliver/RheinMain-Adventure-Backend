@@ -47,7 +47,7 @@ public class LobbyServiceImplTest {
         assertFalse(containsName(testLobby.getTeilnehmerliste(), "Spieler 4"));
 
         /*
-        TODO : TEST für Join Bei
+        TODO : TEST für später: für Join Bei
         -Private Lobby (Nur bei zufall join)
         -Gestartete Lobby Joinen
         */
@@ -66,7 +66,7 @@ public class LobbyServiceImplTest {
         TimeUnit.SECONDS.sleep(11);
         assertTrue(chandsLobby.getIstGestartet()==true);
         /* 
-        TODO : Spielstart-übermittlung Test
+        TODO: TEST für später: Spielstart-übermittlung Test
         Spielstart mit Leerer Lobby soll nicht klappen
         Nur Host kann spiel Starten. (Also als nicht host starten versuchen und soll nicht klappen) <- muss noch implementiert werden
         mit voller lobby starten
@@ -82,7 +82,7 @@ public class LobbyServiceImplTest {
         TimeUnit.SECONDS.sleep(16);
         assertFalse(lobbyService.getLobbyById(chandsLobby.getlobbyID())!=null);
         /* 
-        TODO : Timeout Test
+        TODO: TEST für später: Timeout Test
         Test für wenn Lobby gestartet ist, soll die lobby nach 15 Sekunden immernoch da sein weil kein Timeout wenn gestartet
         */
     }
