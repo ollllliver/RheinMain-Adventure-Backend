@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
+import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
 
 /**
  * Lobby Service für das verwalten aller Lobbys.
@@ -114,6 +116,7 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     broker.convertAndSend("/topic/lobby/" + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLÄSST, false));
+    broker.convertAndSend("/topic/lobby/" + id + "/chat", new ChatNachricht(NachrichtenTyp.LEAVE, "", spielerName));
     return new LobbyMessage(NachrichtenCode.MITSPIELER_VERLÄSST, false);
 
   }
@@ -238,7 +241,8 @@ public class LobbyServiceImpl implements LobbyService {
          */
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
-        //broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID()));
+        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID()));
+        broker.convertAndSend("/topic/lobby/" + Id + "/chat", new ChatNachricht(NachrichtenTyp.JOIN, "", spielername));
         return new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID());
       }
     }

@@ -11,6 +11,12 @@ public class ChatNachricht {
         LEAVE
     }
 
+    public ChatNachricht(NachrichtenTyp typ, String inhalt, String sender) {
+        this.typ = typ;
+        this.inhalt = inhalt;
+        this.sender = sender;
+    }
+
     public NachrichtenTyp getTyp() {
         return typ;
     }
