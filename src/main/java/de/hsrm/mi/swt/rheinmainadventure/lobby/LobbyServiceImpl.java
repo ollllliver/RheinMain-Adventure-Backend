@@ -115,15 +115,16 @@ public class LobbyServiceImpl implements LobbyService {
       // TODO Else noch abdecken
     }
 
-    broker.convertAndSend("/topic/lobby/" + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLÄSST, false));
+    broker.convertAndSend("/topic/lobby/" + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
     broker.convertAndSend("/topic/lobby/" + id + "/chat", new ChatNachricht(NachrichtenTyp.LEAVE, "", spielerName));
-    return new LobbyMessage(NachrichtenCode.MITSPIELER_VERLÄSST, false);
+    return new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false);
 
   }
 
-  /*
-   * Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby
-   * Schließt
+  /** 
+   * Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby schliesst
+   * 
+   * @param lobby Lobby dessen Timeout gestartet wird.
    */
   private void starteTimeout(Lobby lobby) {
     Timer timer = new Timer();
@@ -147,16 +148,20 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    // timer.schedule(task, 5 * 1000); //TESTCASE
+    //timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
     timer.schedule(task, 10 * 60 * 1000);
   }
 
-  // Startet ein Countdown fürs setzen von IstGestartet bei 10 Sekunden
+  /**Startet den Countdown fuer den Spielstart einer Lobby - setzt die IstGestartet Variable
+   * nach 10 Sekunden auf true.
+   *@param lobbyId ID der Lobby dessen Countdown gestartet wird.
+   *@return gibt eine LobbyMessage zurueck die aussagt das der Countdown gestartet worden ist.
+   */ 
   @Override
   public LobbyMessage starteCountdown(String lobbyId) {
     Timer timer = new Timer();
 
-    broker.convertAndSend("/topic/lobby/" + lobbyId, new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false));
+    broker.convertAndSend("/topic/lobby/" + lobbyId, new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false,"Sekunden=10"));
 
     TimerTask task = new TimerTask() {
 
@@ -171,7 +176,7 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    timer.schedule(task, 10 * 1000);
+    timer.schedule(task, 10 * 1000); 
     return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false,"Sekunden=10");  
   }
 
@@ -219,9 +224,11 @@ public class LobbyServiceImpl implements LobbyService {
     // Eigentlich ohne Spieler. In der Lobby.nutzerHinzufuegen() Methode muss der
     // Spieler aus der SessionScope geholt werden
     logger.info(spielername + " will der Lobby " + Id + " joinen");
-
+    
     Lobby currLobby = getLobbyById(Id);
-
+    if(currLobby==null){
+      return new LobbyMessage(NachrichtenCode.BEITRETEN_FEHLGESCHLAGEN, true);
+    }
     // ueberpruefen, ob Spieler bereits in der Lobby ist
     if (!currLobby.getTeilnehmerliste().contains(new Spieler(spielername))) {
 
@@ -249,6 +256,10 @@ public class LobbyServiceImpl implements LobbyService {
     return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false);
   }
 
+  /** Laesst einen Spieler einer zufaelligen freien Lobby beitreten
+   * @param spielername Name des spielers der einer zufaelligen Lobby beitritt
+   * @retun Gibt einene LobbyMessage mit dem ergebnis des beitretens zurueck
+   */
   @Override
   public LobbyMessage lobbieBeitretenZufaellig(String spielername) {
     Lobby tempLobby = null;

@@ -11,7 +11,7 @@ package de.hsrm.mi.swt.rheinmainadventure.messaging;
  */
 public class LobbyMessage {
 
-    private NachrichtenCode operation;
+    private NachrichtenCode typ;
     private Boolean istFehler;
     private String payload;
 
@@ -19,23 +19,23 @@ public class LobbyMessage {
     }
 
     public LobbyMessage(NachrichtenCode op, Boolean istFehler) {
-        this.operation = op;
+        this.typ = op;
         this.istFehler = istFehler;
         this.payload = "";
     }
 
     public LobbyMessage(NachrichtenCode op, Boolean istFehler,String payload) {
-        this.operation = op;
+        this.typ = op;
         this.istFehler = istFehler;
         this.payload = payload;
     }
 
-    public NachrichtenCode getOperation() {
-        return operation;
+    public NachrichtenCode getTyp() {
+        return typ;
     }
 
-    public void setOperation(NachrichtenCode operation) {
-        this.operation = operation;
+    public void setTyp(NachrichtenCode typ) {
+        this.typ = typ;
     }
 
     public Boolean getIstFehler() {
@@ -48,7 +48,7 @@ public class LobbyMessage {
 
     @Override
     public String toString() {
-        return "LobbyMessage [istFehler=" + istFehler + ", operation=" + operation + "]";
+        return "LobbyMessage [istFehler=" + istFehler + ", typ=" + typ + "]";
     }
 
     public String getPayload() {

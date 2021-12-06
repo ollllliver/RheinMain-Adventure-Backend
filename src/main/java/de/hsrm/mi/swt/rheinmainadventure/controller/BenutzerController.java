@@ -56,9 +56,8 @@ public class BenutzerController {
      */
     @GetMapping("/benutzer/check")
     public ResponseEntity<Benutzer> testObEingeloggt(Model m){
-        merkeUser();
         Benutzer check = benutzerService.findeBenutzer(m.getAttribute("loggedinBenutzername").toString());
-        if (!m.getAttribute("loggedinBenutzername").toString().equals("")) {
+        if (check != null) {
             logger.info("Nutzer mit gesetzten Sessionattribut gefunden");
             return new ResponseEntity<Benutzer>(check, HttpStatus.OK);
         }
@@ -76,13 +75,18 @@ public class BenutzerController {
      * @return registrierte Benutzer falls erfolgreich, sonst null
      */
     @PostMapping("/benutzer/register")
-    public Benutzer registrieren(@RequestBody Benutzer benutzer) {
-        try {
-            logger.info("Nutzer wird registriert");
-            return benutzerService.registriereBenutzer(benutzer);
-        } catch (Exception e) {
-            return null;
+    public ResponseEntity<Benutzer> registrieren(@RequestBody Benutzer benutzer) {
+        if (benutzerService.findeBenutzer(benutzer.getBenutzername()) ==null ) {
+            try {
+                logger.info("Nutzer wird registriert");
+                benutzerService.registriereBenutzer(benutzer);
+                return new ResponseEntity<Benutzer>(benutzer, HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<Benutzer>(benutzer, HttpStatus.NO_CONTENT);
+            }
         }
+        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     /**
