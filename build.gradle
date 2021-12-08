@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'de.hsrm.mi.swt'
-version = '0.0.2-SNAPSHOT'
+version = '0.1.0-SNAPSHOT'
 sourceCompatibility = '11'
 mainClassName = "de.hsrm.mi.swt.rheinmainadventure.RheinMainAdventureApplication"
 
@@ -36,7 +36,7 @@ dependencies {
 test {
     useJUnitPlatform()
     finalizedBy jacocoTestReport
-    ignoreFailures = true
+    ignoreFailures = true // TODO: Für Commit auf Master rausnehmen
 }
 // https://docs.gradle.org/current/userguide/jacoco_plugin.html
 jacoco {
