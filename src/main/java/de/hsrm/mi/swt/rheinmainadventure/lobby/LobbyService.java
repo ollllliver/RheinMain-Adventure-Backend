@@ -5,8 +5,8 @@ import java.util.List;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 
 /**
- * Interface für die Lobby Service Klasse
- * Implementation ist in {@link de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyServiceImpl}.
+ * Interface für die Lobby Service Klasse Implementation ist in
+ * {@link de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyServiceImpl}.
  */
 public interface LobbyService {
     // Das hier ist das Interface fuer aktionen auf die Lobbyinstanzen.
@@ -24,4 +24,6 @@ public interface LobbyService {
     public LobbyMessage lobbieBeitretenZufaellig(String username);
 
     public LobbyMessage spielerVerlaesstLobby(String id, String spielerName);
+
+    public void lobbyLoeschen(String id);
 }

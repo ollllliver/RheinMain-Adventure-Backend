@@ -1,13 +1,14 @@
 package de.hsrm.mi.swt.rheinmainadventure.model;
 
 /**
- * Spielerklasse für die Lobbies. Hat nix mit LogIn zu tun!
- * Ein Spieler wird dann erstellt, wenn er einer Lobby hinzugefügt werden soll.
- * Er nutzt nur quasi zufällig praktischerweise den eingeloggten Nutzernamen des
- * Benutzers, ist aber UNABHÄNGIG vom Benutzer.
+ * Spielerklasse für die Lobbies. Hat nix mit LogIn zu tun! Ein Spieler wird
+ * dann erstellt, wenn er einer Lobby hinzugefügt werden soll. Er nutzt nur
+ * quasi zufällig praktischerweise den eingeloggten Nutzernamen des Benutzers,
+ * ist aber UNABHÄNGIG vom Benutzer.
  */
 public class Spieler {
     private String name;
+    private boolean isHost;
 
     public Spieler(String name) {
         this.name = name;
@@ -30,6 +31,14 @@ public class Spieler {
         int result = 1;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
+    }
+
+    public boolean isHost() {
+        return isHost;
+    }
+
+    public void setHost(boolean isHost) {
+        this.isHost = isHost;
     }
 
     @Override
