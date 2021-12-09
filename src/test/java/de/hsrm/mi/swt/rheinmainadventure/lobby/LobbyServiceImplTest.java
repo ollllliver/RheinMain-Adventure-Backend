@@ -36,21 +36,46 @@ public class LobbyServiceImplTest {
         testLobby.setSpielerlimit(3);
 
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Test-User");
+
+        assertTrue(containsName(testLobby.getTeilnehmerliste(), "Test-User"));
+    }
+
+    @Test
+    void testJoinFullLobby(){
+        Lobby testLobby = lobbyService.lobbyErstellen("Test-User2");
+        testLobby.setSpielerlimit(3);
+        //4 Mal Joinen
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Spieler 2");
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Spieler 3");
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Spieler 4");
+        lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Spieler 5");
 
-
-        assertTrue(containsName(testLobby.getTeilnehmerliste(), "Test-User"));
         assertTrue(containsName(testLobby.getTeilnehmerliste(), "Spieler 2"));
         assertTrue(containsName(testLobby.getTeilnehmerliste(), "Spieler 3"));
-        assertFalse(containsName(testLobby.getTeilnehmerliste(), "Spieler 4"));
+        assertTrue(containsName(testLobby.getTeilnehmerliste(), "Spieler 4"));
+        //Sollte der Lobby nicht gejoint sein
+        assertFalse(containsName(testLobby.getTeilnehmerliste(), "Spieler 5"));
+    }
 
-        /*
-        TODO : TEST für später: für Join Bei
-        -Private Lobby (Nur bei zufall join)
-        -Gestartete Lobby Joinen
-        */
+    @Test
+    void testJoinGestarteteLobby(){
+        Lobby testLobby = lobbyService.lobbyErstellen("Test-User3");
+        lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Test-User3");
+
+        testLobby.setIstGestartet(true);
+        lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Bongo");
+        assertFalse(containsName(testLobby.getTeilnehmerliste(), "Bongo"));
+    }
+
+    @Test
+    void testJoinPrivateLobbyOhneLink(){
+        Lobby testLobby = lobbyService.lobbyErstellen("Test-User4");
+        lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Test-User4");
+        testLobby.setIstPrivat(true);
+
+        //Sollte zufaellig einer lobby Joinen jedoch ist die einzige freie Privat
+        lobbyService.lobbieBeitretenZufaellig("Bingo");
+        assertFalse(containsName(testLobby.getTeilnehmerliste(), "Bingo"));
     }
 
     /* Prueft ob eine Lobby nach Countdown als Gestartet Gilt OHNE REST ANSTOSS */
@@ -67,13 +92,15 @@ public class LobbyServiceImplTest {
         assertTrue(chandsLobby.getIstGestartet()==true);
         /* 
         TODO: TEST für später: Spielstart-übermittlung Test
-        Spielstart mit Leerer Lobby soll nicht klappen
         Nur Host kann spiel Starten. (Also als nicht host starten versuchen und soll nicht klappen) <- muss noch implementiert werden
         mit voller lobby starten
         */
     }
 
-    /* Prueft ob eine Lobby nach dem Timeout noch Exsistiert. OHNE REST ANSTOSS */
+
+    /* Prueft ob eine Lobby nach dem Timeout noch Exsistiert. OHNE REST ANSTOSS 
+    *  Hierfuer muss im Backend der Timeout auf 15 Sekunden und nicht 10 Minuten gesetzt werden.
+    */
     @Test
     void testTimeout() throws Exception {
         Lobby chandsLobby = lobbyService.lobbyErstellen("Chand");
@@ -81,10 +108,6 @@ public class LobbyServiceImplTest {
         assertTrue(chandsLobby!=null);
         TimeUnit.SECONDS.sleep(16);
         assertFalse(lobbyService.getLobbyById(chandsLobby.getlobbyID())!=null);
-        /* 
-        TODO: TEST für später: Timeout Test
-        Test für wenn Lobby gestartet ist, soll die lobby nach 15 Sekunden immernoch da sein weil kein Timeout wenn gestartet
-        */
     }
 
 
