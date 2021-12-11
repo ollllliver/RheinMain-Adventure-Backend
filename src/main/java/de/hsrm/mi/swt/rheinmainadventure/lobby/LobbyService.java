@@ -25,5 +25,4 @@ public interface LobbyService {
 
     public LobbyMessage spielerVerlaesstLobby(String id, String spielerName);
 
-    public void lobbyLoeschen(String id);
 }
