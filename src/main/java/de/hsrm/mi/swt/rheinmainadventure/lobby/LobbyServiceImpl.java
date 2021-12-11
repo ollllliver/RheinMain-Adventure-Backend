@@ -1,7 +1,6 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -124,20 +123,21 @@ public class LobbyServiceImpl implements LobbyService {
       Spieler currSpieler = teilnehmer.get(i);
       if (currSpieler.getName().equals(spielerName)) {
         // ... und entfernt
-        // wenn der spieler der Host war wird der Status weitergegeben
-        if (spielerName.equals(currLobby.getHost().getName())) {
-          logger.info("Der Host: " + spielerName + " verlaesst die Lobby");
-          Spieler neuerHost = teilnehmer.get(i + 1);
-          logger.info("Der neue Host ist: " + neuerHost.getName());
-          neuerHost.setHost(true);
-          currLobby.setHost(neuerHost);
-        }
         // wenn lobby leer ist wird sie geschlossen
-        teilnehmer.remove(currSpieler);
-        if (teilnehmer.size() == 0) {
+        if (teilnehmer.size() == 1) {
           logger.info("Die Lobby ist leer und wird somit geschlossen!");
           lobbies.remove(currLobby);
-
+        }
+        else{
+          teilnehmer.remove(currSpieler);
+          // wenn der spieler der Host war wird der Status weitergegeben
+          if (spielerName.equals(currLobby.getHost().getName())) {
+            logger.info("Der Host: " + spielerName + " verlaesst die Lobby");
+            Spieler neuerHost = teilnehmer.get(0);
+            logger.info("Der neue Host ist: " + neuerHost.getName());
+            neuerHost.setHost(true);
+            currLobby.setHost(neuerHost);
+          }
         }
 
       }
