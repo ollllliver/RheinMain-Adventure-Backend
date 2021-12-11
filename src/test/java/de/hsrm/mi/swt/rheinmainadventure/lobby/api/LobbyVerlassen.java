@@ -6,12 +6,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.Console;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -26,10 +25,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -48,12 +49,24 @@ public class LobbyVerlassen {
     @Autowired
     private MockMvc mockmvc;
 
-    // ###############
-    // Hilfsfunktionen
-    // ###############
-
     private final String ERSTER_SPIELER = "Oliver";
     private final String ZWEITER_SPIELER = "Chand";
+
+    @Autowired
+    private IntBenutzerRepo benutzerrepo;
+
+    @BeforeEach
+    public void initUser() {
+        benutzerrepo.deleteAll();
+        final Benutzer u1 = new Benutzer();
+        u1.setBenutzername(ERSTER_SPIELER);
+        u1.setPasswort(ERSTER_SPIELER);
+        benutzerrepo.save(u1);
+        final Benutzer u2 = new Benutzer();
+        u2.setBenutzername(ZWEITER_SPIELER);
+        u2.setPasswort(ZWEITER_SPIELER);
+        benutzerrepo.save(u2);
+    }
 
     // ###############
     // Hilfsfunktionen
@@ -120,12 +133,12 @@ public class LobbyVerlassen {
         MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
         lobbyBeitretenREST(session2, lobby.getlobbyID());
 
+        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
+
         // beigetretene Lobby verlassen
         lobbyVerlassenREST(session2, lobby.getlobbyID());
 
-        assertFalse(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste()
-                .contains(new Spieler(ZWEITER_SPIELER)));
-        assertTrue(lobby.equals(lobbyService.getLobbyById(lobby.getlobbyID())));
+        assertFalse(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
     }
 
     // ####################################################

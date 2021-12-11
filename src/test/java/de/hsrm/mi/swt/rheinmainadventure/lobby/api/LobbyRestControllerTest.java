@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -27,10 +28,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -46,6 +49,23 @@ public class LobbyRestControllerTest {
     private MockMvc mockmvc;
 
     private final String ERSTER_SPIELER = "Oliver";
+    private final String ZWEITER_SPIELER = "Chand";
+
+    @Autowired
+    private IntBenutzerRepo benutzerrepo;
+
+    @BeforeEach
+    public void initUser() {
+        benutzerrepo.deleteAll();
+        final Benutzer u1 = new Benutzer();
+        u1.setBenutzername(ERSTER_SPIELER);
+        u1.setPasswort(ERSTER_SPIELER);
+        benutzerrepo.save(u1);
+        final Benutzer u2 = new Benutzer();
+        u2.setBenutzername(ZWEITER_SPIELER);
+        u2.setPasswort(ZWEITER_SPIELER);
+        benutzerrepo.save(u2);
+    }
     
     private MockHttpSession logIn(String name, String password) throws Exception {
         MockHttpSession session = new MockHttpSession();
@@ -91,29 +111,43 @@ public class LobbyRestControllerTest {
     }
 
     @Test
-    void testLobbieBeitretenZufaellig() {
-
-    }
-
-    @Test
-    void testVerlasseLobby() throws Exception{
+    void testLobbieBeitretenZufaellig() throws Exception {
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
         Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
 
-        result = mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session).contentType("application/json")).andReturn();
+        result = mockmvc.perform(post("/api/lobby/joinRandom").session(session).contentType("application/json")).andReturn();
+        jsonString = result.getResponse().getContentAsString();
+        LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        assertTrue(lobbymessage instanceof LobbyMessage);
+        assertTrue(lobbymessage.getIstFehler() == false);
+        assertTrue(lobbymessage.getTyp() == NachrichtenCode.NEUER_MITSPIELER);
+        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size() == 1);
+}
+
+    @Test
+    void testVerlasseLobby() throws Exception{
+        MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json")).andReturn();
+        String jsonString = result.getResponse().getContentAsString();
+        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+
+        mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session1).contentType("application/json")).andReturn();
+
+        MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
+        result = mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).contentType("application/json")).andReturn();
         jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
 
-        result = mockmvc.perform(delete("/api/lobby/leave/" + lobby.getlobbyID()).session(session).contentType("application/json")).andReturn();
+        result = mockmvc.perform(delete("/api/lobby/leave/" + lobby.getlobbyID()).session(session2).contentType("application/json")).andReturn();
         jsonString = result.getResponse().getContentAsString();
         lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         assertTrue(lobbymessage instanceof LobbyMessage);
         assertTrue(lobbymessage instanceof LobbyMessage);
         assertTrue(lobbymessage.getIstFehler() == false);
         assertTrue(lobbymessage.getTyp() == NachrichtenCode.MITSPIELER_VERLAESST);
-        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size() == 0);
+        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size() == 1);
     }
     
     @Test

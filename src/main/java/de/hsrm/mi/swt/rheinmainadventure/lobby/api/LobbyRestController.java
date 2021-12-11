@@ -75,7 +75,7 @@ public class LobbyRestController {
 
     @DeleteMapping(value = "/leave/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m) {
-        logger.info("POST /api/lobby/" + lobbyId + "/leave/");
+        logger.info("DELETE /api/lobby/leave/" + lobbyId);
         logger.info("USER " + m.getAttribute("loggedinBenutzername").toString() + " will die Lobby verlassen");
         return lobbyservice.spielerVerlaesstLobby(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
