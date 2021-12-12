@@ -261,7 +261,7 @@ public class LobbyServiceImpl implements LobbyService {
 
     Lobby currLobby = getLobbyById(Id);
     if (currLobby == null) {
-      return new LobbyMessage(NachrichtenCode.BEITRETEN_FEHLGESCHLAGEN, true);
+      return new LobbyMessage(NachrichtenCode.LOBBY_NICHT_GEFUNDEN, true);
     }
     // ueberpruefen, ob Spieler bereits in der Lobby ist
     if (!currLobby.getTeilnehmerliste().contains(new Spieler(spielername))) {
@@ -282,10 +282,9 @@ public class LobbyServiceImpl implements LobbyService {
          */
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
-        broker.convertAndSend("/topic/lobby/" + Id,
-            new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false, currLobby.getlobbyID()));
+        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false, currLobby.getlobbyID()));
         broker.convertAndSend("/topic/lobby/" + Id + "/chat", new ChatNachricht(NachrichtenTyp.JOIN, "", spielername));
-        return new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false, currLobby.getlobbyID());
+        return new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, currLobby.getlobbyID());
       }
     }
     return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false);
