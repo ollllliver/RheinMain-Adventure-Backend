@@ -31,6 +31,6 @@ public class spielTest {
 
         Spiel spiel = new Spiel(lobby);
 
-        assertTrue(spiel.getTeilnehmerliste().equals(lobby.getTeilnehmerliste()));
+        assertTrue(spiel.getSpielerListe().equals(lobby.getTeilnehmerliste()));
     }
 }

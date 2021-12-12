@@ -3,6 +3,8 @@ package de.hsrm.mi.swt.rheinmainadventure.lobby;
 import java.util.ArrayList;
 
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.Karte;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
 
 public class Lobby {
     private String lobbyID;
@@ -12,6 +14,8 @@ public class Lobby {
     private boolean istGestartet;
     private boolean istPrivat;
     private int spielerlimit;
+    private Karte gewaehlteKarte;
+    private Spiel spiel;
 
     // Aktuellen LobbyService reinreichen lassen da ich nicht weiß wie man bei einer
     // nicht Component Klasse Autowired.
@@ -145,4 +149,21 @@ public class Lobby {
     public void setIstPrivat(boolean istPrivat) {
         this.istPrivat = istPrivat;
     }
+
+    public Spiel getSpiel() {
+        return spiel;
+    }
+
+    public void setSpiel(Spiel spiel) {
+        this.spiel = spiel;
+    }
+
+    public Karte getGewaehlteKarte() {
+        return gewaehlteKarte;
+    }
+
+    public void setGewaehlteKarte(Karte gewaehlteKarte) {
+        this.gewaehlteKarte = gewaehlteKarte;
+    }
+    
 }

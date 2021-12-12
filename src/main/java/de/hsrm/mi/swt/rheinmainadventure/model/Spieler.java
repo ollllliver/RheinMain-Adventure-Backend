@@ -1,5 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.model;
 
+import javax.persistence.Tuple;
+
 /**
  * Spielerklasse für die Lobbies. Hat nix mit LogIn zu tun!
  * Ein Spieler wird dann erstellt, wenn er einer Lobby hinzugefügt werden soll.
@@ -8,6 +10,7 @@ package de.hsrm.mi.swt.rheinmainadventure.model;
  */
 public class Spieler {
     private String name;
+    private Tuple position;
 
     public Spieler(String name) {
         this.name = name;
@@ -22,6 +25,14 @@ public class Spieler {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Tuple getPosition() {
+        return position;
+    }
+
+    public void setPosition(Tuple position) {
+        this.position = position;
     }
 
     @Override

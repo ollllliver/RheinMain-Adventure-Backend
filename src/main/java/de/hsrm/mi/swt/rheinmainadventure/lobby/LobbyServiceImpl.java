@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
 
 /**
  * Lobby Service für das verwalten aller Lobbys.
@@ -168,6 +169,7 @@ public class LobbyServiceImpl implements LobbyService {
           lobby.setIstGestartet(true);
 
           // TODO : Hier nach Spielcountdown Ansicht wechseln
+          lobby.setSpiel(new Spiel(lobby));
 
         }
       }

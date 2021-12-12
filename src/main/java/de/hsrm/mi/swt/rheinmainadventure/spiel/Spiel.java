@@ -1,25 +1,41 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 
 public class Spiel {
-    private ArrayList<Spieler> teilnehmerliste;
+    private ArrayList<Spieler> spielerListe;
+    private Timestamp startZeitpunkt;
+    private Karte karte;
 
     public Spiel(Lobby lobby) {
-        this.teilnehmerliste = lobby.getTeilnehmerliste();
+        this.karte = lobby.getGewaehlteKarte();
+        for(int i = 0; i<lobby.getTeilnehmerliste().size();i++){
+            lobby.getTeilnehmerliste().get(i).setPosition(this.karte.getStartpositionen().get(i));
+            this.spielerListe.add(lobby.getTeilnehmerliste().get(i));
+        }
+        this.startZeitpunkt = new Timestamp(System.currentTimeMillis());
+    }
+
+    public ArrayList<Spieler> getSpielerListe() {
+        return spielerListe;
     }
 
 
-    public ArrayList<Spieler> getTeilnehmerliste() {
-        return teilnehmerliste;
+    public void setSpielerListe(ArrayList<Spieler> teilnehmerliste) {
+        this.spielerListe = teilnehmerliste;
     }
 
 
-    public void setTeilnehmerliste(ArrayList<Spieler> teilnehmerliste) {
-        this.teilnehmerliste = teilnehmerliste;
+    public Timestamp getStartZeitpunkt() {
+        return startZeitpunkt;
     }
-    
+
+    public Karte getKarte() {
+        return karte;
+    }
+
 }
