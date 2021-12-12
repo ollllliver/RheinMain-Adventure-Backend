@@ -175,6 +175,7 @@ public class LobbyErstellen {
 
         // also Lobby zwei sollte nicht erstellt worden sein.
         assertTrue(zweitelobby==null);
+        assertTrue(lobbyService.getLobbies().size() == 1);
     }
 
     @Test

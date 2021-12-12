@@ -123,9 +123,7 @@ public class LobbyBeitreten {
 
         alteLobby.getTeilnehmerliste().add(new Spieler(ZWEITER_SPIELER));
 
-        assertTrue(!lm.getIstFehler());
-        assertTrue(lm.getTyp() == NachrichtenCode.NEUER_MITSPIELER);
-        assertTrue(lm.equals(new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false)));
+        assertTrue(lm.equals(new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, alteLobby.getlobbyID())));
         assertTrue(neueLobby.getClass() == Lobby.class);
         assertTrue(neueLobby.equals(alteLobby));
     }
@@ -139,8 +137,6 @@ public class LobbyBeitreten {
     public void UCD_Lobby_beitreten_1a1() throws Exception {
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         LobbyMessage lm = lobbyBeitretenREST(session, "lobbyIDgibtEsNicht123");
-        assertTrue(lm.getIstFehler());
-        assertTrue(lm.getTyp() == NachrichtenCode.BEITRETEN_FEHLGESCHLAGEN);
         assertTrue(lm.equals(new LobbyMessage(NachrichtenCode.LOBBY_NICHT_GEFUNDEN, true)));
     }
 
@@ -175,7 +171,7 @@ public class LobbyBeitreten {
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertTrue(lobbyNach1malBeitreten.equals(lobbyNach2malBeitreten));
         assertTrue(lm1.getIstFehler() == false);
-        assertTrue(lm1.getTyp() == NachrichtenCode.NEUER_MITSPIELER);
+        assertTrue(lm1.getTyp() == NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
         assertTrue(lm2.getIstFehler() == false);
         assertTrue(lm2.getTyp() == NachrichtenCode.SCHON_BEIGETRETEN);
     }
@@ -218,7 +214,7 @@ public class LobbyBeitreten {
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertTrue(lobbyNach1malBeitreten.equals(lobbyNach2malBeitreten));
         assertTrue(lm1.getIstFehler() == false);
-        assertTrue(lm1.getTyp() == NachrichtenCode.NEUER_MITSPIELER);
+        assertTrue(lm1.getTyp() == NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
         assertTrue(lm2.getIstFehler() == false);
         assertTrue(lm2.getTyp() == NachrichtenCode.SCHON_BEIGETRETEN);
     }
