@@ -1,6 +1,8 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,8 +37,8 @@ import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class LobbyBeitreten {
-    Logger logger = LoggerFactory.getLogger(LobbyErstellen.class);
+class LobbyBeitretenTest {
+    Logger logger = LoggerFactory.getLogger(LobbyErstellenTest.class);
 
     // orientiert an 7.3.1 Use Case Diagramm Lobby beitreten
     // https://taiga.mi.hs-rm.de/project/weitz-2021swtpro03/wiki/731-use-case-lobby-beitreten
@@ -110,7 +112,7 @@ public class LobbyBeitreten {
 
     @Test
     @DisplayName("Einer Lobby per ID beitreten.")
-    public void UCD_Lobby_beitreten() throws Exception {
+    void UCD_Lobby_beitreten() throws Exception {
 
         // Mit zwei verschiedenen Benutzern einloggen
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
@@ -123,9 +125,9 @@ public class LobbyBeitreten {
 
         alteLobby.getTeilnehmerliste().add(new Spieler(ZWEITER_SPIELER));
 
-        assertTrue(lm.equals(new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, alteLobby.getlobbyID())));
-        assertTrue(neueLobby.getClass() == Lobby.class);
-        assertTrue(neueLobby.equals(alteLobby));
+        assertEquals(lm, new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, alteLobby.getlobbyID()));
+        assertEquals(neueLobby.getClass(), Lobby.class);
+        assertEquals(neueLobby, alteLobby);
     }
 
     // ####################################################
@@ -134,27 +136,27 @@ public class LobbyBeitreten {
 
     @Test
     @DisplayName("Einer Lobby beitreten, die es nicht gibt.")
-    public void UCD_Lobby_beitreten_1a1() throws Exception {
+    void UCD_Lobby_beitreten_1a1() throws Exception {
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         LobbyMessage lm = lobbyBeitretenREST(session, "lobbyIDgibtEsNicht123");
-        assertTrue(lm.equals(new LobbyMessage(NachrichtenCode.LOBBY_NICHT_GEFUNDEN, true)));
+        assertEquals(lm, new LobbyMessage(NachrichtenCode.LOBBY_NICHT_GEFUNDEN, true));
     }
 
     @Test
     @DisplayName("Spieler bekommt Beitrittslink von einem Mitspieler gesendet.")
-    public void UCD_Lobby_beitreten_1b() throws Exception {
+    void UCD_Lobby_beitreten_1b() throws Exception {
         //Das ist eher ein Frontendtest.
     }
 
     @Test
     @DisplayName("Spieler wählt zufälliger Lobby beitreten aus.")
-    public void UCD_Lobby_beitreten_1c() throws Exception {
+    void UCD_Lobby_beitreten_1c() throws Exception {
         // TODO: TEST: Spieler wählt zufälliger Lobby beitreten aus. @Chand?
     }
 
     @Test
     @DisplayName("Spieler befindet sich bereits in der selben Lobby.")
-    public void UCD_Lobby_beitreten_1d_1() throws Exception {
+    void UCD_Lobby_beitreten_1d_1() throws Exception {
         // Mit zwei verschiedenen Benutzern einloggen
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MockHttpSession sessionChand = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
@@ -169,16 +171,16 @@ public class LobbyBeitreten {
 
         
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
-        assertTrue(lobbyNach1malBeitreten.equals(lobbyNach2malBeitreten));
-        assertTrue(lm1.getIstFehler() == false);
-        assertTrue(lm1.getTyp() == NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertTrue(lm2.getIstFehler() == false);
-        assertTrue(lm2.getTyp() == NachrichtenCode.SCHON_BEIGETRETEN);
+        assertEquals(lobbyNach1malBeitreten, lobbyNach2malBeitreten);
+        assertEquals(lm1.getIstFehler(), false);
+        assertSame(lm1.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
+        assertEquals(lm2.getIstFehler(), false);
+        assertSame(lm2.getTyp(), NachrichtenCode.SCHON_BEIGETRETEN);
     }
 
     @Test
     @DisplayName("Spieler befindet sich bereits in einer anderen Lobby.")
-    public void UCD_Lobby_beitreten_1d_2() throws Exception {
+    void UCD_Lobby_beitreten_1d_2() throws Exception {
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MockHttpSession sessionChand = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
 
@@ -198,7 +200,7 @@ public class LobbyBeitreten {
 
     @Test
     @DisplayName("Einer Lobby, in der man schon als Host ist, per ID beitreten soll nichts aendern.")
-    public void UCD_Lobby_beitreten_1d_3() throws Exception {
+    void UCD_Lobby_beitreten_1d_3() throws Exception {
         // Mit zwei verschiedenen Benutzern einloggen
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         
@@ -212,11 +214,11 @@ public class LobbyBeitreten {
 
         
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
-        assertTrue(lobbyNach1malBeitreten.equals(lobbyNach2malBeitreten));
-        assertTrue(lm1.getIstFehler() == false);
-        assertTrue(lm1.getTyp() == NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertTrue(lm2.getIstFehler() == false);
-        assertTrue(lm2.getTyp() == NachrichtenCode.SCHON_BEIGETRETEN);
+        assertEquals(lobbyNach1malBeitreten, lobbyNach2malBeitreten);
+        assertEquals(lm1.getIstFehler(), false);
+        assertSame(lm1.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
+        assertEquals(lm2.getIstFehler(), false);
+        assertSame(lm2.getTyp(), NachrichtenCode.SCHON_BEIGETRETEN);
     }
 
 }

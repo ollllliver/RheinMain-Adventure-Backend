@@ -1,5 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,8 +38,8 @@ import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class LobbyErstellen {
-    Logger logger = LoggerFactory.getLogger(LobbyErstellen.class);
+public class LobbyErstellenTest {
+    Logger logger = LoggerFactory.getLogger(LobbyErstellenTest.class);
 
     // orientiert an 7.3.1 Use Case Diagramm Lobby hosten (und Spiel starten)
     // https://taiga.mi.hs-rm.de/project/weitz-2021swtpro03/wiki/732-use-case-diagramm-lobby-hosten-und-spiel-starten
@@ -126,30 +128,30 @@ public class LobbyErstellen {
 
     @Test
     @DisplayName("Am Anfang sollte keine Lobby vorhanden sein.")
-    public void vorabtest() throws Exception {
-        assertTrue(lobbyService.getLobbys().size() == 0);
-        assertTrue(lobbysAbfragenREST().size() == 0);
+    void vorabtest() throws Exception {
+        assertEquals(lobbyService.getLobbys().size(), 0);
+        assertEquals(lobbysAbfragenREST().size(), 0);
     }
     
     
     @Test
     @DisplayName("Eine Lobby ueber REST erstellen.")
-    public void UCD_Lobby_erstellen_1() throws Exception {
+    void UCD_Lobby_erstellen_1() throws Exception {
         // einloggen:
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         lobbyErstellenREST(session);
-        assertTrue(lobbyService.getLobbys().size() == 1);
-        assertTrue(lobbyService.getLobbys().get(0).getClass() == Lobby.class);
+        assertEquals(lobbyService.getLobbys().size(), 1);
+        assertEquals(lobbyService.getLobbys().get(0).getClass(), Lobby.class);
     }
 
     @Test
     @DisplayName("Eine Lobby ueber REST erstellen UND auch ueber REST die Anzahl der Lobbys ueberpruefen.")
-    public void UCD_Lobby_erstellen_2() throws Exception {
+    void UCD_Lobby_erstellen_2() throws Exception {
         // einloggen:
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         lobbyErstellenREST(session);
         ArrayList<Lobby> lobbys = lobbysAbfragenREST();
-        assertTrue(lobbys.size() == 1);
+        assertEquals(lobbys.size(), 1);
     }
 
     // ####################################################
@@ -159,7 +161,7 @@ public class LobbyErstellen {
 
     @Test
     @DisplayName("Spieler will Lobby hosten, ist aber bereits Mitglied einer anderen Lobby.")
-    public void UCD_Lobby_erstellen_1a_1() throws Exception {
+    void UCD_Lobby_erstellen_1a_1() throws Exception {
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MockHttpSession sessionChand = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
 
@@ -174,23 +176,23 @@ public class LobbyErstellen {
 
 
         // also Lobby zwei sollte nicht erstellt worden sein.
-        assertTrue(zweitelobby==null);
-        assertTrue(lobbyService.getLobbys().size() == 1);
+        assertNull(zweitelobby);
+        assertEquals(lobbyService.getLobbys().size(), 1);
     }
 
     @Test
     @DisplayName(" Spieler will Lobby hosten, ist aber bereits HOST einer anderen Lobby")
-    public void UCD_Lobby_erstellen_1a_2_1() throws Exception {
+    void UCD_Lobby_erstellen_1a_2_1() throws Exception {
         // einloggen:
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         lobbyErstellenREST(session);
         lobbyErstellenREST(session);
-        assertTrue(lobbyService.getLobbys().size() == 1);
+        assertEquals(lobbyService.getLobbys().size(), 1);
     }
 
     @Test
     @DisplayName("Viele Lobbys ueber REST erstellen und auch ueber REST die Anzahl der Lobbys ueberpruefen.")
-    public void UCD_Lobby_erstellen_1a_2_2() throws Exception {
+    void UCD_Lobby_erstellen_1a_2_2() throws Exception {
         // einloggen:
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         lobbyErstellenREST(session1);
@@ -199,18 +201,18 @@ public class LobbyErstellen {
         lobbyErstellenREST(session2);
 
         ArrayList<Lobby> lobbys = lobbysAbfragenREST();
-        assertTrue(lobbys.size() == 2);
+        assertEquals(lobbys.size(), 2);
     }
 
     @Test
     @DisplayName("Eine Lobby ueber REST erstellen und ueber die ID ueber REST wieder abfragen.")
-    public void get_api_id() throws Exception {
+    void get_api_id() throws Exception {
         // einloggen:
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         Lobby lobby = lobbyErstellenREST(session);
         String lobbyID = lobby.getlobbyID();
         Lobby restLobby = lobbyAbfragenREST(lobbyID);
-        assertTrue(restLobby.equals(lobby));
+        assertEquals(restLobby, lobby);
     }
 
 }

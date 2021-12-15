@@ -1,5 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -39,8 +41,8 @@ import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayName("Vorabtests für alle api Domaenen.")
-public class LobbyRestControllerTest {
-    Logger logger = LoggerFactory.getLogger(LobbyVerlassen.class);
+class LobbyRestControllerTest {
+    Logger logger = LoggerFactory.getLogger(LobbyRestControllerTest.class);
 
     @Autowired
     LobbyService lobbyService;
@@ -90,8 +92,8 @@ public class LobbyRestControllerTest {
         String jsonString = result.getResponse().getContentAsString();
         Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
         assertTrue(lobby instanceof Lobby);
-        assertTrue(lobbyService.getLobbys().size()==1);
-        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).equals(lobby));
+        assertEquals(lobbyService.getLobbys().size(), 1);
+        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()), lobby);
     }
 
     @Test
@@ -105,9 +107,9 @@ public class LobbyRestControllerTest {
         jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         assertTrue(lobbymessage instanceof LobbyMessage);
-        assertTrue(lobbymessage.getIstFehler() == false);
-        assertTrue(lobbymessage.getTyp() == NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size() == 1);
+        assertEquals(lobbymessage.getIstFehler(), false);
+        assertSame(lobbymessage.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
+        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size(), 1);
     }
 
     @Test
@@ -121,9 +123,9 @@ public class LobbyRestControllerTest {
         jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         assertTrue(lobbymessage instanceof LobbyMessage);
-        assertTrue(lobbymessage.getIstFehler() == false);
-        assertTrue(lobbymessage.getTyp() == NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size() == 1);
+        assertEquals(lobbymessage.getIstFehler(), false);
+        assertSame(lobbymessage.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
+        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size(), 1);
 }
 
     @Test
@@ -145,9 +147,9 @@ public class LobbyRestControllerTest {
         lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         assertTrue(lobbymessage instanceof LobbyMessage);
         assertTrue(lobbymessage instanceof LobbyMessage);
-        assertTrue(lobbymessage.getIstFehler() == false);
-        assertTrue(lobbymessage.getTyp() == NachrichtenCode.MITSPIELER_VERLAESST);
-        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size() == 1);
+        assertEquals(lobbymessage.getIstFehler(), false);
+        assertSame(lobbymessage.getTyp(), NachrichtenCode.MITSPIELER_VERLAESST);
+        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size(), 1);
     }
     
     @Test
@@ -162,7 +164,7 @@ public class LobbyRestControllerTest {
         Lobby restLobby = new ObjectMapper().readValue(jsonString, Lobby.class);
 
         assertTrue(restLobby instanceof Lobby);
-        assertTrue(restLobby.equals(lobby));
+        assertEquals(restLobby, lobby);
     }
 
     @Test
@@ -176,14 +178,14 @@ public class LobbyRestControllerTest {
         result = mockmvc.perform(post("/api/lobby/neu").session(session2).contentType("application/json")).andReturn();
         jsonString = result.getResponse().getContentAsString();
         new ObjectMapper().readValue(jsonString, Lobby.class);
-        assertTrue(lobbyService.getLobbys().size()==2);
+        assertEquals(lobbyService.getLobbys().size(), 2);
 
         result = mockmvc.perform(get("/api/lobby/alle").session(session1).contentType("application/json")).andReturn();
         jsonString = result.getResponse().getContentAsString();
         Lobby[] lobbyListArray = new ObjectMapper().readValue(jsonString, Lobby[].class);
         ArrayList<Lobby> restLobbyList = new ArrayList<>(Arrays.asList(lobbyListArray));
         
-        assertTrue(lobbyService.getLobbys().equals(restLobbyList));
+        assertEquals(lobbyService.getLobbys(), restLobbyList);
     }
 
     @Test

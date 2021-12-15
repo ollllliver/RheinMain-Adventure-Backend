@@ -1,6 +1,8 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -18,7 +20,7 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class LobbyServiceImplTest {
+class LobbyServiceImplTest {
     Logger logger = LoggerFactory.getLogger(LobbyServiceImplTest.class);
 
     @Autowired
@@ -84,12 +86,12 @@ public class LobbyServiceImplTest {
 
         Lobby chandsLobby = lobbyService.lobbyErstellen("Chand");
 
-        assertTrue(chandsLobby.getIstGestartet()==false);
+        assertEquals(chandsLobby.getIstGestartet(),false);
         String lobbyID = chandsLobby.getlobbyID();
 
         lobbyService.starteCountdown(lobbyID);
         TimeUnit.SECONDS.sleep(11);
-        assertTrue(chandsLobby.getIstGestartet()==true);
+        assertEquals(chandsLobby.getIstGestartet(),true);
         /* 
         TODO: TEST für später: Spielstart-übermittlung Test
         Nur Host kann spiel Starten. (Also als nicht host starten versuchen und soll nicht klappen) <- muss noch implementiert werden
@@ -105,9 +107,9 @@ public class LobbyServiceImplTest {
     void testTimeout() throws Exception {
         Lobby chandsLobby = lobbyService.lobbyErstellen("Chand");
 
-        assertTrue(chandsLobby!=null);
+        assertNotNull(chandsLobby);
         TimeUnit.SECONDS.sleep(16);
-        assertFalse(lobbyService.getLobbyById(chandsLobby.getlobbyID())!=null);
+        assertNotNull(lobbyService.getLobbyById(chandsLobby.getlobbyID()));
     }
 
 
