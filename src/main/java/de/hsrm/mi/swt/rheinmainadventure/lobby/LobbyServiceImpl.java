@@ -178,8 +178,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    // timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
-    timer.schedule(task, 10 * 60 * 1000);
+    timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
+    //timer.schedule(task, 10 * 60 * 1000);
   }
 
   /**
