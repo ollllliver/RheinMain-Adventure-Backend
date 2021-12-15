@@ -1,5 +1,6 @@
 package de.hsrm.mi.swt.rheinmainadventure.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
@@ -21,8 +22,12 @@ public class Level {
     @Column(nullable = false)
     private int maxSpieler;
 
+    @JsonIgnore
     @Version
     private Long version;
+
+    @ManyToOne
+    private Benutzer ersteller;
 
     @Override
     public String toString() {

@@ -1,15 +1,15 @@
 package de.hsrm.mi.swt.rheinmainadventure.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Benutzer-Entity für das Benutzer-Repository
  */
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "benutzer")
 public class Benutzer {
@@ -18,33 +18,46 @@ public class Benutzer {
     @Id
     @GeneratedValue
     private Long id;
+
     //Spalte Loginname im Repository
-    @Column(name = "BENUTZERNAME", unique = true)
+    @Column(nullable = false, unique = true)
     private String benutzername;
 
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @Column(nullable = false)
     private String passwort;
+
+    @OneToMany(mappedBy = "ersteller")
+    @JsonIgnore
+    private Set<Level> erstellteLevel;
 
     //automatisch generierte Versionsnummer
     @Version
-    @GeneratedValue
-    @JsonProperty(access = Access.WRITE_ONLY)
+    @JsonIgnore
     private Long version;
 
-    //Getter/Setter/hashCode/equals/toString
-    public String getBenutzername() {
-        return benutzername;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Benutzer benutzer = (Benutzer) o;
+
+        return getBenutzername().equals(benutzer.getBenutzername());
     }
 
-    public void setBenutzername(String loginname) {
-        this.benutzername = loginname;
+    @Override
+    public String toString() {
+        return "Benutzer{" +
+            "id=" + id +
+            ", benutzername='" + benutzername + '\'' +
+            ", passwort='" + passwort + '\'' +
+            '}';
     }
 
-    public String getPasswort() {
-        return passwort;
-    }
-
-    public void setPasswort(String passwort) {
-        this.passwort = passwort;
+    @Override
+    public int hashCode() {
+        return getBenutzername().hashCode();
     }
 
     public Long getId() {
@@ -55,48 +68,27 @@ public class Benutzer {
         this.id = id;
     }
 
+    public String getBenutzername() {
+        return benutzername;
+    }
+
+    public void setBenutzername(String benutzername) {
+        this.benutzername = benutzername;
+    }
+
+    public String getPasswort() {
+        return passwort;
+    }
+
+    public void setPasswort(String passwort) {
+        this.passwort = passwort;
+    }
+
     public Long getVersion() {
         return version;
     }
 
     public void setVersion(Long version) {
         this.version = version;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((benutzername == null) ? 0 : benutzername.hashCode());
-
-        result = prime * result + ((passwort == null) ? 0 : passwort.hashCode());
-        result = prime * result + ((version == null) ? 0 : version.hashCode());
-        return result;
-    }
-
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        Benutzer other = (Benutzer) obj;
-        if (id == null) {
-            if (other.id != null) return false;
-        } else if (!id.equals(other.id)) return false;
-        if (benutzername == null) {
-            if (other.benutzername != null) return false;
-        } else if (!benutzername.equals(other.benutzername)) if (passwort == null) {
-            if (other.passwort != null) return false;
-        } else if (!passwort.equals(other.passwort)) return false;
-        if (version == null) {
-            return other.version == null;
-        } else return version.equals(other.version);
-    }
-
-    @Override
-    public String toString() {
-        return "Benutzer [id=" + id + ", benutzername=" + benutzername + ", passwort=" + passwort + ", version=" + version + "]";
     }
 }
