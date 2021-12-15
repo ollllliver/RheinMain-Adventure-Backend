@@ -22,13 +22,15 @@ public class Level {
     @Column(nullable = false)
     private int maxSpieler;
 
-    @JsonIgnore
-    @Version
-    private Long version;
+    @OneToMany(mappedBy = "level")
+    Set<Raum> raeume;
 
     @ManyToOne
     private Benutzer ersteller;
 
+    @JsonIgnore
+    @Version
+    private Long version;
     @Override
     public String toString() {
         return "Level{" + "levelId=" + levelId +
