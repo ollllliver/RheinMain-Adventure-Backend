@@ -97,11 +97,11 @@ public class LobbyErstellen {
         return restLobby;
     }
 
-    private ArrayList<Lobby> lobbiesAbfragenREST() throws Exception {
+    private ArrayList<Lobby> lobbysAbfragenREST() throws Exception {
         MvcResult  result = mockmvc.perform(get("/api/lobby/alle").contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        ArrayList<Lobby> restLobbies = new ObjectMapper().readValue(jsonString, new TypeReference<ArrayList<Lobby>>(){});
-        return restLobbies;
+        ArrayList<Lobby> restLobbys = new ObjectMapper().readValue(jsonString, new TypeReference<ArrayList<Lobby>>(){});
+        return restLobbys;
     }
 
     private MockHttpSession logIn(String name, String password) throws Exception {
@@ -127,8 +127,8 @@ public class LobbyErstellen {
     @Test
     @DisplayName("Am Anfang sollte keine Lobby vorhanden sein.")
     public void vorabtest() throws Exception {
-        assertTrue(lobbyService.getLobbies().size() == 0);
-        assertTrue(lobbiesAbfragenREST().size() == 0);
+        assertTrue(lobbyService.getLobbys().size() == 0);
+        assertTrue(lobbysAbfragenREST().size() == 0);
     }
     
     
@@ -138,18 +138,18 @@ public class LobbyErstellen {
         // einloggen:
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         lobbyErstellenREST(session);
-        assertTrue(lobbyService.getLobbies().size() == 1);
-        assertTrue(lobbyService.getLobbies().get(0).getClass() == Lobby.class);
+        assertTrue(lobbyService.getLobbys().size() == 1);
+        assertTrue(lobbyService.getLobbys().get(0).getClass() == Lobby.class);
     }
 
     @Test
-    @DisplayName("Eine Lobby ueber REST erstellen UND auch ueber REST die Anzahl der Lobbies ueberpruefen.")
+    @DisplayName("Eine Lobby ueber REST erstellen UND auch ueber REST die Anzahl der Lobbys ueberpruefen.")
     public void UCD_Lobby_erstellen_2() throws Exception {
         // einloggen:
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         lobbyErstellenREST(session);
-        ArrayList<Lobby> lobbies = lobbiesAbfragenREST();
-        assertTrue(lobbies.size() == 1);
+        ArrayList<Lobby> lobbys = lobbysAbfragenREST();
+        assertTrue(lobbys.size() == 1);
     }
 
     // ####################################################
@@ -175,7 +175,7 @@ public class LobbyErstellen {
 
         // also Lobby zwei sollte nicht erstellt worden sein.
         assertTrue(zweitelobby==null);
-        assertTrue(lobbyService.getLobbies().size() == 1);
+        assertTrue(lobbyService.getLobbys().size() == 1);
     }
 
     @Test
@@ -185,11 +185,11 @@ public class LobbyErstellen {
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         lobbyErstellenREST(session);
         lobbyErstellenREST(session);
-        assertTrue(lobbyService.getLobbies().size() == 1);
+        assertTrue(lobbyService.getLobbys().size() == 1);
     }
 
     @Test
-    @DisplayName("Viele Lobbies ueber REST erstellen und auch ueber REST die Anzahl der Lobbies ueberpruefen.")
+    @DisplayName("Viele Lobbys ueber REST erstellen und auch ueber REST die Anzahl der Lobbys ueberpruefen.")
     public void UCD_Lobby_erstellen_1a_2_2() throws Exception {
         // einloggen:
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
@@ -198,8 +198,8 @@ public class LobbyErstellen {
         MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
         lobbyErstellenREST(session2);
 
-        ArrayList<Lobby> lobbies = lobbiesAbfragenREST();
-        assertTrue(lobbies.size() == 2);
+        ArrayList<Lobby> lobbys = lobbysAbfragenREST();
+        assertTrue(lobbys.size() == 2);
     }
 
     @Test

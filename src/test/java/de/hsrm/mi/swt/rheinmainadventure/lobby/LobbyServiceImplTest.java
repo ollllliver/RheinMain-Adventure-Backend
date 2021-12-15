@@ -74,7 +74,7 @@ public class LobbyServiceImplTest {
         testLobby.setIstPrivat(true);
 
         //Sollte zufaellig einer lobby Joinen jedoch ist die einzige freie Privat
-        lobbyService.lobbieBeitretenZufaellig("Bingo");
+        lobbyService.lobbyBeitretenZufaellig("Bingo");
         assertFalse(containsName(testLobby.getTeilnehmerliste(), "Bingo"));
     }
 

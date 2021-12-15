@@ -43,10 +43,10 @@ public class LobbyRestController {
     LobbyService lobbyservice;
 
     @GetMapping("alle")
-    public List<Lobby> getAlleLobbies() {
+    public List<Lobby> getAlleLobbys() {
         // GET /api/lobby/alle - liefert alle Lobbys.
         logger.info("GET /api/lobby/alle");
-        return lobbyservice.getLobbies();
+        return lobbyservice.getLobbys();
     }
 
     /**
@@ -59,7 +59,7 @@ public class LobbyRestController {
      * 
      */
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public LobbyMessage lobbieBeitretenByID(@PathVariable String lobbyId, Model m) {
+    public LobbyMessage lobbyBeitretenByID(@PathVariable String lobbyId, Model m) {
         logger.info("POST /api/lobby/join/" + lobbyId);
         return lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
@@ -113,8 +113,8 @@ public class LobbyRestController {
     // @Chand work in progress
 
     @PostMapping(value = "/joinRandom", produces = MediaType.APPLICATION_JSON_VALUE)
-    public LobbyMessage lobbieBeitretenZufaellig(Model m) {
-        return lobbyservice.lobbieBeitretenZufaellig(m.getAttribute("loggedinBenutzername").toString());
+    public LobbyMessage lobbyBeitretenZufaellig(Model m) {
+        return lobbyservice.lobbyBeitretenZufaellig(m.getAttribute("loggedinBenutzername").toString());
     }
 
     @PostMapping("/{lobbyId}/start")

@@ -20,6 +20,7 @@ public class BenutzerController {
 
     @Autowired
     IntBenutzerRepo benutzerRepo;
+
     @Autowired
     BenutzerService benutzerService;
     Logger logger = LoggerFactory.getLogger(BenutzerController.class);
@@ -38,14 +39,15 @@ public class BenutzerController {
     public ResponseEntity<List<Benutzer>> alleBenutzer() {
         try {
             List<Benutzer> list = benutzerRepo.findAll();
-            if (list.isEmpty() || list.size() == 0){
-                return new ResponseEntity<List<Benutzer>>(HttpStatus.NO_CONTENT);
+            if (list.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
+
             logger.info("Nutzer gefunden");
             return new ResponseEntity<List<Benutzer>>(list, HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -86,7 +88,6 @@ public class BenutzerController {
             }
         }
         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
     /**

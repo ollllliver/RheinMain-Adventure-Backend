@@ -90,12 +90,12 @@ public class LobbyRestControllerTest {
         String jsonString = result.getResponse().getContentAsString();
         Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
         assertTrue(lobby instanceof Lobby);
-        assertTrue(lobbyService.getLobbies().size()==1);
+        assertTrue(lobbyService.getLobbys().size()==1);
         assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).equals(lobby));
     }
 
     @Test
-    void testlobbieBeitretenByID() throws Exception {
+    void testlobbyBeitretenByID() throws Exception {
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
@@ -111,7 +111,7 @@ public class LobbyRestControllerTest {
     }
 
     @Test
-    void testLobbieBeitretenZufaellig() throws Exception {
+    void testLobbyBeitretenZufaellig() throws Exception {
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
@@ -166,7 +166,7 @@ public class LobbyRestControllerTest {
     }
 
     @Test
-    void testGetAlleLobbies() throws Exception {
+    void testGetAlleLobbys() throws Exception {
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
@@ -176,14 +176,14 @@ public class LobbyRestControllerTest {
         result = mockmvc.perform(post("/api/lobby/neu").session(session2).contentType("application/json")).andReturn();
         jsonString = result.getResponse().getContentAsString();
         new ObjectMapper().readValue(jsonString, Lobby.class);
-        assertTrue(lobbyService.getLobbies().size()==2);
+        assertTrue(lobbyService.getLobbys().size()==2);
 
         result = mockmvc.perform(get("/api/lobby/alle").session(session1).contentType("application/json")).andReturn();
         jsonString = result.getResponse().getContentAsString();
         Lobby[] lobbyListArray = new ObjectMapper().readValue(jsonString, Lobby[].class);
         ArrayList<Lobby> restLobbyList = new ArrayList<>(Arrays.asList(lobbyListArray));
         
-        assertTrue(lobbyService.getLobbies().equals(restLobbyList));
+        assertTrue(lobbyService.getLobbys().equals(restLobbyList));
     }
 
     @Test

@@ -2,7 +2,6 @@ package de.hsrm.mi.swt.rheinmainadventure.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -112,6 +111,4 @@ public class Benutzer {
     return "Benutzer [id=" + id + ", benutzername=" + benutzername
             + ", passwort=" + passwort + ", version=" + version + "]";
   }
-
-
 }

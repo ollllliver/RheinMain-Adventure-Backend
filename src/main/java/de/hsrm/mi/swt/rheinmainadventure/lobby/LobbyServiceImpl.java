@@ -1,6 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,7 +35,7 @@ public class LobbyServiceImpl implements LobbyService {
   /**
    * Liste aller Lobbyinstanzen.
    */
-  ArrayList<Lobby> lobbies = new ArrayList<Lobby>();
+  ArrayList<Lobby> lobbys = new ArrayList<Lobby>();
 
   /**
    * Generiert eine einmalige Lobby-ID aus dem Namen des Spielers, kombiniert mit
@@ -97,7 +98,7 @@ public class LobbyServiceImpl implements LobbyService {
     Lobby lobby = new Lobby(lobbyID, players, host);
 
     starteTimeout(lobby);
-    lobbies.add(lobby);
+    lobbys.add(lobby);
 
     return lobby;
   }
@@ -126,7 +127,7 @@ public class LobbyServiceImpl implements LobbyService {
         // wenn lobby leer ist wird sie geschlossen
         if (teilnehmer.size() == 1) {
           logger.info("Die Lobby ist leer und wird somit geschlossen!");
-          lobbies.remove(currLobby);
+          lobbys.remove(currLobby);
         }
         else{
           teilnehmer.remove(currSpieler);
@@ -151,7 +152,7 @@ public class LobbyServiceImpl implements LobbyService {
   }
 
   /**
-   * Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby
+   * Timeout Funktion für Lobbs die nach 10 Minuten Thread-Safe eine Lobby
    * schliesst
    * 
    * @param lobby Lobby dessen Timeout gestartet wird.
@@ -172,14 +173,14 @@ public class LobbyServiceImpl implements LobbyService {
           // Das sendet an alle, die in der Lobby eingeschrieben sind die message
           // LOBBYZEIT_ABGELAUFEN
 
-          lobbies.remove(lobby);
+          lobbys.remove(lobby);
 
         }
       }
 
     };
-    // timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
-    timer.schedule(task, 10 * 60 * 1000);
+    timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
+    //timer.schedule(task, 10 * 60 * 1000);
   }
 
   /**
@@ -215,12 +216,12 @@ public class LobbyServiceImpl implements LobbyService {
   }
 
   /**
-   * Gibt ALLE aktuellen Lobbies als Array zurueck.
+   * Gibt ALLE aktuellen Lobbs als Array zurueck.
    * 
    */
-  public ArrayList<Lobby> getLobbies() {
-    logger.info("Anzahl lobbies:" + this.lobbies.size());
-    return this.lobbies;
+  public ArrayList<Lobby> getLobbys() {
+    logger.info("Anzahl lobbys:" + this.lobbys.size());
+    return this.lobbys;
     // Bsp.:
     // [{"lobbyID":"4l1a7y16","playerList":[{"id":0,"name":"Player1"}],"host":{"id":0,"name":"Player1"},"istVoll":false,"istGestartet":false,"spielerlimit":0},
     // {"lobbyID":"1r4a4l08","playerList":[{"id":0,"name":"Player1"}],"host":{"id":0,"name":"Player1"},"istVoll":false,"istGestartet":false,"spielerlimit":0}],
@@ -236,7 +237,7 @@ public class LobbyServiceImpl implements LobbyService {
   public Lobby getLobbyById(String Id) {
     // Gibt die Lobby mit uebergebener ID zurueck. Wenn nicht vorhanden, dann return
     // 0.
-    for (Lobby currLobby : lobbies) {
+    for (Lobby currLobby : lobbys) {
       if (currLobby.getlobbyID().equals(Id)) {
         return currLobby;
       }
@@ -297,9 +298,9 @@ public class LobbyServiceImpl implements LobbyService {
    * @retun Gibt einene LobbyMessage mit dem ergebnis des beitretens zurueck
    */
   @Override
-  public LobbyMessage lobbieBeitretenZufaellig(String spielername) {
+  public LobbyMessage lobbyBeitretenZufaellig(String spielername) {
     Lobby tempLobby = null;
-    for (Lobby currLobby : lobbies) {
+    for (Lobby currLobby : lobbys) {
       if (!currLobby.getIstGestartet() && !currLobby.getIstVoll() && !currLobby.getIstPrivat()) {
         tempLobby = currLobby;
         break;
@@ -312,5 +313,4 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
   }
-
 }

@@ -19,7 +19,7 @@ public class Lobby {
      * Erstellt eine Lobby mit einer bestimmten ID
      * 
      * @param lobbyID        einmalige LobbyID für eine Lobby
-     * @param teilehmerliste leere Liste der teilnehmer
+     * @param teilnehmerliste leere Liste der teilnehmer
      * @param host           ein Spieler der der host der Lobby ist
      * 
      */
