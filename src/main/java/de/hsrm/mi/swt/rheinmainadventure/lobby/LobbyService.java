@@ -15,13 +15,13 @@ public interface LobbyService {
 
     public Lobby getLobbyById(String id);
 
-    public List<Lobby> getLobbies();
+    public List<Lobby> getLobbys();
 
     public LobbyMessage joinLobbybyId(String id, String benutzername);
 
     public LobbyMessage starteCountdown(String lobbyId);
 
-    public LobbyMessage lobbieBeitretenZufaellig(String username);
+    public LobbyMessage lobbyBeitretenZufaellig(String username);
 
     public LobbyMessage spielerVerlaesstLobby(String id, String spielerName);
 
