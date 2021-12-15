@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -23,11 +24,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -46,8 +49,24 @@ public class LobbyBeitreten {
     @Autowired
     private MockMvc mockmvc;
 
-    private final String ERSTER_SPIELER = "Chand";
+    private final String ERSTER_SPIELER = "Oliver";
     private final String ZWEITER_SPIELER = "Chand";
+
+    @Autowired
+    private IntBenutzerRepo benutzerrepo;
+
+    @BeforeEach
+    public void initUser() {
+        benutzerrepo.deleteAll();
+        final Benutzer u1 = new Benutzer();
+        u1.setBenutzername(ERSTER_SPIELER);
+        u1.setPasswort(ERSTER_SPIELER);
+        benutzerrepo.save(u1);
+        final Benutzer u2 = new Benutzer();
+        u2.setBenutzername(ZWEITER_SPIELER);
+        u2.setPasswort(ZWEITER_SPIELER);
+        benutzerrepo.save(u2);
+    }
 
     // ###############
     // Hilfsfunktionen
@@ -104,8 +123,7 @@ public class LobbyBeitreten {
 
         alteLobby.getTeilnehmerliste().add(new Spieler(ZWEITER_SPIELER));
 
-        assertTrue(!lm.getIstFehler());
-        assertTrue(lm.getTyp() == NachrichtenCode.NEUER_MITSPIELER);
+        assertTrue(lm.equals(new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, alteLobby.getlobbyID())));
         assertTrue(neueLobby.getClass() == Lobby.class);
         assertTrue(neueLobby.equals(alteLobby));
     }
@@ -115,31 +133,23 @@ public class LobbyBeitreten {
     // ####################################################
 
     @Test
-    @DisplayName("Die ausgewählte Lobby ist nicht mehr verfügbar.")
+    @DisplayName("Einer Lobby beitreten, die es nicht gibt.")
     public void UCD_Lobby_beitreten_1a1() throws Exception {
-        // TODO: TEST: Kommt in einem anderen Sprint. Lobbies werden noch nicht gelöscht.
-        // Test: Die ausgewählte Lobby ist nicht mehr verfügbar. 
-    }
-
-    @Test
-    @DisplayName("Einer Lobby, die es nie gab beitreten.")
-    public void UCD_Lobby_beitreten_1a2() throws Exception {
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         LobbyMessage lm = lobbyBeitretenREST(session, "lobbyIDgibtEsNicht123");
-        assertTrue(lm.getIstFehler());
-        assertTrue(lm.getTyp() == NachrichtenCode.BEITRETEN_FEHLGESCHLAGEN);
+        assertTrue(lm.equals(new LobbyMessage(NachrichtenCode.LOBBY_NICHT_GEFUNDEN, true)));
     }
 
     @Test
     @DisplayName("Spieler bekommt Beitrittslink von einem Mitspieler gesendet.")
     public void UCD_Lobby_beitreten_1b() throws Exception {
-        // TODO: TEST: Spieler bekommt Beitrittslink von einem Mitspieler gesendet. Das ist eher ein Frontendtest oder?
+        //Das ist eher ein Frontendtest.
     }
 
     @Test
     @DisplayName("Spieler wählt zufälliger Lobby beitreten aus.")
     public void UCD_Lobby_beitreten_1c() throws Exception {
-        // TODO: TEST: Spieler wählt zufälliger Lobby beitreten aus.
+        // TODO: TEST: Spieler wählt zufälliger Lobby beitreten aus. @Chand?
     }
 
     @Test
@@ -161,7 +171,7 @@ public class LobbyBeitreten {
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertTrue(lobbyNach1malBeitreten.equals(lobbyNach2malBeitreten));
         assertTrue(lm1.getIstFehler() == false);
-        assertTrue(lm1.getTyp() == NachrichtenCode.NEUER_MITSPIELER);
+        assertTrue(lm1.getTyp() == NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
         assertTrue(lm2.getIstFehler() == false);
         assertTrue(lm2.getTyp() == NachrichtenCode.SCHON_BEIGETRETEN);
     }
@@ -183,21 +193,30 @@ public class LobbyBeitreten {
 
         // also sollte neuer Spieler danach nicht in neuer Lobby sein aber in alter Lobby.
         assertTrue(lobbyService.getLobbyById(ersteLobby.getlobbyID()).getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
-        assertFalse(lobbyService.getLobbyById(ersteLobby.getlobbyID()).getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
+        assertFalse(lobbyService.getLobbyById(zweitelobby.getlobbyID()).getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
     }
 
     @Test
     @DisplayName("Einer Lobby, in der man schon als Host ist, per ID beitreten soll nichts aendern.")
     public void UCD_Lobby_beitreten_1d_3() throws Exception {
-        // // TODO: TEST: für eine spätere userstorry/ späterer sprint
-        // Spieler neueSpieler = new Spieler("Peter"); // So?
-        // // Login...
-        // Lobby lobbyInDerManIst = lobbyErstellenREST();
-        // // Lobby beitreten, ohne den Benutzer vorher zu wechseln, sollte nichts an der
-        // // Lobby aendern.
-        // Lobby neueLobby = lobbyBeitretenREST(lobbyInDerManIst.getlobbyID());
-        // // Alt soll wie neu sein.
-        // assertTrue(neueLobby.equals(lobbyInDerManIst));
+        // Mit zwei verschiedenen Benutzern einloggen
+        MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        
+        Lobby initLobby = lobbyErstellenREST(sessionOliver);
+        // ein mal beitreten:
+        LobbyMessage lm1 = lobbyBeitretenREST(sessionOliver, initLobby.getlobbyID());
+        Lobby lobbyNach1malBeitreten = lobbyService.getLobbyById(initLobby.getlobbyID());
+        // zweites mal beitreten:
+        LobbyMessage lm2 = lobbyBeitretenREST(sessionOliver, initLobby.getlobbyID());
+        Lobby lobbyNach2malBeitreten = lobbyService.getLobbyById(initLobby.getlobbyID());
+
+        
+        // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
+        assertTrue(lobbyNach1malBeitreten.equals(lobbyNach2malBeitreten));
+        assertTrue(lm1.getIstFehler() == false);
+        assertTrue(lm1.getTyp() == NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
+        assertTrue(lm2.getIstFehler() == false);
+        assertTrue(lm2.getTyp() == NachrichtenCode.SCHON_BEIGETRETEN);
     }
 
 }

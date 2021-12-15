@@ -64,9 +64,18 @@ public class LobbyRestController {
         return lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
 
+    /**
+     * 
+     * api/leave/{lobbyId} stoeßt beim lobbyservice das Verlassen an
+     * 
+     * @param lobbyId, die der SPieler verlassen will
+     * @param m        eingeloggter User
+     * @return LobbyMessage mit Nachrichtencode
+     */
+
     @DeleteMapping(value = "/leave/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m) {
-        logger.info("POST /api/lobby/" + lobbyId + "/leave/");
+        logger.info("DELETE /api/lobby/leave/" + lobbyId);
         logger.info("USER " + m.getAttribute("loggedinBenutzername").toString() + " will die Lobby verlassen");
         return lobbyservice.spielerVerlaesstLobby(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
@@ -83,7 +92,7 @@ public class LobbyRestController {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
         // zurueckgesendet wird die neu erstellte Lobbyinstanz, damit das Frontend auf
         // die Lobbyseite mit der im Backend erstellten LobbyID weiterleidten kann.
-        logger.info("POST /api/lobby/neu  Von : "+m.getAttribute("loggedinBenutzername").toString());
+        logger.info("POST /api/lobby/neu  Von : " + m.getAttribute("loggedinBenutzername").toString());
         Lobby lobby = lobbyservice.lobbyErstellen(m.getAttribute("loggedinBenutzername").toString());
         return lobby;
     }

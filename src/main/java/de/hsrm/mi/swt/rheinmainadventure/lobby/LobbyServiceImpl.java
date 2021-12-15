@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
+import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
 
 /**
  * Lobby Service für das verwalten aller Lobbys.
@@ -88,6 +90,7 @@ public class LobbyServiceImpl implements LobbyService {
     // Hier wird eine neue Lobby erstellt. Der Host ist der Benutzer aus dem
     // Sessionscope.
     Spieler host = new Spieler(spielerName);
+    host.setHost(true);
     ArrayList<Spieler> players = new ArrayList<Spieler>();
     // players.add(host);
     String lobbyID = generateLobbyID(spielerName);
@@ -99,27 +102,57 @@ public class LobbyServiceImpl implements LobbyService {
     return lobby;
   }
 
+  /**
+   * Funktion für verlassen der Lobby, entfernt spielernamen aus der
+   * ArrayList<Spieler>
+   * 
+   * @param id          lobby ID
+   * @param spielerName spieler der die lobby verlassen will
+   * @return LobbyMessage dass eine spieler die lobby verlassen hat
+   *
+   */
+
   @Override
   public LobbyMessage spielerVerlaesstLobby(String id, String spielerName) {
-    logger.info("HIER GEHTS REIN: " + id + spielerName);
+
     Lobby currLobby = getLobbyById(id);
     ArrayList<Spieler> teilnehmer = currLobby.getTeilnehmerliste();
 
+    // Spieler wird gesucht aus der aktuellenTeilnehmerList...
     for (int i = 0; i < teilnehmer.size(); i++) {
       Spieler currSpieler = teilnehmer.get(i);
       if (currSpieler.getName().equals(spielerName)) {
-        teilnehmer.remove(currSpieler);
+        // ... und entfernt
+        // wenn lobby leer ist wird sie geschlossen
+        if (teilnehmer.size() == 1) {
+          logger.info("Die Lobby ist leer und wird somit geschlossen!");
+          lobbies.remove(currLobby);
+        }
+        else{
+          teilnehmer.remove(currSpieler);
+          // wenn der spieler der Host war wird der Status weitergegeben
+          if (spielerName.equals(currLobby.getHost().getName())) {
+            logger.info("Der Host: " + spielerName + " verlaesst die Lobby");
+            Spieler neuerHost = teilnehmer.get(0);
+            logger.info("Der neue Host ist: " + neuerHost.getName());
+            neuerHost.setHost(true);
+            currLobby.setHost(neuerHost);
+          }
+        }
+
       }
       // TODO Else noch abdecken
     }
 
     broker.convertAndSend("/topic/lobby/" + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
+    broker.convertAndSend("/topic/lobby/" + id + "/chat", new ChatNachricht(NachrichtenTyp.LEAVE, "", spielerName));
     return new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false);
 
   }
 
-  /** 
-   * Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby schliesst
+  /**
+   * Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby
+   * schliesst
    * 
    * @param lobby Lobby dessen Timeout gestartet wird.
    */
@@ -145,20 +178,24 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    //timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
+    // timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
     timer.schedule(task, 10 * 60 * 1000);
   }
 
-  /**Startet den Countdown fuer den Spielstart einer Lobby - setzt die IstGestartet Variable
-   * nach 10 Sekunden auf true.
-   *@param lobbyId ID der Lobby dessen Countdown gestartet wird.
-   *@return gibt eine LobbyMessage zurueck die aussagt das der Countdown gestartet worden ist.
-   */ 
+  /**
+   * Startet den Countdown fuer den Spielstart einer Lobby - setzt die
+   * IstGestartet Variable nach 10 Sekunden auf true.
+   * 
+   * @param lobbyId ID der Lobby dessen Countdown gestartet wird.
+   * @return gibt eine LobbyMessage zurueck die aussagt das der Countdown
+   *         gestartet worden ist.
+   */
   @Override
   public LobbyMessage starteCountdown(String lobbyId) {
     Timer timer = new Timer();
 
-    broker.convertAndSend("/topic/lobby/" + lobbyId, new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false,"Sekunden=10"));
+    broker.convertAndSend("/topic/lobby/" + lobbyId,
+        new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10"));
 
     TimerTask task = new TimerTask() {
 
@@ -173,8 +210,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    timer.schedule(task, 10 * 1000); 
-    return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false,"Sekunden=10");  
+    timer.schedule(task, 10 * 1000);
+    return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10");
   }
 
   /**
@@ -221,10 +258,10 @@ public class LobbyServiceImpl implements LobbyService {
     // Eigentlich ohne Spieler. In der Lobby.nutzerHinzufuegen() Methode muss der
     // Spieler aus der SessionScope geholt werden
     logger.info(spielername + " will der Lobby " + Id + " joinen");
-    
+
     Lobby currLobby = getLobbyById(Id);
-    if(currLobby==null){
-      return new LobbyMessage(NachrichtenCode.BEITRETEN_FEHLGESCHLAGEN, true);
+    if (currLobby == null) {
+      return new LobbyMessage(NachrichtenCode.LOBBY_NICHT_GEFUNDEN, true);
     }
     // ueberpruefen, ob Spieler bereits in der Lobby ist
     if (!currLobby.getTeilnehmerliste().contains(new Spieler(spielername))) {
@@ -245,14 +282,17 @@ public class LobbyServiceImpl implements LobbyService {
          */
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
-        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID()));
-        return new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID());
+        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false, currLobby.getlobbyID()));
+        broker.convertAndSend("/topic/lobby/" + Id + "/chat", new ChatNachricht(NachrichtenTyp.JOIN, "", spielername));
+        return new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, currLobby.getlobbyID());
       }
     }
     return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false);
   }
 
-  /** Laesst einen Spieler einer zufaelligen freien Lobby beitreten
+  /**
+   * Laesst einen Spieler einer zufaelligen freien Lobby beitreten
+   * 
    * @param spielername Name des spielers der einer zufaelligen Lobby beitritt
    * @retun Gibt einene LobbyMessage mit dem ergebnis des beitretens zurueck
    */
