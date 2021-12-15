@@ -35,8 +35,8 @@ import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class LobbyVerlassen {
-    Logger logger = LoggerFactory.getLogger(LobbyVerlassen.class);
+class LobbyVerlassenTest {
+    Logger logger = LoggerFactory.getLogger(LobbyVerlassenTest.class);
 
     // 7.3.1 Use Case Diagramm Lobby verlassen
     // https://taiga.mi.hs-rm.de/project/weitz-2021swtpro03/wiki/733-use-case-diagramm-lobby-verlassen
@@ -122,7 +122,7 @@ public class LobbyVerlassen {
 
     @Test
     @DisplayName("Eine Lobby, in der man ist, per ID verlassen.")
-    public void UCD_Lobby_verlassen() throws Exception {
+    void UCD_Lobby_verlassen() throws Exception {
         // einloggen, lobby erstellen und beitreten:
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         Lobby lobby = lobbyErstellenREST(session1);
@@ -147,13 +147,13 @@ public class LobbyVerlassen {
 
     @Test
     @DisplayName("Als Lobbyhost einen Mitspieler aus seiner Lobby entfernen.")
-    public void UCD_Lobby_verlassen_1c2() throws Exception {
+    void UCD_Lobby_verlassen_1c2() throws Exception {
         // TODO: TEST: Als Lobbyhost einen Mitspieler aus seiner Lobby entfernen.
     }
 
     @Test
     @DisplayName("Als Lobbyhost Lobby verlassen.")
-    public void UCD_Lobby_verlassen_1c() throws Exception {
+    void UCD_Lobby_verlassen_1c() throws Exception {
         // TODO: TEST: Lobbyhost Rolle nach verlassen der Lobby "weitergeben".
         // MockHttpSession session = logIn("chap", "chap");
         // MockHttpSession session2 = logIn("raoul", "123");
@@ -166,27 +166,27 @@ public class LobbyVerlassen {
 
     @Test
     @DisplayName("Als Lobbyhost UND letzter Teilnehmer Lobby verlassen.")
-    public void UCD_Lobby_verlassen_1e() throws Exception {
+    void UCD_Lobby_verlassen_1e() throws Exception {
         // TODO: TEST: Lobby muss danach gelöscht werden.
     }
 
     @Test
     @DisplayName("Als NICHT Lobbyhost einen Mitspieler aus seiner Lobby entfernen (REST manipulation!).")
-    public void UCD_Lobby_verlassen_manipuliert_1() throws Exception {
+    void UCD_Lobby_verlassen_manipuliert_1() throws Exception {
         // TODO: TEST: Als NICHT Lobbyhost einen Mitspieler aus seiner Lobby entfernen
         // (REST manipulation!).
     }
 
     @Test
     @DisplayName("Als Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen (REST manipulation!).")
-    public void UCD_Lobby_verlassen_manipuliert_2() throws Exception {
+    void UCD_Lobby_verlassen_manipuliert_2() throws Exception {
         // TODO: TEST: Als Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen
         // (REST manipulation!).
     }
 
     @Test
     @DisplayName("Als NICHT Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen (REST manipulation!).")
-    public void UCD_Lobby_verlassen_manipuliert_3() throws Exception {
+    void UCD_Lobby_verlassen_manipuliert_3() throws Exception {
         // TODO: TEST: Als NICHT Lobbyhost einen Mitspieler aus einer fremden Lobby
         // entfernen (REST manipulation!).
     }

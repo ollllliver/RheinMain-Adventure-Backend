@@ -1,7 +1,6 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,7 +34,7 @@ public class LobbyServiceImpl implements LobbyService {
   /**
    * Liste aller Lobbyinstanzen.
    */
-  ArrayList<Lobby> lobbys = new ArrayList<Lobby>();
+  ArrayList<Lobby> lobbys = new ArrayList<>();
 
   /**
    * Generiert eine einmalige Lobby-ID aus dem Namen des Spielers, kombiniert mit
@@ -47,14 +46,16 @@ public class LobbyServiceImpl implements LobbyService {
   private String generateLobbyID(String benutzerName) {
     String lobbyID = "";
 
-    // Benutzername verschoben um eine Stelle
-    String verschobenerName = "";
-
+    // Codesmell war da! Besser mit Stringbinder:
+    StringBuilder bld = new StringBuilder();
     for (int i = 0; i < benutzerName.length(); i++) {
       char neuerChar = benutzerName.charAt(i);
       neuerChar += 1;
-      verschobenerName += neuerChar;
+      bld.append(neuerChar);
     }
+
+    // Benutzername verschoben um eine Stelle
+    String verschobenerName = bld.toString();
 
     // Hash-Wert aus aktueller Zeit
     String aktZeit = java.time.LocalTime.now().toString();
@@ -62,6 +63,7 @@ public class LobbyServiceImpl implements LobbyService {
 
     int zaehler = 0;
 
+    // TODO: lobbyID schmeißt  einen Codesmell in SonarCube
     // Kombination von Name und Zeit-Hashwert fuer Lobby-ID
     for (int i = 0; i < 10; i++) {
       if (i % 2 == 0) {
@@ -92,8 +94,7 @@ public class LobbyServiceImpl implements LobbyService {
     // Sessionscope.
     Spieler host = new Spieler(spielerName);
     host.setHost(true);
-    ArrayList<Spieler> players = new ArrayList<Spieler>();
-    // players.add(host);
+    ArrayList<Spieler> players = new ArrayList<>();
     String lobbyID = generateLobbyID(spielerName);
     Lobby lobby = new Lobby(lobbyID, players, host);
 
@@ -117,7 +118,7 @@ public class LobbyServiceImpl implements LobbyService {
   public LobbyMessage spielerVerlaesstLobby(String id, String spielerName) {
 
     Lobby currLobby = getLobbyById(id);
-    ArrayList<Spieler> teilnehmer = currLobby.getTeilnehmerliste();
+    ArrayList<Spieler> teilnehmer = new ArrayList<Spieler>(currLobby.getTeilnehmerliste());
 
     // Spieler wird gesucht aus der aktuellenTeilnehmerList...
     for (int i = 0; i < teilnehmer.size(); i++) {
@@ -133,9 +134,9 @@ public class LobbyServiceImpl implements LobbyService {
           teilnehmer.remove(currSpieler);
           // wenn der spieler der Host war wird der Status weitergegeben
           if (spielerName.equals(currLobby.getHost().getName())) {
-            logger.info("Der Host: " + spielerName + " verlaesst die Lobby");
+            logger.info(String.format("Der Host: %s verlaesst die Lobby",spielerName));
             Spieler neuerHost = teilnehmer.get(0);
-            logger.info("Der neue Host ist: " + neuerHost.getName());
+            logger.info(String.format("Der neue Host ist: %s", neuerHost.getName()));
             neuerHost.setHost(true);
             currLobby.setHost(neuerHost);
           }
@@ -144,9 +145,9 @@ public class LobbyServiceImpl implements LobbyService {
       }
       // TODO Else noch abdecken
     }
-
-    broker.convertAndSend("/topic/lobby/" + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
-    broker.convertAndSend("/topic/lobby/" + id + "/chat", new ChatNachricht(NachrichtenTyp.LEAVE, "", spielerName));
+    String topic = "/topic/lobby/";
+    broker.convertAndSend(topic + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
+    broker.convertAndSend(topic + id + "/chat", new ChatNachricht(NachrichtenTyp.LEAVE, "", spielerName));
     return new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false);
 
   }
@@ -220,7 +221,7 @@ public class LobbyServiceImpl implements LobbyService {
    * 
    */
   public ArrayList<Lobby> getLobbys() {
-    logger.info("Anzahl lobbys:" + this.lobbys.size());
+    logger.info(String.format("Anzahl lobbys: %s",  this.lobbys.size()));
     return this.lobbys;
     // Bsp.:
     // [{"lobbyID":"4l1a7y16","playerList":[{"id":0,"name":"Player1"}],"host":{"id":0,"name":"Player1"},"istVoll":false,"istGestartet":false,"spielerlimit":0},
@@ -231,14 +232,14 @@ public class LobbyServiceImpl implements LobbyService {
   /**
    * Gibt die eine Lobby mit der übergebenen id zurück.
    * 
-   * @param Id ist die Lobby ID der gewünschten Lobby
+   * @param id ist die Lobby ID der gewünschten Lobby
    * @return Lobby mit der mitgegebenen ID
    */
-  public Lobby getLobbyById(String Id) {
+  public Lobby getLobbyById(String id) {
     // Gibt die Lobby mit uebergebener ID zurueck. Wenn nicht vorhanden, dann return
     // 0.
     for (Lobby currLobby : lobbys) {
-      if (currLobby.getlobbyID().equals(Id)) {
+      if (currLobby.getlobbyID().equals(id)) {
         return currLobby;
       }
     }
@@ -249,18 +250,18 @@ public class LobbyServiceImpl implements LobbyService {
    * Fuegt den Sessionspieler der mitgegebenen Lobby (ID) ueber die
    * nutzerHinzufuegen() Funktion der Lobby Klasse hinzu.
    * 
-   * @param Id          mitgegebene Lobby-ID
+   * @param id          mitgegebene Lobby-ID
    * @param spielername Der mitgegebene Name des Spielers
    * @return Gibt eine LobbyMessage mit passendem NachrichtenCode, sowie
    *         Erfolgsstatus zurueck
    */
   @Override
-  public LobbyMessage joinLobbybyId(String Id, String spielername) {
+  public LobbyMessage joinLobbybyId(String id, String spielername) {
     // Eigentlich ohne Spieler. In der Lobby.nutzerHinzufuegen() Methode muss der
     // Spieler aus der SessionScope geholt werden
-    logger.info(spielername + " will der Lobby " + Id + " joinen");
+    logger.info("{} will der Lobby {} joinen", spielername, id);
 
-    Lobby currLobby = getLobbyById(Id);
+    Lobby currLobby = getLobbyById(id);
     if (currLobby == null) {
       return new LobbyMessage(NachrichtenCode.LOBBY_NICHT_GEFUNDEN, true);
     }
@@ -276,15 +277,10 @@ public class LobbyServiceImpl implements LobbyService {
         return new LobbyMessage(NachrichtenCode.LOBBY_VOLL, true);
       } else {
         Spieler spieler = new Spieler(spielername);
-        /*
-         * Legt benutzer Instanz an wenn man einen User mit dem aktuellen Session
-         * Benutzernamen findet. Benutzer tempNutzer =
-         * benutzerService.getBenutzerByUsername(username);
-         */
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
-        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false, currLobby.getlobbyID()));
-        broker.convertAndSend("/topic/lobby/" + Id + "/chat", new ChatNachricht(NachrichtenTyp.JOIN, "", spielername));
+        broker.convertAndSend("/topic/lobby/" + id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false, currLobby.getlobbyID()));
+        broker.convertAndSend("/topic/lobby/" + id + "/chat", new ChatNachricht(NachrichtenTyp.JOIN, "", spielername));
         return new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, currLobby.getlobbyID());
       }
     }
