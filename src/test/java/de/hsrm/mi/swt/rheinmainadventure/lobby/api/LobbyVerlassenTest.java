@@ -133,12 +133,14 @@ class LobbyVerlassenTest {
         MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
         lobbyBeitretenREST(session2, lobby.getlobbyID());
 
-        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
+        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste()
+                .contains(new Spieler(ZWEITER_SPIELER)));
 
         // beigetretene Lobby verlassen
         lobbyVerlassenREST(session2, lobby.getlobbyID());
 
-        assertFalse(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
+        assertFalse(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste()
+                .contains(new Spieler(ZWEITER_SPIELER)));
     }
 
     // ####################################################
@@ -153,21 +155,46 @@ class LobbyVerlassenTest {
 
     @Test
     @DisplayName("Als Lobbyhost Lobby verlassen.")
-    void UCD_Lobby_verlassen_1c() throws Exception {
-        // TODO: TEST: Lobbyhost Rolle nach verlassen der Lobby "weitergeben".
-        // MockHttpSession session = logIn("chap", "chap");
-        // MockHttpSession session2 = logIn("raoul", "123");
-        // Lobby lobby = lobbyErstellenREST(session);
-        // lobbyBeitretenREST(session2, lobby.getlobbyID());
+    public void UCD_Lobby_verlassen_1c() throws Exception {
+        // einloggen, lobby erstellen und beitreten:
+        MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        Lobby lobby = lobbyErstellenREST(session1);
+        lobbyBeitretenREST(session1, lobby.getlobbyID());
+        lobby = lobbyService.getLobbyById(lobby.getlobbyID());
 
-        // logger.info(lobby.getTeilnehmerliste().toString());
+        // einloggen:
+        MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
+        lobbyBeitretenREST(session2, lobby.getlobbyID());
+
+        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size() == 2);
+        // Host ist ERSTER_SPIELER
+        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getHost().getName().equals(ERSTER_SPIELER));
+
+        // Host verlaesst
+        lobbyVerlassenREST(session1, lobby.getlobbyID());
+
+        // Host wird veitergegeben zu ZWEITER_SPIELER
+        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getHost().getName().equals(ZWEITER_SPIELER));
 
     }
 
     @Test
     @DisplayName("Als Lobbyhost UND letzter Teilnehmer Lobby verlassen.")
-    void UCD_Lobby_verlassen_1e() throws Exception {
-        // TODO: TEST: Lobby muss danach gelöscht werden.
+    public void UCD_Lobby_verlassen_1e() throws Exception {
+
+        // einloggen, lobby erstellen und beitreten:
+        MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        Lobby lobby = lobbyErstellenREST(session1);
+        lobbyBeitretenREST(session1, lobby.getlobbyID());
+        lobby = lobbyService.getLobbyById(lobby.getlobbyID());
+
+        assertTrue(lobbyService.getLobbys().size() == 1);
+
+        // Host verlaesst
+        lobbyVerlassenREST(session1, lobby.getlobbyID());
+
+        assertTrue(lobbyService.getLobbys().size() == 0);
+
     }
 
     @Test
