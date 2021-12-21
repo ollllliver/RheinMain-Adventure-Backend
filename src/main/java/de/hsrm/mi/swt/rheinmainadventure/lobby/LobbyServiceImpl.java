@@ -63,7 +63,7 @@ public class LobbyServiceImpl implements LobbyService {
 
     int zaehler = 0;
 
-    // TODO: lobbyID schmeißt  einen Codesmell in SonarCube
+    // TODO: lobbyID schmeißt einen Codesmell in SonarCube
     // Kombination von Name und Zeit-Hashwert fuer Lobby-ID
     for (int i = 0; i < 10; i++) {
       if (i % 2 == 0) {
@@ -129,13 +129,15 @@ public class LobbyServiceImpl implements LobbyService {
         if (teilnehmer.size() == 1) {
           logger.info("Die Lobby ist leer und wird somit geschlossen!");
           lobbys.remove(currLobby);
-        }
-        else{
-          teilnehmer.remove(currSpieler);
+        } else {
+          currLobby.getTeilnehmerliste().remove(currSpieler);
           // wenn der spieler der Host war wird der Status weitergegeben
           if (spielerName.equals(currLobby.getHost().getName())) {
-            logger.info(String.format("Der Host: %s verlaesst die Lobby",spielerName));
-            Spieler neuerHost = teilnehmer.get(0);
+            logger.info(String.format("Der Host: %s verlaesst die Lobby", spielerName));
+            int size = currLobby.getTeilnehmerliste().size();
+            double index = Math.floor(Math.random() * size);
+
+            Spieler neuerHost = teilnehmer.get((int) index);
             logger.info(String.format("Der neue Host ist: %s", neuerHost.getName()));
             neuerHost.setHost(true);
             currLobby.setHost(neuerHost);
@@ -180,8 +182,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
-    //timer.schedule(task, 10 * 60 * 1000);
+    timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
+    // timer.schedule(task, 10 * 60 * 1000);
   }
 
   /**
@@ -221,7 +223,7 @@ public class LobbyServiceImpl implements LobbyService {
    * 
    */
   public ArrayList<Lobby> getLobbys() {
-    logger.info(String.format("Anzahl lobbys: %s",  this.lobbys.size()));
+    logger.info(String.format("Anzahl lobbys: %s", this.lobbys.size()));
     return this.lobbys;
     // Bsp.:
     // [{"lobbyID":"4l1a7y16","playerList":[{"id":0,"name":"Player1"}],"host":{"id":0,"name":"Player1"},"istVoll":false,"istGestartet":false,"spielerlimit":0},
@@ -279,7 +281,8 @@ public class LobbyServiceImpl implements LobbyService {
         Spieler spieler = new Spieler(spielername);
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
-        broker.convertAndSend("/topic/lobby/" + id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false, currLobby.getlobbyID()));
+        broker.convertAndSend("/topic/lobby/" + id,
+            new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false, currLobby.getlobbyID()));
         broker.convertAndSend("/topic/lobby/" + id + "/chat", new ChatNachricht(NachrichtenTyp.JOIN, "", spielername));
         return new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, currLobby.getlobbyID());
       }
