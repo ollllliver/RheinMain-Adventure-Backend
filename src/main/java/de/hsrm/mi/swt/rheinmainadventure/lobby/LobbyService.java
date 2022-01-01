@@ -2,6 +2,7 @@ package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.List;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 
 /**
@@ -25,4 +26,9 @@ public interface LobbyService {
 
     public LobbyMessage spielerVerlaesstLobby(String id, String spielerName);
 
+    public LobbyMessage setSpielerlimit(String id, int spielerlimit);
+
+    public LobbyMessage setPrivacy(String id, Boolean istPrivat);
+
+    public LobbyMessage setHost(String id, Benutzer host);
 }

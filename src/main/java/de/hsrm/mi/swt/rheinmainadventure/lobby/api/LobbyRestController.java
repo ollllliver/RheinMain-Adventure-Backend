@@ -9,12 +9,15 @@ import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
@@ -121,4 +124,19 @@ public class LobbyRestController {
         return lobbyservice.starteCountdown(lobbyId);
     }
 
+    @PatchMapping("/{lobbyId}/spielerlimit")
+    public LobbyMessage patchSpielerlimit(@PathVariable String lobbyId, @RequestBody int spielerlimit ){
+        logger.info(Integer.toString(spielerlimit));
+        return lobbyservice.setSpielerlimit(lobbyId, spielerlimit);
+    }
+
+    @PatchMapping("/{lobbyId}/privacy")
+    public LobbyMessage patchPrivacy(@PathVariable String lobbyId, @RequestBody Boolean istPrivat ){
+        return lobbyservice.setPrivacy(lobbyId, istPrivat);
+    }
+
+    @PatchMapping("/{lobbyId}/host")
+    public LobbyMessage patchHost(@PathVariable String lobbyId, @RequestBody Benutzer host ){
+        return lobbyservice.setHost(lobbyId, host);
+    }
 }

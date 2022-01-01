@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
@@ -182,8 +183,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
-    // timer.schedule(task, 10 * 60 * 1000);
+    // timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
+    timer.schedule(task, 10 * 60 * 1000);
   }
 
   /**
@@ -311,5 +312,23 @@ public class LobbyServiceImpl implements LobbyService {
       return new LobbyMessage(NachrichtenCode.KEINE_LOBBY_FREI, true);
     }
 
+  }
+
+  @Override
+  public LobbyMessage setSpielerlimit(String id, int spielerlimit) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public LobbyMessage setPrivacy(String id, Boolean istPrivat) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public LobbyMessage setHost(String id, Benutzer host) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }
