@@ -112,7 +112,6 @@ class LobbyVerlassenTest {
                 .perform(post("/api/benutzer/login").session(session).content(TESTLOGINJSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful()).andReturn().toString());
-        logger.info("msg");
         return session;
     }
 

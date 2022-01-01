@@ -102,7 +102,6 @@ class LobbyBeitretenTest {
                         .content(TESTLOGINJSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful()).andReturn().toString());
-        logger.info("msg");
         return session;
     }
 
