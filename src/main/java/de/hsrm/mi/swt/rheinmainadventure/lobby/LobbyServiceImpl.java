@@ -182,8 +182,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
-    // timer.schedule(task, 10 * 60 * 1000);
+    // timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
+    timer.schedule(task, 10 * 60 * 1000);
   }
 
   /**
@@ -323,7 +323,9 @@ public class LobbyServiceImpl implements LobbyService {
   public LobbyMessage setSpielerlimit(String id, int spielerlimit, String spielerName) {
     if (getLobbyById(id).getHost().getName()==spielerName){
       getLobbyById(id).setSpielerlimit(spielerlimit);
-      return new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+      LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+      broker.convertAndSend("/topic/lobby/" + id, res);
+      return res;
     }
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
@@ -332,7 +334,9 @@ public class LobbyServiceImpl implements LobbyService {
   public LobbyMessage setPrivacy(String id, Boolean istPrivat, String spielerName) {
     if (getLobbyById(id).getHost().getName()==spielerName){
       getLobbyById(id).setIstPrivat(istPrivat);
-      return new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+      LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+      broker.convertAndSend("/topic/lobby/" + id, res);
+      return res;
     }
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
@@ -343,7 +347,9 @@ public class LobbyServiceImpl implements LobbyService {
     host = getLobbyById(id).getTeilnehmerliste().get(getLobbyById(id).getTeilnehmerliste().indexOf(host));
     if (getLobbyById(id).getHost().getName()==spielerName){
       getLobbyById(id).setHost(host);
-      return new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+      LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+      broker.convertAndSend("/topic/lobby/" + id, res);
+      return res;
     }
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
