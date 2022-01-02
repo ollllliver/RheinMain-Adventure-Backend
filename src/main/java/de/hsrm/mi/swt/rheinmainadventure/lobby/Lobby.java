@@ -128,6 +128,10 @@ public class Lobby {
     }
 
     public void setHost(Spieler host) {
+        if (getHost() != null){
+            getHost().setHost(false);
+        }
+        host.setHost(true);
         this.host = host;
     }
 

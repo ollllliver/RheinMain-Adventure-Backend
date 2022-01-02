@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 /**
  * Rest Controller für /abi/lobby/*
@@ -125,18 +125,17 @@ public class LobbyRestController {
     }
 
     @PatchMapping("/{lobbyId}/spielerlimit")
-    public LobbyMessage patchSpielerlimit(@PathVariable String lobbyId, @RequestBody int spielerlimit ){
-        logger.info(Integer.toString(spielerlimit));
-        return lobbyservice.setSpielerlimit(lobbyId, spielerlimit);
+    public LobbyMessage patchSpielerlimit(@PathVariable String lobbyId, @RequestBody int spielerlimit , Model m){
+        return lobbyservice.setSpielerlimit(lobbyId, spielerlimit, m.getAttribute("loggedinBenutzername").toString());
     }
 
     @PatchMapping("/{lobbyId}/privacy")
-    public LobbyMessage patchPrivacy(@PathVariable String lobbyId, @RequestBody Boolean istPrivat ){
-        return lobbyservice.setPrivacy(lobbyId, istPrivat);
+    public LobbyMessage patchPrivacy(@PathVariable String lobbyId, @RequestBody Boolean istPrivat ,Model m){
+        return lobbyservice.setPrivacy(lobbyId, istPrivat, m.getAttribute("loggedinBenutzername").toString());
     }
 
     @PatchMapping("/{lobbyId}/host")
-    public LobbyMessage patchHost(@PathVariable String lobbyId, @RequestBody Benutzer host ){
-        return lobbyservice.setHost(lobbyId, host);
+    public LobbyMessage patchHost(@PathVariable String lobbyId, @RequestBody Spieler host ,Model m){
+        return lobbyservice.setHost(lobbyId, host, m.getAttribute("loggedinBenutzername").toString());
     }
 }

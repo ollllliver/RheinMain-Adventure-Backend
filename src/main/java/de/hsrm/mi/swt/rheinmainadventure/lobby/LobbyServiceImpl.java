@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
@@ -183,8 +182,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    // timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
-    timer.schedule(task, 10 * 60 * 1000);
+    timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
+    // timer.schedule(task, 10 * 60 * 1000);
   }
 
   /**
@@ -279,7 +278,13 @@ public class LobbyServiceImpl implements LobbyService {
       } else if (currLobby.getIstVoll()) {
         return new LobbyMessage(NachrichtenCode.LOBBY_VOLL, true);
       } else {
-        Spieler spieler = new Spieler(spielername);
+        Spieler spieler;
+        if (currLobby.getHost().getName().equals(spielername)){
+          spieler = currLobby.getHost();
+        }
+        else{
+          spieler = new Spieler(spielername);
+        }
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
         broker.convertAndSend("/topic/lobby/" + id,
@@ -315,20 +320,31 @@ public class LobbyServiceImpl implements LobbyService {
   }
 
   @Override
-  public LobbyMessage setSpielerlimit(String id, int spielerlimit) {
-    // TODO Auto-generated method stub
-    return null;
+  public LobbyMessage setSpielerlimit(String id, int spielerlimit, String spielerName) {
+    if (getLobbyById(id).getHost().getName()==spielerName){
+      getLobbyById(id).setSpielerlimit(spielerlimit);
+      return new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+    }
+    return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
 
   @Override
-  public LobbyMessage setPrivacy(String id, Boolean istPrivat) {
-    // TODO Auto-generated method stub
-    return null;
+  public LobbyMessage setPrivacy(String id, Boolean istPrivat, String spielerName) {
+    if (getLobbyById(id).getHost().getName()==spielerName){
+      getLobbyById(id).setIstPrivat(istPrivat);
+      return new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+    }
+    return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
 
   @Override
-  public LobbyMessage setHost(String id, Benutzer host) {
-    // TODO Auto-generated method stub
-    return null;
+  public LobbyMessage setHost(String id, Spieler host, String spielerName) {
+    // Da host ja nicht wirklich das Objekt ist, da in der Teilnehmerliste ist, müssen wir es erst mit dem gemeinten Objekt ersetzten
+    host = getLobbyById(id).getTeilnehmerliste().get(getLobbyById(id).getTeilnehmerliste().indexOf(host));
+    if (getLobbyById(id).getHost().getName()==spielerName){
+      getLobbyById(id).setHost(host);
+      return new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+    }
+    return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
 }
