@@ -101,6 +101,7 @@ public class LobbyServiceImpl implements LobbyService {
     starteTimeout(lobby);
     lobbys.add(lobby);
 
+    broker.convertAndSend("/topic/lobby/uebersicht", new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false));
     return lobby;
   }
 
@@ -129,6 +130,7 @@ public class LobbyServiceImpl implements LobbyService {
         if (teilnehmer.size() == 1) {
           logger.info("Die Lobby ist leer und wird somit geschlossen!");
           lobbys.remove(currLobby);
+          broker.convertAndSend("/topic/lobby/uebersicht", new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
         } else {
           currLobby.getTeilnehmerliste().remove(currSpieler);
           // wenn der spieler der Host war wird der Status weitergegeben
@@ -177,6 +179,7 @@ public class LobbyServiceImpl implements LobbyService {
           // LOBBYZEIT_ABGELAUFEN
 
           lobbys.remove(lobby);
+          broker.convertAndSend("/topic/lobby/uebersicht", new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
 
         }
       }
