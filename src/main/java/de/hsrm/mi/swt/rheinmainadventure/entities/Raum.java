@@ -5,6 +5,10 @@ import net.minidev.json.annotate.JsonIgnore;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * Ein einzelner Raum in einem Level.
+ * Ein Raum enthält Mobiliar und kommt an einer bestimmten Stelle im Level dran. Räume stehen für sich.
+ */
 @Entity
 public class Raum {
 

@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class RaumMobiliar {
 
     @Id
-    private long id;
+    private long raumMobiliarId;
 
     @ManyToOne
     @JoinColumn(name = "raum_id")
@@ -28,13 +28,12 @@ public class RaumMobiliar {
     private int positionY;
 
 
-
-    public long getId() {
-        return id;
+    public long getRaumMobiliarId() {
+        return raumMobiliarId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setRaumMobiliarId(long id) {
+        this.raumMobiliarId = id;
     }
 
     public Raum getRaum() {

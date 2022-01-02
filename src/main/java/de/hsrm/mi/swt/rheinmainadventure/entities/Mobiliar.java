@@ -5,6 +5,11 @@ import net.minidev.json.annotate.JsonIgnore;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * Mobiliar sind in Räumen platzierbare Objekte.
+ * Die Mobiliar-Klasse enthält neben der URI für das tatsächliche 3D-Modell im gtlf-Format
+ * auch noch den Klarnamen für das Mobiliar.
+ */
 @Entity
 public class Mobiliar {
 
@@ -18,7 +23,7 @@ public class Mobiliar {
     // TODO: Später anpassen, wenn Task 32 gemacht wird
     // Feedback von Tim, Julian und/oder Hans einholen
     @Column(nullable = false)
-    private String modell;
+    private String modellURI;
 
     @JsonIgnore
     @OneToMany(mappedBy = "mobiliar")
@@ -32,13 +37,13 @@ public class Mobiliar {
         Mobiliar mobiliar = (Mobiliar) o;
 
         if (!getName().equals(mobiliar.getName())) return false;
-        return getModell().equals(mobiliar.getModell());
+        return getModellURI().equals(mobiliar.getModellURI());
     }
 
     @Override
     public int hashCode() {
         int result = getName().hashCode();
-        result = 31 * result + getModell().hashCode();
+        result = 31 * result + getModellURI().hashCode();
         return result;
     }
 
@@ -58,12 +63,12 @@ public class Mobiliar {
         this.name = name;
     }
 
-    public String getModell() {
-        return modell;
+    public String getModellURI() {
+        return modellURI;
     }
 
-    public void setModell(String modell) {
-        this.modell = modell;
+    public void setModellURI(String modell) {
+        this.modellURI = modell;
     }
 
     public Set<RaumMobiliar> getRaumMobiliar() {

@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * Ein Level, das von Benutzern gespielt werden kann.
+ * Die Level-Klasse enthält, neben den einzelnen Räumen des Levels, Meta-Informationen zum Spielablauf und wer es erstellt hat.
+ */
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Level {
@@ -26,19 +30,32 @@ public class Level {
     Set<Raum> raeume;
 
     @ManyToOne
+    @JoinColumn(name = "benutzer_id")
     private Benutzer ersteller;
 
     @JsonIgnore
     @Version
     private Long version;
+
+    public Level(Long levelId, String name, int minSpieler, int maxSpieler, Benutzer ersteller) {
+        this.levelId = levelId;
+        this.name = name;
+        this.minSpieler = minSpieler;
+        this.maxSpieler = maxSpieler;
+        this.ersteller = ersteller;
+    }
+
+    public Level() {
+    }
+
     @Override
     public String toString() {
         return "Level{" + "levelId=" + levelId +
-            ", name='" + name + '\'' +
-            ", minSpieler=" + minSpieler +
-            ", maxSpieler=" + maxSpieler +
-            ", version=" + version +
-            '}';
+                ", name='" + name + '\'' +
+                ", minSpieler=" + minSpieler +
+                ", maxSpieler=" + maxSpieler +
+                ", version=" + version +
+                '}';
     }
 
     @Override

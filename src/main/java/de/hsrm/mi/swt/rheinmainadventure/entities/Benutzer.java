@@ -5,19 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Benutzer-Entity für das Benutzer-Repository
  */
 @Entity
-@Table(name = "benutzer")
 public class Benutzer {
 
     //automatisch generierte ID
     @Id
     @GeneratedValue
-    private Long id;
+    private Long benutzerId;
 
     //Spalte Loginname im Repository
     @Column(nullable = false, unique = true)
@@ -29,12 +28,21 @@ public class Benutzer {
 
     @OneToMany(mappedBy = "ersteller")
     @JsonIgnore
-    private Set<Level> erstellteLevel;
+    private List<Level> erstellteLevel;
 
     //automatisch generierte Versionsnummer
     @Version
     @JsonIgnore
     private Long version;
+
+    public Benutzer(Long benutzerId, String benutzername, String passwort) {
+        this.benutzerId = benutzerId;
+        this.benutzername = benutzername;
+        this.passwort = passwort;
+    }
+
+    public Benutzer() {
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -49,10 +57,10 @@ public class Benutzer {
     @Override
     public String toString() {
         return "Benutzer{" +
-            "id=" + id +
-            ", benutzername='" + benutzername + '\'' +
-            ", passwort='" + passwort + '\'' +
-            '}';
+                "benutzerId=" + benutzerId +
+                ", benutzername='" + benutzername + '\'' +
+                ", passwort='" + passwort + '\'' +
+                '}';
     }
 
     @Override
@@ -60,12 +68,12 @@ public class Benutzer {
         return getBenutzername().hashCode();
     }
 
-    public Long getId() {
-        return id;
+    public Long getBenutzerId() {
+        return benutzerId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setBenutzerId(Long benutzerId) {
+        this.benutzerId = benutzerId;
     }
 
     public String getBenutzername() {
