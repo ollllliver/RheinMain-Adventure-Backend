@@ -1,6 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -253,18 +254,32 @@ class LobbyRestControllerTest {
         // session1 ist host
 
         ObjectNode json = JsonNodeFactory.instance.objectNode();
-        json.put("benutzername", ZWEITER_SPIELER);
-        json.put("passwort", ZWEITER_SPIELER);
+        json.put("istHost", false);
+        json.put("name", ZWEITER_SPIELER);
         String ZWEITER_SPIELER_JSON = json.toString();
 
+        // aktuelle Lobby holen 
         lobby = lobbyService.getLobbyById(lobby.getlobbyID());
         List<Spieler> teilnehmer = lobby.getTeilnehmerliste();
-        teilnehmer.remove(lobby.getHost());
-        Spieler nichtHost = teilnehmer.get(0);
+        Spieler nichtHost = teilnehmer.get(1);
         Spieler host = lobby.getHost();
+
+        // vorher host isHost true und nichtHost isHost false
+        assertTrue(host.isHost());
+        assertFalse(nichtHost.isHost());
 
         assertEquals(lobby.getHost(),host);
         mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/host").session(session1).content(ZWEITER_SPIELER_JSON).contentType("application/json")).andReturn();
-        assertEquals(lobby.getHost(), nichtHost);
+        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getHost(), nichtHost);
+
+        // aktuelle Lobby holen 
+        lobby = lobbyService.getLobbyById(lobby.getlobbyID());
+        teilnehmer = lobby.getTeilnehmerliste();
+        nichtHost = teilnehmer.get(1);
+        host = lobby.getHost();
+
+        // nachher nichtHost isHost true und host isHost false
+        assertTrue(nichtHost.isHost());
+        assertFalse(host.isHost());
     }
 }
