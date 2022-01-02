@@ -262,7 +262,7 @@ class LobbyRestControllerTest {
         lobby = lobbyService.getLobbyById(lobby.getlobbyID());
         List<Spieler> teilnehmer = lobby.getTeilnehmerliste();
         Spieler nichtHost = teilnehmer.get(1);
-        Spieler host = lobby.getHost();
+        Spieler host = teilnehmer.get(0);
 
         // vorher host isHost true und nichtHost isHost false
         assertTrue(host.isHost());
@@ -276,10 +276,31 @@ class LobbyRestControllerTest {
         lobby = lobbyService.getLobbyById(lobby.getlobbyID());
         teilnehmer = lobby.getTeilnehmerliste();
         nichtHost = teilnehmer.get(1);
-        host = lobby.getHost();
+        host = teilnehmer.get(0);
 
         // nachher nichtHost isHost true und host isHost false
         assertTrue(nichtHost.isHost());
         assertFalse(host.isHost());
+
+        // Jetzt noch mal mit der selben session versuchen, den Host wieder zurück zu wechslen
+        // Das sollte nicht gehen, also es soll sich nichts ändern, da das nur der Host machen darf 
+
+        json = JsonNodeFactory.instance.objectNode();
+        json.put("istHost", false);
+        json.put("name", ERSTER_SPIELER);
+        ZWEITER_SPIELER_JSON = json.toString();
+
+        mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/host").session(session1).content(ZWEITER_SPIELER_JSON).contentType("application/json")).andReturn();
+        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getHost(), nichtHost);
+        // aktuelle Lobby holen 
+        lobby = lobbyService.getLobbyById(lobby.getlobbyID());
+        teilnehmer = lobby.getTeilnehmerliste();
+        nichtHost = teilnehmer.get(1);
+        host = teilnehmer.get(0);
+
+        // nachher nichtHost isHost true und host isHost false
+        assertTrue(nichtHost.isHost());
+        assertFalse(host.isHost());
+
     }
 }
