@@ -2,8 +2,8 @@ package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
-import de.hsrm.mi.swt.rheinmainadventure.spiel.Karte;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
 
 public class Lobby {
@@ -14,7 +14,7 @@ public class Lobby {
     private boolean istGestartet;
     private boolean istPrivat;
     private int spielerlimit;
-    private Karte gewaehlteKarte;
+    private Level gewaehlteKarte;
     private Spiel spiel;
 
     // Aktuellen LobbyService reinreichen lassen da ich nicht weiß wie man bei einer
@@ -158,11 +158,11 @@ public class Lobby {
         this.spiel = spiel;
     }
 
-    public Karte getGewaehlteKarte() {
+    public Level getGewaehlteKarte() {
         return gewaehlteKarte;
     }
 
-    public void setGewaehlteKarte(Karte gewaehlteKarte) {
+    public void setGewaehlteKarte(Level gewaehlteKarte) {
         this.gewaehlteKarte = gewaehlteKarte;
     }
     
