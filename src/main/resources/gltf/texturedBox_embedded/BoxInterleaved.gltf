@@ -1,4 +1,4 @@
-{
+{BoxInterleaved
     "asset": {
         "generator": "COLLADA2GLTF",
         "version": "2.0"
@@ -45,8 +45,7 @@
                 {
                     "attributes": {
                         "NORMAL": 1,
-                        "POSITION": 2,
-                        "TEXCOORD_0": 3
+                        "POSITION": 2
                     },
                     "indices": 0,
                     "mode": 4,
@@ -89,7 +88,7 @@
         },
         {
             "bufferView": 1,
-            "byteOffset": 288,
+            "byteOffset": 12,
             "componentType": 5126,
             "count": 24,
             "max": [
@@ -103,57 +102,24 @@
                 -0.5
             ],
             "type": "VEC3"
-        },
-        {
-            "bufferView": 2,
-            "byteOffset": 0,
-            "componentType": 5126,
-            "count": 24,
-            "max": [
-                6.0,
-                1.0
-            ],
-            "min": [
-                0.0,
-                0.0
-            ],
-            "type": "VEC2"
         }
     ],
     "materials": [
         {
             "pbrMetallicRoughness": {
-                "baseColorTexture": {
-                    "index": 0
-                },
-                "metallicFactor": 0.0
-            },
-            "name": "Texture"
-        }
-    ],
-    "textures": [
-        {
-            "sampler": 0,
-            "source": 0
-        }
-    ],
-    "images": [
-        {
-            "uri": "CesiumLogoFlat.png"
-        }
-    ],
-    "samplers": [
-        {
-            "magFilter": 9729,
-            "minFilter": 9986,
-            "wrapS": 10497,
-            "wrapT": 10497
+                "baseColorFactor": [
+                    0.800000011920929,
+                    0.0,
+                    0.0,
+                    1.0
+                ]
+            }
         }
     ],
     "bufferViews": [
         {
             "buffer": 0,
-            "byteOffset": 768,
+            "byteOffset": 576,
             "byteLength": 72,
             "target": 34963
         },
@@ -161,21 +127,14 @@
             "buffer": 0,
             "byteOffset": 0,
             "byteLength": 576,
-            "byteStride": 12,
-            "target": 34962
-        },
-        {
-            "buffer": 0,
-            "byteOffset": 576,
-            "byteLength": 192,
-            "byteStride": 8,
+            "byteStride": 24,
             "target": 34962
         }
     ],
     "buffers": [
         {
-            "byteLength": 840,
-            "uri": "BoxTextured0.bin"
+            "byteLength": 648,
+            "uri": "data:application/octet-stream;base64,AAAAAAAAAAAAAIA/AAAAvwAAAL8AAAA/AAAAAAAAAAAAAIA/AAAAPwAAAL8AAAA/AAAAAAAAAAAAAIA/AAAAvwAAAD8AAAA/AAAAAAAAAAAAAIA/AAAAPwAAAD8AAAA/AAAAAAAAgL8AAAAAAAAAPwAAAL8AAAA/AAAAAAAAgL8AAAAAAAAAvwAAAL8AAAA/AAAAAAAAgL8AAAAAAAAAPwAAAL8AAAC/AAAAAAAAgL8AAAAAAAAAvwAAAL8AAAC/AACAPwAAAAAAAAAAAAAAPwAAAD8AAAA/AACAPwAAAAAAAAAAAAAAPwAAAL8AAAA/AACAPwAAAAAAAAAAAAAAPwAAAD8AAAC/AACAPwAAAAAAAAAAAAAAPwAAAL8AAAC/AAAAAAAAgD8AAAAAAAAAvwAAAD8AAAA/AAAAAAAAgD8AAAAAAAAAPwAAAD8AAAA/AAAAAAAAgD8AAAAAAAAAvwAAAD8AAAC/AAAAAAAAgD8AAAAAAAAAPwAAAD8AAAC/AACAvwAAAAAAAAAAAAAAvwAAAL8AAAA/AACAvwAAAAAAAAAAAAAAvwAAAD8AAAA/AACAvwAAAAAAAAAAAAAAvwAAAL8AAAC/AACAvwAAAAAAAAAAAAAAvwAAAD8AAAC/AAAAAAAAAAAAAIC/AAAAvwAAAL8AAAC/AAAAAAAAAAAAAIC/AAAAvwAAAD8AAAC/AAAAAAAAAAAAAIC/AAAAPwAAAL8AAAC/AAAAAAAAAAAAAIC/AAAAPwAAAD8AAAC/AAABAAIAAwACAAEABAAFAAYABwAGAAUACAAJAAoACwAKAAkADAANAA4ADwAOAA0AEAARABIAEwASABEAFAAVABYAFwAWABUA"
         }
     ]
 }

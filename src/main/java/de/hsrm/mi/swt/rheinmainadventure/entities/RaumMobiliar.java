@@ -1,5 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.entities;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.mobiliar.Mobiliar;
+
 import javax.persistence.*;
 
 /**

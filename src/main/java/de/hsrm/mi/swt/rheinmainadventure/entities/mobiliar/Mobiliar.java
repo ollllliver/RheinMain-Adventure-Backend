@@ -1,5 +1,6 @@
-package de.hsrm.mi.swt.rheinmainadventure.entities;
+package de.hsrm.mi.swt.rheinmainadventure.entities.mobiliar;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
 import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import java.util.Set;
  * auch noch den Klarnamen für das Mobiliar.
  */
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Mobiliar {
 
     @Id
@@ -20,8 +22,6 @@ public class Mobiliar {
     @Column(nullable = false)
     private String name;
 
-    // TODO: Später anpassen, wenn Task 32 gemacht wird
-    // Feedback von Tim, Julian und/oder Hans einholen
     @Column(nullable = false)
     private String modellURI;
 

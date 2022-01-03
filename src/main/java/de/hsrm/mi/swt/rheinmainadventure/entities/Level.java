@@ -3,10 +3,7 @@ package de.hsrm.mi.swt.rheinmainadventure.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import de.hsrm.mi.swt.rheinmainadventure.model.Position;
-
 import javax.persistence.*;
-
 import java.util.Set;
 
 /**
@@ -29,9 +26,9 @@ public class Level {
     @Column(nullable = false)
     private int maxSpieler;
 
-    // @Column(nullable = false)
-    @Embedded
-    private Position startPosition;
+    // Durchschnittliche Bewertung aller Nutzer oder so
+    @Column
+    private byte bewertung;
 
     @OneToMany(mappedBy = "level")
     Set<Raum> raeume;
@@ -87,6 +84,14 @@ public class Level {
         return result;
     }
 
+    public byte getBewertung() {
+        return bewertung;
+    }
+
+    public void setBewertung(byte bewertung) {
+        this.bewertung = bewertung;
+    }
+
     public Long getLevelId() {
         return levelId;
     }
@@ -117,14 +122,6 @@ public class Level {
 
     public void setMaxSpieler(int maxSpieler) {
         this.maxSpieler = maxSpieler;
-    }
-
-    public Position getStartpositionen() {
-        return startPosition;
-    }
-
-    public void setStartpositionen(Position startposition) {
-        this.startPosition = startposition;
     }
 
     public Long getVersion() {
