@@ -4,7 +4,7 @@ VALUES (10, 'wubbo', 'test');
 INSERT INTO level (level_id, name, min_spieler, max_spieler, bewertung, benutzer_id)
 VALUES (1, 'Wubbos wahnwitzige Wunderwelt', 2, 4, 17, 10);
 
-INSERT INTO raum (raum_id, folge_im_level, level_level_id)
+INSERT INTO raum (raum_id, raum_index, level_level_id)
 VALUES (20, 0, 1);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name)

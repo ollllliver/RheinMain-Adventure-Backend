@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Ein Level, das von Benutzern gespielt werden kann.
@@ -31,7 +31,7 @@ public class Level {
     private byte bewertung;
 
     @OneToMany(mappedBy = "level")
-    Set<Raum> raeume;
+    List<Raum> raeume;
 
     @ManyToOne
     @JoinColumn(name = "benutzer_id")
@@ -54,12 +54,7 @@ public class Level {
 
     @Override
     public String toString() {
-        return "Level{" + "levelId=" + levelId +
-                ", name='" + name + '\'' +
-                ", minSpieler=" + minSpieler +
-                ", maxSpieler=" + maxSpieler +
-                ", version=" + version +
-                '}';
+        return "Level{" + "levelId=" + levelId + ", name='" + name + '\'' + ", minSpieler=" + minSpieler + ", maxSpieler=" + maxSpieler + ", version=" + version + '}';
     }
 
     @Override
@@ -82,6 +77,14 @@ public class Level {
         result = 31 * result + getMinSpieler();
         result = 31 * result + getMaxSpieler();
         return result;
+    }
+
+    public List<Raum> getRaeume() {
+        return raeume;
+    }
+
+    public void setRaeume(List<Raum> raeume) {
+        this.raeume = raeume;
     }
 
     public byte getBewertung() {

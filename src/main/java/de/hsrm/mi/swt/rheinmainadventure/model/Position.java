@@ -1,29 +1,33 @@
 package de.hsrm.mi.swt.rheinmainadventure.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.Embeddable;
-
-@Embeddable
 public class Position {
-    
-    private Map<String, Integer> position;
+
+    private Map<Character, Integer> positionData;
 
     public Position() {
-        this.position.put("x", null);
-        this.position.put("y", null);
+        this.positionData = new HashMap<>();
+        this.positionData.put('x', null);
+        this.positionData.put('y', null);
     }
 
-    public Position(Map<String, Integer> position) {
-        this.position = position;
+    public Position(int x, int y) {
+        this.positionData = new HashMap<>();
+        this.positionData.put('x', x);
+        this.positionData.put('y', y);
     }
 
-    public Map<String, Integer> getPosition() {
-        return position;
+    public Position(Map<Character, Integer> positionData) {
+        this.positionData = positionData;
     }
 
-    public void setPosition(Map<String, Integer> position) {
-        this.position = position;
+    public Map<Character, Integer> getPositionData() {
+        return positionData;
     }
 
+    public void setPositionData(Map<Character, Integer> positionData) {
+        this.positionData = positionData;
+    }
 }

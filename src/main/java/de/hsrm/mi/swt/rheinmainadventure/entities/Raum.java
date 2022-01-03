@@ -17,7 +17,7 @@ public class Raum {
     private Long raumId;
 
     @Column(nullable = false)
-    private int folgeImLevel;
+    private int raumIndex;
 
     @ManyToOne
     @JsonIgnore
@@ -31,7 +31,7 @@ public class Raum {
     public String toString() {
         return "Raum{" +
                 "raumId=" + raumId +
-                ", folgeImLevel=" + folgeImLevel +
+                ", folgeImLevel=" + raumIndex +
                 ", level=" + level +
                 '}';
     }
@@ -59,11 +59,11 @@ public class Raum {
         this.raumId = raumId;
     }
 
-    public int getFolgeImLevel() {
-        return folgeImLevel;
+    public int getRaumIndex() {
+        return raumIndex;
     }
 
-    public void setFolgeImLevel(int folgeImLevel) {
-        this.folgeImLevel = folgeImLevel;
+    public void setRaumIndex(int folgeImLevel) {
+        this.raumIndex = folgeImLevel;
     }
 }

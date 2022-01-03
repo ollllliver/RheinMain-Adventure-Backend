@@ -9,11 +9,7 @@ import java.util.List;
 @Repository
 public interface RaumRepository extends JpaRepository<Raum, Long> {
 
-    /**
-     * Sucht zu einer Level-ID alle Räume dieses Levels heraus
-     *
-     * @param levelId Die Level-ID des Levels, zu dem man alle Räume finden möchte.
-     * @return eine nicht sortierte Liste von allen Räumen eines Levels, wenn die Level-ID existiert
-     */
-    List<Raum> findAllByLevel_LevelId(Long levelId);
+    List<Raum> findAllByLevel_LevelIdOrderByRaumIndex(Long levelId);
+
+    Raum findAllByLevel_LevelIdAndRaumIndex(long levelId, int raumIndex);
 }
