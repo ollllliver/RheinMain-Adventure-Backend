@@ -26,7 +26,7 @@ public class Lobby {
      */
     public Lobby(String lobbyID, List<Spieler> teilnehmerliste, Spieler host) {
         this.lobbyID = lobbyID;
-        this.teilnehmerliste = new ArrayList<Spieler>(teilnehmerliste);
+        this.teilnehmerliste = new ArrayList<>(teilnehmerliste);
         this.host = host;
         this.istVoll = false;
         this.istGestartet = false;
@@ -95,7 +95,7 @@ public class Lobby {
     }
 
     public void setTeilnehmerliste(List<Spieler> teilnehmerliste) {
-        this.teilnehmerliste = new ArrayList<Spieler>(teilnehmerliste);
+        this.teilnehmerliste = new ArrayList<>(teilnehmerliste);
     }
 
     public boolean getIstVoll() {
@@ -128,7 +128,7 @@ public class Lobby {
     }
 
     public void setHost(Spieler host) {
-        if (getHost() != null){
+        if (getHost() != null) {
             getHost().setHost(false);
         }
         host.setHost(true);

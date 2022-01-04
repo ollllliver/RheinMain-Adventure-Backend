@@ -22,7 +22,9 @@ import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
  */
 @Service
 public class LobbyServiceImpl implements LobbyService {
-  Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
+  private Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
+  private final String TOPIC_LOB = "/topic/lobby/";
+  private final String TOPIC_UEB = "/topic/lobby/uebersicht";
 
   /**
    * Der Messagebroker wird hier durch dependencyInjection eingebunden. Über ihn
@@ -101,7 +103,7 @@ public class LobbyServiceImpl implements LobbyService {
     starteTimeout(lobby);
     lobbys.add(lobby);
 
-    broker.convertAndSend("/topic/lobby/uebersicht", new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false));
+    broker.convertAndSend(TOPIC_UEB, new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false));
     return lobby;
   }
 
@@ -119,7 +121,7 @@ public class LobbyServiceImpl implements LobbyService {
   public LobbyMessage spielerVerlaesstLobby(String id, String spielerName) {
 
     Lobby currLobby = getLobbyById(id);
-    ArrayList<Spieler> teilnehmer = new ArrayList<Spieler>(currLobby.getTeilnehmerliste());
+    ArrayList<Spieler> teilnehmer = new ArrayList<>(currLobby.getTeilnehmerliste());
 
     // Spieler wird gesucht aus der aktuellenTeilnehmerList...
     for (int i = 0; i < teilnehmer.size(); i++) {
@@ -130,7 +132,7 @@ public class LobbyServiceImpl implements LobbyService {
         if (teilnehmer.size() == 1) {
           logger.info("Die Lobby ist leer und wird somit geschlossen!");
           lobbys.remove(currLobby);
-          broker.convertAndSend("/topic/lobby/uebersicht", new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
+          broker.convertAndSend(TOPIC_UEB, new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
         } else {
           currLobby.getTeilnehmerliste().remove(currSpieler);
           // wenn der spieler der Host war wird der Status weitergegeben
@@ -140,7 +142,7 @@ public class LobbyServiceImpl implements LobbyService {
             double index = Math.floor(Math.random() * size);
 
             Spieler neuerHost = teilnehmer.get((int) index);
-            logger.info(String.format("Der neue Host ist: %s", neuerHost.getName()));
+            logger.info("Der neue Host ist: " + neuerHost.getName());
             neuerHost.setHost(true);
             currLobby.setHost(neuerHost);
           }
@@ -149,9 +151,8 @@ public class LobbyServiceImpl implements LobbyService {
       }
       // TODO Else noch abdecken
     }
-    String topic = "/topic/lobby/";
-    broker.convertAndSend(topic + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
-    broker.convertAndSend(topic + id + "/chat", new ChatNachricht(NachrichtenTyp.LEAVE, "", spielerName));
+    broker.convertAndSend(TOPIC_LOB + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
+    broker.convertAndSend(TOPIC_LOB + id + "/chat", new ChatNachricht(NachrichtenTyp.LEAVE, "", spielerName));
     return new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false);
 
   }
@@ -173,13 +174,13 @@ public class LobbyServiceImpl implements LobbyService {
           // Subscribed sind eine Fehlermeldung per Publish senden und im Frontend
           // abfangen.
           // @Chand das wuerde jetzt so gehen:
-          broker.convertAndSend("/topic/lobby/" + lobby.getlobbyID(),
+          broker.convertAndSend(TOPIC_UEB + lobby.getlobbyID(),
               new LobbyMessage(NachrichtenCode.LOBBYZEIT_ABGELAUFEN, true));
           // Das sendet an alle, die in der Lobby eingeschrieben sind die message
           // LOBBYZEIT_ABGELAUFEN
 
           lobbys.remove(lobby);
-          broker.convertAndSend("/topic/lobby/uebersicht", new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
+          broker.convertAndSend(TOPIC_UEB, new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
 
         }
       }
@@ -201,7 +202,7 @@ public class LobbyServiceImpl implements LobbyService {
   public LobbyMessage starteCountdown(String lobbyId) {
     Timer timer = new Timer();
 
-    broker.convertAndSend("/topic/lobby/" + lobbyId,
+    broker.convertAndSend(TOPIC_LOB + lobbyId,
         new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10"));
 
     TimerTask task = new TimerTask() {
@@ -282,17 +283,16 @@ public class LobbyServiceImpl implements LobbyService {
         return new LobbyMessage(NachrichtenCode.LOBBY_VOLL, true);
       } else {
         Spieler spieler;
-        if (currLobby.getHost().getName().equals(spielername)){
+        if (currLobby.getHost().getName().equals(spielername)) {
           spieler = currLobby.getHost();
-        }
-        else{
+        } else {
           spieler = new Spieler(spielername);
         }
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
-        broker.convertAndSend("/topic/lobby/" + id,
+        broker.convertAndSend(TOPIC_LOB + id,
             new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false, currLobby.getlobbyID()));
-        broker.convertAndSend("/topic/lobby/" + id + "/chat", new ChatNachricht(NachrichtenTyp.JOIN, "", spielername));
+        broker.convertAndSend(TOPIC_LOB + id + "/chat", new ChatNachricht(NachrichtenTyp.JOIN, "", spielername));
         return new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, currLobby.getlobbyID());
       }
     }
@@ -324,10 +324,10 @@ public class LobbyServiceImpl implements LobbyService {
 
   @Override
   public LobbyMessage setSpielerlimit(String id, int spielerlimit, String spielerName) {
-    if (getLobbyById(id).getHost().getName()==spielerName){
+    if (getLobbyById(id).getHost().getName() == spielerName) {
       getLobbyById(id).setSpielerlimit(spielerlimit);
       LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
-      broker.convertAndSend("/topic/lobby/" + id, res);
+      broker.convertAndSend(TOPIC_LOB + id, res);
       return res;
     }
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
@@ -335,10 +335,10 @@ public class LobbyServiceImpl implements LobbyService {
 
   @Override
   public LobbyMessage setPrivacy(String id, Boolean istPrivat, String spielerName) {
-    if (getLobbyById(id).getHost().getName()==spielerName){
+    if (getLobbyById(id).getHost().getName() == spielerName) {
       getLobbyById(id).setIstPrivat(istPrivat);
       LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
-      broker.convertAndSend("/topic/lobby/" + id, res);
+      broker.convertAndSend(TOPIC_LOB + id, res);
       return res;
     }
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
@@ -346,12 +346,13 @@ public class LobbyServiceImpl implements LobbyService {
 
   @Override
   public LobbyMessage setHost(String id, Spieler host, String spielerName) {
-    // Da host ja nicht wirklich das Objekt ist, da in der Teilnehmerliste ist, müssen wir es erst mit dem gemeinten Objekt ersetzten
+    // Da host ja nicht wirklich das Objekt ist, da in der Teilnehmerliste ist,
+    // müssen wir es erst mit dem gemeinten Objekt ersetzten
     host = getLobbyById(id).getTeilnehmerliste().get(getLobbyById(id).getTeilnehmerliste().indexOf(host));
-    if (getLobbyById(id).getHost().getName()==spielerName){
+    if (getLobbyById(id).getHost().getName() == spielerName) {
       getLobbyById(id).setHost(host);
       LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
-      broker.convertAndSend("/topic/lobby/" + id, res);
+      broker.convertAndSend(TOPIC_LOB + id, res);
       return res;
     }
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
