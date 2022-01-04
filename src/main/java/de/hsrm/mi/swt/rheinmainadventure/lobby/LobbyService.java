@@ -3,6 +3,7 @@ package de.hsrm.mi.swt.rheinmainadventure.lobby;
 import java.util.List;
 
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 /**
  * Interface für die Lobby Service Klasse Implementation ist in
@@ -25,4 +26,9 @@ public interface LobbyService {
 
     public LobbyMessage spielerVerlaesstLobby(String id, String spielerName);
 
+    public LobbyMessage setSpielerlimit(String id, int spielerlimit, String spielerName);
+
+    public LobbyMessage setPrivacy(String id, Boolean istPrivat, String spielerName);
+
+    public LobbyMessage setHost(String id, Spieler host, String spielerName);
 }

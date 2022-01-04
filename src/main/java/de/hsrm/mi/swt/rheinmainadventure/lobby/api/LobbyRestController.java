@@ -9,8 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 /**
  * Rest Controller für /abi/lobby/*
@@ -76,7 +79,8 @@ public class LobbyRestController {
     @DeleteMapping(value = "/leave/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m) {
         logger.info(String.format("DELETE /api/lobby/leave/%s", lobbyId));
-        logger.info(String.format("USER %s will die Lobby verlassen",  m.getAttribute("loggedinBenutzername").toString()));
+        logger.info(
+                String.format("USER %s will die Lobby verlassen", m.getAttribute("loggedinBenutzername").toString()));
         return lobbyservice.spielerVerlaesstLobby(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
 
@@ -121,4 +125,18 @@ public class LobbyRestController {
         return lobbyservice.starteCountdown(lobbyId);
     }
 
+    @PatchMapping("/{lobbyId}/spielerlimit")
+    public LobbyMessage patchSpielerlimit(@PathVariable String lobbyId, @RequestBody int spielerlimit, Model m) {
+        return lobbyservice.setSpielerlimit(lobbyId, spielerlimit, m.getAttribute("loggedinBenutzername").toString());
+    }
+
+    @PatchMapping("/{lobbyId}/privacy")
+    public LobbyMessage patchPrivacy(@PathVariable String lobbyId, @RequestBody Boolean istPrivat, Model m) {
+        return lobbyservice.setPrivacy(lobbyId, istPrivat, m.getAttribute("loggedinBenutzername").toString());
+    }
+
+    @PatchMapping("/{lobbyId}/host")
+    public LobbyMessage patchHost(@PathVariable String lobbyId, @RequestBody Spieler host, Model m) {
+        return lobbyservice.setHost(lobbyId, host, m.getAttribute("loggedinBenutzername").toString());
+    }
 }

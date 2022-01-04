@@ -24,7 +24,7 @@ public class LobbyMessage {
         this.payload = "";
     }
 
-    public LobbyMessage(NachrichtenCode typ, Boolean istFehler,String payload) {
+    public LobbyMessage(NachrichtenCode typ, Boolean istFehler, String payload) {
         this.typ = typ;
         this.istFehler = istFehler;
         this.payload = payload;
@@ -93,5 +93,4 @@ public class LobbyMessage {
         this.payload = payload;
     }
 
-            
 }
