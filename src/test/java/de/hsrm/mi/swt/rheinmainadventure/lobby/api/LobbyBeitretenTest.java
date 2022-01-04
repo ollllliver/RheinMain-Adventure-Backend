@@ -171,10 +171,10 @@ class LobbyBeitretenTest {
         
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertEquals(lobbyNach1malBeitreten, lobbyNach2malBeitreten);
-        assertEquals(lm1.getIstFehler(), false);
-        assertSame(lm1.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertEquals(lm2.getIstFehler(), false);
-        assertSame(lm2.getTyp(), NachrichtenCode.SCHON_BEIGETRETEN);
+        assertFalse(lm1.getIstFehler());
+        assertSame(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, lm1.getTyp());
+        assertFalse(lm2.getIstFehler());
+        assertSame(NachrichtenCode.SCHON_BEIGETRETEN, lm2.getTyp());
     }
 
     @Test
@@ -214,10 +214,10 @@ class LobbyBeitretenTest {
         
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertEquals(lobbyNach1malBeitreten, lobbyNach2malBeitreten);
-        assertEquals(lm1.getIstFehler(), false);
-        assertSame(lm1.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertEquals(lm2.getIstFehler(), false);
-        assertSame(lm2.getTyp(), NachrichtenCode.SCHON_BEIGETRETEN);
+        assertFalse(lm1.getIstFehler());
+        assertSame(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, lm1.getTyp());
+        assertFalse(lm2.getIstFehler());
+        assertSame(NachrichtenCode.SCHON_BEIGETRETEN, lm2.getTyp());
     }
 
 }

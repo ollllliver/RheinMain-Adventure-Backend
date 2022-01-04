@@ -86,12 +86,12 @@ class LobbyServiceImplTest {
 
         Lobby chandsLobby = lobbyService.lobbyErstellen("Chand");
 
-        assertEquals(chandsLobby.getIstGestartet(),false);
+        assertFalse(chandsLobby.getIstGestartet());
         String lobbyID = chandsLobby.getlobbyID();
 
         lobbyService.starteCountdown(lobbyID);
         TimeUnit.SECONDS.sleep(11);
-        assertEquals(chandsLobby.getIstGestartet(),true);
+        assertTrue(chandsLobby.getIstGestartet());
         /* 
         TODO: TEST für später: Spielstart-übermittlung Test
         Nur Host kann spiel Starten. (Also als nicht host starten versuchen und soll nicht klappen) <- muss noch implementiert werden

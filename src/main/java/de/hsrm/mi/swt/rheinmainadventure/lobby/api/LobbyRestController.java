@@ -63,7 +63,7 @@ public class LobbyRestController {
      */
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage lobbyBeitretenByID(@PathVariable String lobbyId, Model m) {
-        logger.info(String.format("POST /api/lobby/join/%s", lobbyId));
+        logger.info("POST /api/lobby/join/" + lobbyId);
         return lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
 
@@ -78,9 +78,8 @@ public class LobbyRestController {
 
     @DeleteMapping(value = "/leave/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m) {
-        logger.info(String.format("DELETE /api/lobby/leave/%s", lobbyId));
-        logger.info(
-                String.format("USER %s will die Lobby verlassen", m.getAttribute("loggedinBenutzername").toString()));
+        logger.info("DELETE /api/lobby/leave/" + lobbyId);
+        logger.info("USER " + m.getAttribute("loggedinBenutzername").toString() + " will die Lobby verlassen");
         return lobbyservice.spielerVerlaesstLobby(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
 
@@ -96,7 +95,7 @@ public class LobbyRestController {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
         // zurueckgesendet wird die neu erstellte Lobbyinstanz, damit das Frontend auf
         // die Lobbyseite mit der im Backend erstellten LobbyID weiterleidten kann.
-        logger.info(String.format("POST /api/lobby/neu  Von : %s", m.getAttribute("loggedinBenutzername").toString()));
+        logger.info("POST /api/lobby/neu  Von : " + m.getAttribute("loggedinBenutzername").toString());
         return lobbyservice.lobbyErstellen(m.getAttribute("loggedinBenutzername").toString());
     }
 
@@ -109,7 +108,7 @@ public class LobbyRestController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Lobby getLobbyById(@PathVariable String id) {
         // GET /api/lobby/{id} - gibt die Lobby ueber die ID zurueck
-        logger.info(String.format("GET /api/lobby/%s", id));
+        logger.info("GET /api/lobby/" + id);
         return lobbyservice.getLobbyById(id);
     }
 

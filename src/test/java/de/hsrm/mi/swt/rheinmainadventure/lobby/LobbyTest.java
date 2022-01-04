@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 @SpringBootTest
-public class LobbyTest {
+class LobbyTest {
 
     @Autowired
     LobbyServiceImpl lobbyService;
@@ -30,7 +30,7 @@ public class LobbyTest {
      * Einmaligkeit und ob sie nur aus Buchstaben und Zahlen besteht.
      */
     @Test
-    public void testLobbyID() {
+    void testLobbyID() {
 
         // zu testende Benutzernamen
         String lobbyID1 = lobbyService.lobbyErstellen("Oliver").getlobbyID();
@@ -58,7 +58,7 @@ public class LobbyTest {
     }
 
     @Test
-    public void testLobbyErstellen() {
+    void testLobbyErstellen() {
         String spielerName = "Player1";
         Spieler host = new Spieler(spielerName);
         ArrayList<Spieler> players = new ArrayList<Spieler>();
@@ -71,7 +71,7 @@ public class LobbyTest {
     }
 
     @Test
-    public void testLobbyErstellen1000() {
+    void testLobbyErstellen1000() {
         ArrayList<Lobby> lobbyList = new ArrayList<Lobby>();
 
         for (int i = 0; i < 1000; i++) {
