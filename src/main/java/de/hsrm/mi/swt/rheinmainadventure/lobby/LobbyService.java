@@ -31,4 +31,6 @@ public interface LobbyService {
     public LobbyMessage setPrivacy(String id, Boolean istPrivat, String spielerName);
 
     public LobbyMessage setHost(String id, Spieler host, String spielerName);
+
+    public LobbyMessage removeSpieler(String id, Spieler zuEntfernendSpieler, String spielerName);
 }

@@ -138,4 +138,11 @@ public class LobbyRestController {
     public LobbyMessage patchHost(@PathVariable String lobbyId, @RequestBody Spieler host, Model m) {
         return lobbyservice.setHost(lobbyId, host, m.getAttribute("loggedinBenutzername").toString());
     }
+
+    @DeleteMapping("/{lobbyId}/teilnehmer")
+    public LobbyMessage deleteTeilnehmer(@PathVariable String lobbyId, @RequestBody Spieler zuEntfernendSpieler,
+            Model m) {
+        return lobbyservice.removeSpieler(lobbyId, zuEntfernendSpieler,
+                m.getAttribute("loggedinBenutzername").toString());
+    }
 }

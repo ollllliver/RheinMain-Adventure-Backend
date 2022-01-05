@@ -357,4 +357,10 @@ public class LobbyServiceImpl implements LobbyService {
     }
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
+
+  @Override
+  public LobbyMessage removeSpieler(String id, Spieler zuEntfernendSpieler, String spielerName) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
