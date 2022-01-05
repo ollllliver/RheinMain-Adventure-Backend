@@ -214,6 +214,7 @@ class LobbyRestControllerTest {
     }
 
     @Test
+    @DisplayName("#102 Als Host LobbyEinstellungen ändern - Spielerlimit ändern")
     void testPatchSpielerlimit() throws Exception {
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
@@ -244,6 +245,7 @@ class LobbyRestControllerTest {
     }
 
     @Test
+    @DisplayName("#102 Als Host LobbyEinstellungen ändern - istPrivat ändern")
     void testPatchPrivacy() throws Exception {
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
@@ -272,6 +274,7 @@ class LobbyRestControllerTest {
     }
 
     @Test
+    @DisplayName("#102 Als Host LobbyEinstellungen ändern - Host ändern")
     void testPatchHost() throws Exception {
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
@@ -345,6 +348,7 @@ class LobbyRestControllerTest {
     }
 
     @Test
+    @DisplayName("#97 Als Host Leute rausschmeißen.")
     void testDeleteTeilnehmer() throws Exception {
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))

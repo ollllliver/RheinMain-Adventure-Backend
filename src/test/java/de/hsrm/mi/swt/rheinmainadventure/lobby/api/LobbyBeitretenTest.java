@@ -178,7 +178,7 @@ class LobbyBeitretenTest {
     }
 
     @Test
-    @DisplayName("Spieler befindet sich bereits in einer anderen Lobby.")
+    @DisplayName("#101 Ein Spieler darf nur in max. einer Lobby zeitgleich sein - Spieler befindet sich bereits in einer anderen Lobby.")
     void UCD_Lobby_beitreten_1d_2() throws Exception {
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MockHttpSession sessionChand = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);

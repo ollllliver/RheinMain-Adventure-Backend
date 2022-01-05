@@ -159,7 +159,7 @@ public class LobbyErstellenTest {
 
 
     @Test
-    @DisplayName("Spieler will Lobby hosten, ist aber bereits Mitglied einer anderen Lobby.")
+    @DisplayName("#101 Ein Spieler darf nur in max. einer Lobby zeitgleich sein - Spieler will Lobby hosten, ist aber bereits Mitglied einer anderen Lobby.")
     void UCD_Lobby_erstellen_1a_1() throws Exception {
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MockHttpSession sessionChand = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
@@ -180,7 +180,7 @@ public class LobbyErstellenTest {
     }
 
     @Test
-    @DisplayName(" Spieler will Lobby hosten, ist aber bereits HOST einer anderen Lobby")
+    @DisplayName("#101 Ein Spieler darf nur in max. einer Lobby zeitgleich sein - Spieler will Lobby hosten, ist aber bereits HOST einer anderen Lobby")
     void UCD_Lobby_erstellen_1a_2_1() throws Exception {
         // einloggen:
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
