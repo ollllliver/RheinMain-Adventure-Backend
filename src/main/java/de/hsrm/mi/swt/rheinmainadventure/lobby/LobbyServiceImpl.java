@@ -120,36 +120,35 @@ public class LobbyServiceImpl implements LobbyService {
   @Override
   public LobbyMessage spielerVerlaesstLobby(String id, String spielerName) {
 
-    Lobby currLobby = getLobbyById(id);
-    ArrayList<Spieler> teilnehmer = new ArrayList<>(currLobby.getTeilnehmerliste());
 
     // Spieler wird gesucht aus der aktuellenTeilnehmerList...
-    for (int i = 0; i < teilnehmer.size(); i++) {
-      Spieler currSpieler = teilnehmer.get(i);
+    for (int i = 0; i < getLobbyById(id).getTeilnehmerliste().size(); i++) {
+      Spieler currSpieler = getLobbyById(id).getTeilnehmerliste().get(i);
       if (currSpieler.getName().equals(spielerName)) {
         // ... und entfernt
         // wenn lobby leer ist wird sie geschlossen
-        if (teilnehmer.size() == 1) {
+        if (getLobbyById(id).getTeilnehmerliste().size() == 1) {
           logger.info("Die Lobby ist leer und wird somit geschlossen!");
-          lobbys.remove(currLobby);
+          lobbys.remove(getLobbyById(id));
           broker.convertAndSend(TOPICUEB, new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
         } else {
-          currLobby.getTeilnehmerliste().remove(currSpieler);
+          logger.info(getLobbyById(id).getTeilnehmerliste().toString());
+          getLobbyById(id).getTeilnehmerliste().remove(currSpieler);
+          logger.info(getLobbyById(id).getTeilnehmerliste().toString());
           // wenn der spieler der Host war wird der Status weitergegeben
-          if (spielerName.equals(currLobby.getHost().getName())) {
+          if (spielerName.equals(getLobbyById(id).getHost().getName())) {
             logger.info("Der Host: " + spielerName + " verlaesst die Lobby");
-            int size = currLobby.getTeilnehmerliste().size();
+            int size = getLobbyById(id).getTeilnehmerliste().size();
             double index = Math.floor(Math.random() * size);
 
-            Spieler neuerHost = teilnehmer.get((int) index);
+            Spieler neuerHost = getLobbyById(id).getTeilnehmerliste().get((int) index);
             logger.info("Der neue Host ist: " + neuerHost.getName());
             neuerHost.setHost(true);
-            currLobby.setHost(neuerHost);
+            getLobbyById(id).setHost(neuerHost);
           }
         }
 
       }
-      // TODO Else noch abdecken
     }
     broker.convertAndSend(TOPICLOB + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
     broker.convertAndSend(TOPICLOB + id + "/chat", new ChatNachricht(NachrichtenTyp.LEAVE, "", spielerName));
