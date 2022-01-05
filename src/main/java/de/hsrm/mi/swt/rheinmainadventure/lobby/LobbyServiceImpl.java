@@ -367,7 +367,7 @@ public class LobbyServiceImpl implements LobbyService {
       List<Spieler> teilnehmerliste = lobby.getTeilnehmerliste();
       if (teilnehmerliste.contains(zuEntfernendSpieler)){
         teilnehmerliste.remove(zuEntfernendSpieler);
-        LobbyMessage res = new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false);
+        LobbyMessage res = new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false, zuEntfernendSpieler.getName());
         broker.convertAndSend(TOPICLOB + id, res);
         return res;
         }
