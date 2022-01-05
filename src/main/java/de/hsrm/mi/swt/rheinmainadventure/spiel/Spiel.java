@@ -10,6 +10,7 @@ public class Spiel {
     private ArrayList<Spieler> spielerListe;
     private Timestamp startZeitpunkt;
     private Karte karte;
+    private String id;
 
     public Spiel(Lobby lobby) {
         this.karte = lobby.getGewaehlteKarte();
@@ -18,6 +19,7 @@ public class Spiel {
             this.spielerListe.add(lobby.getTeilnehmerliste().get(i));
         }
         this.startZeitpunkt = new Timestamp(System.currentTimeMillis());
+        this.id = lobby.getlobbyID();
     }
 
     public ArrayList<Spieler> getSpielerListe() {
@@ -27,6 +29,10 @@ public class Spiel {
 
     public void setSpielerListe(ArrayList<Spieler> teilnehmerliste) {
         this.spielerListe = teilnehmerliste;
+    }
+
+    public String getId(){
+        return this.id;
     }
 
 

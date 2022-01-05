@@ -24,5 +24,7 @@ public class LobbyMessageBrokerConfiguration implements WebSocketMessageBrokerCo
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/messagebroker").setAllowedOrigins("*");
         registry.addEndpoint("/messagebroker").withSockJS();
+        registry.addEndpoint("/gamebroker").setAllowedOrigins("*");
+        registry.addEndpoint("/gamebroker").withSockJS();
     }
 }
