@@ -1,6 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -360,7 +361,18 @@ public class LobbyServiceImpl implements LobbyService {
 
   @Override
   public LobbyMessage removeSpieler(String id, Spieler zuEntfernendSpieler, String spielerName) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    Lobby lobby = getLobbyById(id);
+    // nur der Host darf machen:
+    if (lobby.getHost().getName().equals(spielerName) && !lobby.getHost().equals(zuEntfernendSpieler)) {
+      List<Spieler> teilnehmerliste = lobby.getTeilnehmerliste();
+      if (teilnehmerliste.contains(zuEntfernendSpieler)){
+        teilnehmerliste.remove(zuEntfernendSpieler);
+        LobbyMessage res = new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false);
+        broker.convertAndSend(TOPICLOB + id, res);
+        return res;
+        }
+    }
+    LobbyMessage res = new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
+    return res;
+}
 }
