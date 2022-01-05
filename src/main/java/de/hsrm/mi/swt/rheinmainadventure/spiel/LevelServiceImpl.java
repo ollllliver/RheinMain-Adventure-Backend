@@ -1,16 +1,19 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
-import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
-import de.hsrm.mi.swt.rheinmainadventure.entities.mobiliar.Mobiliar;
+import de.hsrm.mi.swt.rheinmainadventure.entities.*;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.*;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.LevelRepository;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.RaumMobiliarRepository;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.RaumRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,20 +23,17 @@ public class LevelServiceImpl implements LevelService {
     private final RaumRepository raumRepository;
     private final MobiliarRepository mobiliarRepository;
     private final RaumMobiliarRepository raumMobiliarRepository;
-    private final StartpositionRepository startpositionRepository;
 
     private final Logger lg = LoggerFactory.getLogger(LevelServiceImpl.class);
 
     public LevelServiceImpl(LevelRepository levelRepository,
                             RaumRepository raumRepository,
                             MobiliarRepository mobiliarRepository,
-                            RaumMobiliarRepository raumMobiliarRepository,
-                            StartpositionRepository startpositionRepository) {
+                            RaumMobiliarRepository raumMobiliarRepository) {
         this.levelRepository = levelRepository;
         this.raumRepository = raumRepository;
         this.mobiliarRepository = mobiliarRepository;
         this.raumMobiliarRepository = raumMobiliarRepository;
-        this.startpositionRepository = startpositionRepository;
     }
 
     @Override
@@ -139,18 +139,11 @@ public class LevelServiceImpl implements LevelService {
         Map<Position, Mobiliar> mobiliarMap = getMobiliarImRaum(raum);
         lg.info("Mobiliar existiert, alles erfolgreich abgefragt.");
 
-        // Alle Startpositions-Mobiliars abfragen und ihre ID aus ihnen raus klamüsern.
-        // So sparen wir uns die DB Latenz später beim Vergleichen.
-        List<Long> alleStartpositionsMobiliarIds = startpositionRepository.findAll()
-                .stream()
-                .map(Mobiliar::getMobiliarId)
-                .collect(Collectors.toCollection(LinkedList::new));
-
         lg.info("Startposition wird gesucht...");
         // Gehe sämtliches Mobiliar im Raum ab
         for (Map.Entry<Position, Mobiliar> entry : mobiliarMap.entrySet()) {
-            // Wenn die aktuelle Mobiliar-ID eine Startpositions-Mobiliar-ID ist, haben wir unseren Treffer
-            if (alleStartpositionsMobiliarIds.contains(entry.getValue().getMobiliarId())) {
+            // Wenn das aktuelle Mobiliar vom Typ Start ist, haben wir unseren Treffer
+            if (entry.getValue().getMobiliartyp().equals(Mobiliartyp.EINGANG)) {
                 // Der Schlüssel der Map ist die Mobiliar-Position, also geben wir die zurück
                 lg.info("Gefunden!");
                 return entry.getKey();

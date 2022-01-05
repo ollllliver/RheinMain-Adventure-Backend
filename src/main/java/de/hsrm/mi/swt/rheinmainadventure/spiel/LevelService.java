@@ -1,8 +1,8 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
 import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliar;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
-import de.hsrm.mi.swt.rheinmainadventure.entities.mobiliar.Mobiliar;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 
 import java.util.List;

@@ -1,18 +1,17 @@
-package de.hsrm.mi.swt.rheinmainadventure.entities.mobiliar;
+package de.hsrm.mi.swt.rheinmainadventure.entities;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
 import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 /**
  * Mobiliar sind in Räumen platzierbare Objekte.
  * Die Mobiliar-Klasse enthält neben der URI für das tatsächliche 3D-Modell im gtlf-Format
- * auch noch den Klarnamen für das Mobiliar.
+ * auch noch den Klarnamen für das Mobiliar und seinen Typ.
  */
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Mobiliar {
 
     @Id
@@ -29,6 +28,9 @@ public class Mobiliar {
     @OneToMany(mappedBy = "mobiliar")
     private Set<RaumMobiliar> raumMobiliar;
 
+    @Column
+    private Mobiliartyp mobiliartyp;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -36,14 +38,18 @@ public class Mobiliar {
 
         Mobiliar mobiliar = (Mobiliar) o;
 
-        if (!getName().equals(mobiliar.getName())) return false;
-        return getModellURI().equals(mobiliar.getModellURI());
+        if (!Objects.equals(mobiliarId, mobiliar.mobiliarId)) return false;
+        if (!Objects.equals(name, mobiliar.name)) return false;
+        if (!Objects.equals(modellURI, mobiliar.modellURI)) return false;
+        return mobiliartyp == mobiliar.mobiliartyp;
     }
 
     @Override
     public int hashCode() {
-        int result = getName().hashCode();
-        result = 31 * result + getModellURI().hashCode();
+        int result = mobiliarId != null ? mobiliarId.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (modellURI != null ? modellURI.hashCode() : 0);
+        result = 31 * result + (mobiliartyp != null ? mobiliartyp.hashCode() : 0);
         return result;
     }
 
@@ -67,8 +73,8 @@ public class Mobiliar {
         return modellURI;
     }
 
-    public void setModellURI(String modell) {
-        this.modellURI = modell;
+    public void setModellURI(String modellURI) {
+        this.modellURI = modellURI;
     }
 
     public Set<RaumMobiliar> getRaumMobiliar() {
@@ -77,5 +83,13 @@ public class Mobiliar {
 
     public void setRaumMobiliar(Set<RaumMobiliar> raumMobiliar) {
         this.raumMobiliar = raumMobiliar;
+    }
+
+    public Mobiliartyp getMobiliartyp() {
+        return mobiliartyp;
+    }
+
+    public void setMobiliartyp(Mobiliartyp mobiliartyp) {
+        this.mobiliartyp = mobiliartyp;
     }
 }
