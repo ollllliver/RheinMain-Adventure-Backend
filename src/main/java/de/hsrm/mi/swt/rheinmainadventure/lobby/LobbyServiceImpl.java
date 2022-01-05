@@ -1,6 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -321,6 +322,15 @@ public class LobbyServiceImpl implements LobbyService {
 
   }
 
+    /**
+     * Überprüft, ob der anfragende Spiler Änderungen an der Lobby vornehmen darf
+     * (wenn man Host ist) und setzt dann das spielerlimit der Lobby auf den
+     * mitgegebenen Wert. 
+     * 
+     * @param id der Lobby, um die es geht
+     * @param spielerlimit neuer Wert für das Spielerlimit
+     * @return LobbyMessage mit Information über den Ausgang der Anfrage
+     */
   @Override
   public LobbyMessage setSpielerlimit(String id, int spielerlimit, String spielerName) {
     if (getLobbyById(id).getHost().getName().equals(spielerName)) {
@@ -332,6 +342,15 @@ public class LobbyServiceImpl implements LobbyService {
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
 
+    /**
+     * Überprüft, ob anfragende Spiler Änderungen an der Lobby vornehmen darf
+     * (wenn man Host ist) und setzt dann die Flag istPrivat um. 
+     * 
+     * @param id der Lobby, um die es geht
+     * @param istPrivat Boolean wie die Lobby gesetzt werden soll
+     * @param spielerName des anfragenden Spielers
+     * @return LobbyMessage mit Information über den Ausgang der Anfrage
+     */
   @Override
   public LobbyMessage setPrivacy(String id, Boolean istPrivat, String spielerName) {
     if (getLobbyById(id).getHost().getName().equals(spielerName)) {
@@ -343,6 +362,15 @@ public class LobbyServiceImpl implements LobbyService {
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
 
+    /**
+     * Überprüft, ob anfragende Spiler einen anderen zum Host ernennen darf (wenn man Host ist,
+     * darf man den Host weitergeben) und macht das dann. Der Anfrager its danach kein Host mehr. 
+     * 
+     * @param id der Lobby, um die es geht
+     * @param host der Spieler, der aktuell noch Host der Lobby ist
+     * @param spielerName des Spielers, der Host werden soll
+     * @return LobbyMessage mit Information über den Ausgang der Anfrage
+     */
   @Override
   public LobbyMessage setHost(String id, Spieler host, String spielerName) {
     // Da host ja nicht wirklich das Objekt ist, da in der Teilnehmerliste ist,
@@ -356,4 +384,30 @@ public class LobbyServiceImpl implements LobbyService {
     }
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
+
+    /**
+     * Überprüft, ob der entfernende Spiler den zu entfernenden Spieler entfernen darf (wenn man Host ist,
+     * darf man andere entfernen) und macht das dann.
+     * 
+     * @param id die ID der Lobby, aus der ein Spieler entfernt werden soll.
+     * @param zuEntfernendSpieler zu entfernender Spieler
+     * @param spielerName Spieler, der die Anfrage stellt
+     * @return LobbyMessage mit Information über den Ausgang der Anfrage
+     */
+  @Override
+  public LobbyMessage removeSpieler(String id, Spieler zuEntfernendSpieler, String spielerName) {
+    Lobby lobby = getLobbyById(id);
+    // nur der Host darf machen:
+    if (lobby.getHost().getName().equals(spielerName) && !lobby.getHost().equals(zuEntfernendSpieler)) {
+      List<Spieler> teilnehmerliste = lobby.getTeilnehmerliste();
+      if (teilnehmerliste.contains(zuEntfernendSpieler)){
+        teilnehmerliste.remove(zuEntfernendSpieler);
+        LobbyMessage res = new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false, zuEntfernendSpieler.getName());
+        broker.convertAndSend(TOPICLOB + id, res);
+        return res;
+        }
+    }
+    LobbyMessage res = new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
+    return res;
+}
 }

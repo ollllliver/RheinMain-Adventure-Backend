@@ -1,6 +1,5 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,15 +25,16 @@ class LobbyServiceImplTest {
     @Autowired
     LobbyService lobbyService;
 
-    public boolean containsName(final List<Spieler> list, final String name){
+    public boolean containsName(final List<Spieler> list, final String name) {
         return list.stream().filter(o -> o.getName().equals(name)).findFirst().isPresent();
     }
 
-
-    /*Test für joinen bei bereits voller lobby*/
+    /* Test für joinen bei bereits voller lobby */
     @Test
     void testJoinLobbybyId() {
-        Lobby testLobby = lobbyService.lobbyErstellen("Test-User"); //Dieser User erstellt die Lobby ist aber noch nicht in der Lobby drinne. vllt beim Erstellen doch autoJoinen
+        Lobby testLobby = lobbyService.lobbyErstellen("Test-User"); // Dieser User erstellt die Lobby ist aber noch
+                                                                    // nicht in der Lobby drinne. vllt beim Erstellen
+                                                                    // doch autoJoinen
         testLobby.setSpielerlimit(3);
 
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Test-User");
@@ -43,10 +43,10 @@ class LobbyServiceImplTest {
     }
 
     @Test
-    void testJoinFullLobby(){
+    void testJoinFullLobby() {
         Lobby testLobby = lobbyService.lobbyErstellen("Test-User2");
         testLobby.setSpielerlimit(3);
-        //4 Mal Joinen
+        // 4 Mal Joinen
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Spieler 2");
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Spieler 3");
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Spieler 4");
@@ -55,12 +55,12 @@ class LobbyServiceImplTest {
         assertTrue(containsName(testLobby.getTeilnehmerliste(), "Spieler 2"));
         assertTrue(containsName(testLobby.getTeilnehmerliste(), "Spieler 3"));
         assertTrue(containsName(testLobby.getTeilnehmerliste(), "Spieler 4"));
-        //Sollte der Lobby nicht gejoint sein
+        // Sollte der Lobby nicht gejoint sein
         assertFalse(containsName(testLobby.getTeilnehmerliste(), "Spieler 5"));
     }
 
     @Test
-    void testJoinGestarteteLobby(){
+    void testJoinGestarteteLobby() {
         Lobby testLobby = lobbyService.lobbyErstellen("Test-User3");
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Test-User3");
 
@@ -70,12 +70,12 @@ class LobbyServiceImplTest {
     }
 
     @Test
-    void testJoinPrivateLobbyOhneLink(){
+    void testJoinPrivateLobbyOhneLink() {
         Lobby testLobby = lobbyService.lobbyErstellen("Test-User4");
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Test-User4");
         testLobby.setIstPrivat(true);
 
-        //Sollte zufaellig einer lobby Joinen jedoch ist die einzige freie Privat
+        // Sollte zufaellig einer lobby Joinen jedoch ist die einzige freie Privat
         lobbyService.lobbyBeitretenZufaellig("Bingo");
         assertFalse(containsName(testLobby.getTeilnehmerliste(), "Bingo"));
     }
@@ -92,17 +92,19 @@ class LobbyServiceImplTest {
         lobbyService.starteCountdown(lobbyID);
         TimeUnit.SECONDS.sleep(11);
         assertTrue(chandsLobby.getIstGestartet());
-        /* 
-        TODO: TEST für später: Spielstart-übermittlung Test
-        Nur Host kann spiel Starten. (Also als nicht host starten versuchen und soll nicht klappen) <- muss noch implementiert werden
-        mit voller lobby starten
-        */
+        /*
+         * TODO: TEST für später: Spielstart-übermittlung Test
+         * Nur Host kann spiel Starten. (Also als nicht host starten versuchen und soll
+         * nicht klappen) <- muss noch implementiert werden
+         * mit voller lobby starten
+         */
     }
 
-
-    /* Prueft ob eine Lobby nach dem Timeout noch Exsistiert. OHNE REST ANSTOSS 
-    *  Hierfuer muss im Backend der Timeout auf 15 Sekunden und nicht 10 Minuten gesetzt werden.
-    */
+    /*
+     * Prueft ob eine Lobby nach dem Timeout noch Exsistiert. OHNE REST ANSTOSS
+     * Hierfuer muss im Backend der Timeout auf 15 Sekunden und nicht 10 Minuten
+     * gesetzt werden.
+     */
     @Test
     void testTimeout() throws Exception {
         Lobby chandsLobby = lobbyService.lobbyErstellen("Chand");
@@ -111,6 +113,5 @@ class LobbyServiceImplTest {
         TimeUnit.SECONDS.sleep(16);
         assertNotNull(lobbyService.getLobbyById(chandsLobby.getlobbyID()));
     }
-
 
 }

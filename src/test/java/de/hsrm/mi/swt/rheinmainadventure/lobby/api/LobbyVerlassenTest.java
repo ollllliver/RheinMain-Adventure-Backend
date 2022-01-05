@@ -147,13 +147,7 @@ class LobbyVerlassenTest {
     // ####################################################
 
     @Test
-    @DisplayName("Als Lobbyhost einen Mitspieler aus seiner Lobby entfernen.")
-    void UCD_Lobby_verlassen_1c2() throws Exception {
-        // TODO: TEST: Als Lobbyhost einen Mitspieler aus seiner Lobby entfernen.
-    }
-
-    @Test
-    @DisplayName("Als Lobbyhost Lobby verlassen.")
+    @DisplayName("#98 Host weitergeben beim Verlassen - Als Lobbyhost Lobby verlassen.")
     public void UCD_Lobby_verlassen_1c() throws Exception {
         // einloggen, lobby erstellen und beitreten:
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
@@ -178,7 +172,7 @@ class LobbyVerlassenTest {
     }
 
     @Test
-    @DisplayName("Als Lobbyhost UND letzter Teilnehmer Lobby verlassen.")
+    @DisplayName("#100 Lobbyinstanz löschen bei 0 Teilnehmern - Als Lobbyhost UND letzter Teilnehmer Lobby verlassen.")
     public void UCD_Lobby_verlassen_1e() throws Exception {
 
         // einloggen, lobby erstellen und beitreten:
@@ -194,27 +188,6 @@ class LobbyVerlassenTest {
 
         assertTrue(lobbyService.getLobbys().size() == 0);
 
-    }
-
-    @Test
-    @DisplayName("Als NICHT Lobbyhost einen Mitspieler aus seiner Lobby entfernen (REST manipulation!).")
-    void UCD_Lobby_verlassen_manipuliert_1() throws Exception {
-        // TODO: TEST: Als NICHT Lobbyhost einen Mitspieler aus seiner Lobby entfernen
-        // (REST manipulation!).
-    }
-
-    @Test
-    @DisplayName("Als Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen (REST manipulation!).")
-    void UCD_Lobby_verlassen_manipuliert_2() throws Exception {
-        // TODO: TEST: Als Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen
-        // (REST manipulation!).
-    }
-
-    @Test
-    @DisplayName("Als NICHT Lobbyhost einen Mitspieler aus einer fremden Lobby entfernen (REST manipulation!).")
-    void UCD_Lobby_verlassen_manipuliert_3() throws Exception {
-        // TODO: TEST: Als NICHT Lobbyhost einen Mitspieler aus einer fremden Lobby
-        // entfernen (REST manipulation!).
     }
 
 }
