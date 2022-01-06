@@ -28,18 +28,21 @@ public class SpielerController {
 
     Logger logger = LoggerFactory.getLogger(SpielerController.class);
 
-    // @MessageMapping("/topic/spiel")
-    // @SendTo("/topic/public")
-    // public void updatePosition(@Payload Tuple position) {
-    //     logger.info("Update Position\n\n\n");
-    //     //spielService.setSpielerPosition(id, name, position);
-    // }
 
+    /**
+     * 
+     * 
+     * @param s
+     * @param lobbyID
+     * @param name
+     * @throws Exception
+     */
     @MessageMapping("/topic/spiel/{lobbyID}/pos/{name}")
-    //@SendTo("/topic/spiel/")
+    //@SendTo("/topic/spiel/{lobbyID}")
     public void updatePosition(@Payload String s, @DestinationVariable String lobbyID, @DestinationVariable String name) throws Exception {  
         logger.info("SpielerController.updatePosition: Payload=" + s + ", lobbyID="+lobbyID + ", name: " + name);
-        spielService.setSpielerPosition(lobbyID, name, null);
+        broker.convertAndSend("/topic/spiel/" + lobbyID, s); //nur Test
+        //spielService.setSpielerPosition(lobbyID, name, null); //TODO
     }
 
 
