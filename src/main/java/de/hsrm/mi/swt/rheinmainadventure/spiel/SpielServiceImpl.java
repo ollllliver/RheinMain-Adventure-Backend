@@ -16,7 +16,6 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 /**
  * Spiel Service für das verwalten aller Spiele.
- * 
  */
 @Service
 public class SpielServiceImpl implements SpielService{
@@ -68,11 +67,14 @@ public class SpielServiceImpl implements SpielService{
 
     @Override
     public void setSpielerPosition(String id, String name, Tuple position){
+
         for ( Spieler spieler : getSpielerListeByLobbyId(id)) {
+            logger.info("SpielerServiceImpl.setSpielerPosition  wird aufgerufen");
             if (spieler.getName().equals(name)) {
                 spieler.setPosition(position);
-            }
+            }   
         }
+        updateSpielerPositionen(id);
     }
     
 }
