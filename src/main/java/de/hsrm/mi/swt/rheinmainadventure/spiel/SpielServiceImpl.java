@@ -53,7 +53,7 @@ public class SpielServiceImpl implements SpielService{
     }
 
     public void updateSpielerPositionen(String id){ //TODO
-        broker.convertAndSend("/topic/spiel/" + id, getSpielerListeByLobbyId(id));
+        broker.convertAndSend("/topic/spiel" + id, getSpielerListeByLobbyId(id));
     }
 
     @Override

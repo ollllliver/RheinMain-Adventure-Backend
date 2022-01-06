@@ -29,7 +29,7 @@ public class SpielerController {
     // }
 
     //@SendTo("/topic/spiel")
-    @MessageMapping("/spiel")
+    @MessageMapping("/topic/spiel")
     public void updatePosition(String string) {
         logger.info("\n\n\nUpdate Position: " + string);
         //spielService.setSpielerPosition(id, name, position);
