@@ -11,7 +11,7 @@ INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (30, 'gltf/texturedBox_embedded/Box_regular.gltf', 'Normale Box', null);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (31, 'gltf/duck_embedded_texture/Duck.gltf', 'Ente', 1);
+VALUES (31, 'gltf/duck_embedded/Duck.gltf', 'Ente', 1);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (32, 'gltf/texturedBox_embedded/BoxInterleaved.gltf', 'Eingangs-Box', 0);

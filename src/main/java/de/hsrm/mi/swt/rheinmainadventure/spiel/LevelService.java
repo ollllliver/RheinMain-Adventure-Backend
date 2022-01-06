@@ -14,6 +14,10 @@ public interface LevelService {
 
     Optional<Level> getLevel(long levelId);
 
+    Level bearbeiteLevel(String benutzername, Level externesLevel);
+
+    void loescheLevel(long levelId);
+
     List<Raum> getAlleRaumeImLevel(Level level);
 
     Raum getRaum(Level level, int raumindex);

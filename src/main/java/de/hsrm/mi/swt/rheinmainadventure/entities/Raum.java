@@ -1,9 +1,9 @@
 package de.hsrm.mi.swt.rheinmainadventure.entities;
 
-import net.minidev.json.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Ein einzelner Raum in einem Level.
@@ -25,7 +25,7 @@ public class Raum {
 
     @OneToMany(mappedBy = "raum")
     @JsonIgnore
-    private Set<RaumMobiliar> raumMobiliar;
+    private List<RaumMobiliar> raumMobiliar;
 
     @Override
     public String toString() {
@@ -65,5 +65,21 @@ public class Raum {
 
     public void setRaumIndex(int folgeImLevel) {
         this.raumIndex = folgeImLevel;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
+    public List<RaumMobiliar> getRaumMobiliar() {
+        return raumMobiliar;
+    }
+
+    public void setRaumMobiliar(List<RaumMobiliar> raumMobiliar) {
+        this.raumMobiliar = raumMobiliar;
     }
 }

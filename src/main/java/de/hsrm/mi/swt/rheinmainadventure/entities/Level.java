@@ -30,6 +30,7 @@ public class Level {
     @Column
     private byte bewertung;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "level")
     List<Raum> raeume;
 
@@ -40,17 +41,6 @@ public class Level {
     @JsonIgnore
     @Version
     private Long version;
-
-    public Level(Long levelId, String name, int minSpieler, int maxSpieler, Benutzer ersteller) {
-        this.levelId = levelId;
-        this.name = name;
-        this.minSpieler = minSpieler;
-        this.maxSpieler = maxSpieler;
-        this.ersteller = ersteller;
-    }
-
-    public Level() {
-    }
 
     @Override
     public String toString() {
@@ -133,5 +123,13 @@ public class Level {
 
     public void setVersion(Long version) {
         this.version = version;
+    }
+
+    public Benutzer getErsteller() {
+        return ersteller;
+    }
+
+    public void setErsteller(Benutzer ersteller) {
+        this.ersteller = ersteller;
     }
 }

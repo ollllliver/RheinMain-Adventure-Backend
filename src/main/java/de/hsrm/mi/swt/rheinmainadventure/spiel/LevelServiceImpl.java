@@ -1,5 +1,6 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
+import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
 import de.hsrm.mi.swt.rheinmainadventure.entities.*;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.LevelRepository;
@@ -8,33 +9,28 @@ import de.hsrm.mi.swt.rheinmainadventure.repositories.RaumMobiliarRepository;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.RaumRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import javax.persistence.OptimisticLockException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class LevelServiceImpl implements LevelService {
 
-    private final LevelRepository levelRepository;
-    private final RaumRepository raumRepository;
-    private final MobiliarRepository mobiliarRepository;
-    private final RaumMobiliarRepository raumMobiliarRepository;
+    @Autowired
+    private LevelRepository levelRepository;
+    @Autowired
+    private RaumRepository raumRepository;
+    @Autowired
+    private MobiliarRepository mobiliarRepository;
+    @Autowired
+    private RaumMobiliarRepository raumMobiliarRepository;
+    @Autowired
+    private BenutzerService benutzerService;
 
     private final Logger lg = LoggerFactory.getLogger(LevelServiceImpl.class);
-
-    public LevelServiceImpl(LevelRepository levelRepository,
-                            RaumRepository raumRepository,
-                            MobiliarRepository mobiliarRepository,
-                            RaumMobiliarRepository raumMobiliarRepository) {
-        this.levelRepository = levelRepository;
-        this.raumRepository = raumRepository;
-        this.mobiliarRepository = mobiliarRepository;
-        this.raumMobiliarRepository = raumMobiliarRepository;
-    }
 
     @Override
     public List<Level> alleLevel() {
@@ -46,6 +42,74 @@ public class LevelServiceImpl implements LevelService {
         return levelRepository.findById(levelId);
     }
 
+    /**
+     * Ersetzt ein Level aus der Datenbank mit dem Level aus dem Übergabeparameter,
+     * oder legt es neu an, wenn es noch nicht existiert,
+     *
+     * @param benutzername  Ist der Benutzername des Nutzers, der das Level erstellt hat.
+     * @param externesLevel Ist das Level, das in die Datenbank übernommen werden soll.
+     * @return Das neue Level, synchron mit der Datenbank
+     */
+    @Override
+    public Level bearbeiteLevel(String benutzername, Level externesLevel) {
+        try {
+            lg.info("LevelService - editLevel");
+            // Erst einmal Level anhand der ID versuchen aus der DB rausklamüsern
+            Optional<Level> levelZumAktualisieren = getLevel(externesLevel.getLevelId());
+
+            // Jetzt den Benutzer anhand des Benutzernamens herausfinden.
+            Benutzer ersteller = benutzerService.findeBenutzer(benutzername);
+
+            lg.info("DB erfolgreich nach Level und Benutzer abgefragt");
+
+            // Wenn das Optional befüllt ist, haben wir ein Level und können es einfach updaten
+            // Speichern ist (hoffentlich) nicht nötig, da der Spaß hier @Transactional ist
+            if (levelZumAktualisieren.isPresent()) {
+                lg.info("Level aus DB erhält ein Update");
+                Level level = levelZumAktualisieren.get();
+                level.setErsteller(ersteller);
+
+                level.setName(externesLevel.getName());
+                level.setMinSpieler(externesLevel.getMinSpieler());
+                level.setMaxSpieler(externesLevel.getMaxSpieler());
+                level.setBewertung(externesLevel.getBewertung());
+                level.setRaeume(externesLevel.getRaeume());
+                level.setErsteller(ersteller);
+
+                lg.info("Level aktualisiert");
+
+                return level;
+
+            } else {
+                // Wenn das Optional leer ist, gibt es das Level noch nicht
+                // in der DB und wir legen ihn neu an
+
+                lg.info("Neues Level wird in DB angelegt");
+                externesLevel.setErsteller(ersteller);
+
+                // Abspeichern und beim Anbieter hinterlegen
+                Level level = levelRepository.save(externesLevel);
+                Collection<Level> erstellteLevel = ersteller.getErstellteLevel();
+                erstellteLevel.add(level);
+
+                lg.info("Level eingefügt");
+
+                return level;
+            }
+        } catch (OptimisticLockException ole) {
+            lg.error("OptimisticLockException ist aufgetreten! Eventuell einfach nochmal probieren?");
+            throw ole;
+        }
+    }
+
+    @Override
+    public void loescheLevel(long levelId) {
+        Optional<Level> zuLoeschen = levelRepository.findById(levelId);
+        if (zuLoeschen.isPresent()) {
+            lg.info("Level aus DB gelöscht, Anzeige ist raus.");
+            levelRepository.deleteById(levelId);
+        }
+    }
 
     /**
      * Sucht zu einem Level alle Räume dieses Levels heraus.
@@ -94,8 +158,8 @@ public class LevelServiceImpl implements LevelService {
     /**
      * Findet sämtliches Mobiliar, das sich in einem Raum befindet.
      *
-     * @param externerRaum ist der Raum, zu der das Mobiliar nachgeschlagen werden soll
-     * @return Eine Map von Mobiliar-Objekten, mit der Position als Schlüssel sowie die X/Y-Position im Level
+     * @param externerRaum ist der Raum, zu dem das Mobiliar nachgeschlagen werden soll
+     * @return Eine Map von Mobiliar-Objekten, mit der Position als Schlüssel
      * @throws NoSuchElementException Wenn es den Raum nicht in der Datenbank gibt
      */
     @Override

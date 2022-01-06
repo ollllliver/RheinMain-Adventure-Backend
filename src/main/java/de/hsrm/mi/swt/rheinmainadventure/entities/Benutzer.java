@@ -99,4 +99,12 @@ public class Benutzer {
     public void setVersion(Long version) {
         this.version = version;
     }
+
+    public List<Level> getErstellteLevel() {
+        return erstellteLevel;
+    }
+
+    public void setErstellteLevel(List<Level> erstellteLevel) {
+        this.erstellteLevel = erstellteLevel;
+    }
 }
