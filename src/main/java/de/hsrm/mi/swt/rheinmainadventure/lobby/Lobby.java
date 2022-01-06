@@ -1,9 +1,10 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
-import de.hsrm.mi.swt.rheinmainadventure.spiel.Karte;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
 
 public class Lobby {
@@ -14,7 +15,7 @@ public class Lobby {
     private boolean istGestartet;
     private boolean istPrivat;
     private int spielerlimit;
-    private Karte gewaehlteKarte;
+    private Level gewaehlteKarte;
     private Spiel spiel;
 
     // Aktuellen LobbyService reinreichen lassen da ich nicht weiß wie man bei einer
@@ -22,14 +23,14 @@ public class Lobby {
     /**
      * Erstellt eine Lobby mit einer bestimmten ID
      * 
-     * @param lobbyID        einmalige LobbyID für eine Lobby
-     * @param teilehmerliste leere Liste der teilnehmer
-     * @param host           ein Spieler der der host der Lobby ist
+     * @param lobbyID         einmalige LobbyID für eine Lobby
+     * @param teilnehmerliste leere Liste der teilnehmer
+     * @param host            ein Spieler der der host der Lobby ist
      * 
      */
-    public Lobby(String lobbyID, ArrayList<Spieler> teilnehmerliste, Spieler host) {
+    public Lobby(String lobbyID, List<Spieler> teilnehmerliste, Spieler host) {
         this.lobbyID = lobbyID;
-        this.teilnehmerliste = teilnehmerliste;
+        this.teilnehmerliste = new ArrayList<>(teilnehmerliste);
         this.host = host;
         this.istVoll = false;
         this.istGestartet = false;
@@ -93,12 +94,12 @@ public class Lobby {
      * Es folgen nurnoch Getter und Setter
      */
 
-    public ArrayList<Spieler> getTeilnehmerliste() {
+    public List<Spieler> getTeilnehmerliste() {
         return teilnehmerliste;
     }
 
-    public void setTeilnehmerliste(ArrayList<Spieler> teilnehmerliste) {
-        this.teilnehmerliste = teilnehmerliste;
+    public void setTeilnehmerliste(List<Spieler> teilnehmerliste) {
+        this.teilnehmerliste = new ArrayList<>(teilnehmerliste);
     }
 
     public boolean getIstVoll() {
@@ -131,6 +132,10 @@ public class Lobby {
     }
 
     public void setHost(Spieler host) {
+        if (getHost() != null) {
+            getHost().setHost(false);
+        }
+        host.setHost(true);
         this.host = host;
     }
 
@@ -158,11 +163,11 @@ public class Lobby {
         this.spiel = spiel;
     }
 
-    public Karte getGewaehlteKarte() {
+    public Level getGewaehlteKarte() {
         return gewaehlteKarte;
     }
 
-    public void setGewaehlteKarte(Karte gewaehlteKarte) {
+    public void setGewaehlteKarte(Level gewaehlteKarte) {
         this.gewaehlteKarte = gewaehlteKarte;
     }
     

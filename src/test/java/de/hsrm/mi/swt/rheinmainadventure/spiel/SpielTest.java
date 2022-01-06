@@ -1,7 +1,7 @@
-package de.hsrm.mi.swt.rheinmainadventure.level;
+package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,27 +10,25 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 
-import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
-import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayName("Erster Test für die Spielklasse.")
-public class spielTest {
+class SpielTest {
 
     @Autowired
     LobbyService lobbyService;
-    
+
     @Test
-    void einSpielErstellen() throws Exception{
+    void einSpielErstellen() throws Exception {
         Lobby lobby = lobbyService.lobbyErstellen("spielername1");
         lobbyService.joinLobbybyId(lobby.getlobbyID(), "spielername1");
         lobbyService.joinLobbybyId(lobby.getlobbyID(), "spielername2");
 
         Spiel spiel = new Spiel(lobby);
 
-        assertTrue(spiel.getSpielerListe().equals(lobby.getTeilnehmerliste()));
+        assertEquals(spiel.getSpielerListe(), lobby.getTeilnehmerliste());
     }
 }

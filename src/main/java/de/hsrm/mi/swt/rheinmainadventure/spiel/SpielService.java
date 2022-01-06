@@ -1,27 +1,19 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
+
 import java.util.List;
 
-import javax.persistence.Tuple;
-
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
+import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.model.SpielerStatus;
 
-/**
- * Interface für die Spiel Service Klasse
- * Implementation ist in {@link de.hsrm.mi.swt.rheinmainadventure.spiel.SpielServiceImpl}.
- */
 public interface SpielService {
-
-     // Das hier ist das Interface fuer aktionen auf die Spielinstanzen.
-    // Alles, was an einem Spiel gemacht wird, soll hierueber passieren.
-    public Spiel spielErstellen(Lobby lobby);
-
-    public Spiel getSpielByLobbyId(String id);
-
-    public List<Spiel> getSpiele();
-
-    public List<Spieler> getSpielerListeByLobbyId(String id);
-
-    public void setSpielerPosition(String id, String name, Tuple position);
-    
+    void starteSpiel(Lobby lobby);
+    List<Spiel> alleSpiele();
+    List<Spieler> alleSpieler(String spielID);
+    Spieler positionsAktualisierung(Spieler spieler, Position position);
+    Spieler statusAktualisierung(Spieler spieler, SpielerStatus status);
+    Spiel getSpielByLobbyId(String id);
+    List<Spieler> getSpielerListeBySpiel(Spiel spiel);
+    void setSpielerPosition(String id, String name, Position position);
 }

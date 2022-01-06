@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
+import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
+import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
 
 /**
  * Lobby Service für das verwalten aller Lobbys.
@@ -21,7 +23,9 @@ import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
  */
 @Service
 public class LobbyServiceImpl implements LobbyService {
-  Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
+  private Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
+  private final String TOPIC_LOB = "/topic/lobby/";
+  private final String TOPIC_UEB = "/topic/lobby/uebersicht";
 
   /**
    * Der Messagebroker wird hier durch dependencyInjection eingebunden. Über ihn
@@ -33,7 +37,7 @@ public class LobbyServiceImpl implements LobbyService {
   /**
    * Liste aller Lobbyinstanzen.
    */
-  ArrayList<Lobby> lobbies = new ArrayList<Lobby>();
+  ArrayList<Lobby> lobbys = new ArrayList<>();
 
   /**
    * Generiert eine einmalige Lobby-ID aus dem Namen des Spielers, kombiniert mit
@@ -45,14 +49,16 @@ public class LobbyServiceImpl implements LobbyService {
   private String generateLobbyID(String benutzerName) {
     String lobbyID = "";
 
-    // Benutzername verschoben um eine Stelle
-    String verschobenerName = "";
-
+    // Codesmell war da! Besser mit Stringbinder:
+    StringBuilder bld = new StringBuilder();
     for (int i = 0; i < benutzerName.length(); i++) {
       char neuerChar = benutzerName.charAt(i);
       neuerChar += 1;
-      verschobenerName += neuerChar;
+      bld.append(neuerChar);
     }
+
+    // Benutzername verschoben um eine Stelle
+    String verschobenerName = bld.toString();
 
     // Hash-Wert aus aktueller Zeit
     String aktZeit = java.time.LocalTime.now().toString();
@@ -60,6 +66,7 @@ public class LobbyServiceImpl implements LobbyService {
 
     int zaehler = 0;
 
+    // TODO: lobbyID schmeißt einen Codesmell in SonarCube
     // Kombination von Name und Zeit-Hashwert fuer Lobby-ID
     for (int i = 0; i < 10; i++) {
       if (i % 2 == 0) {
@@ -89,38 +96,71 @@ public class LobbyServiceImpl implements LobbyService {
     // Hier wird eine neue Lobby erstellt. Der Host ist der Benutzer aus dem
     // Sessionscope.
     Spieler host = new Spieler(spielerName);
-    ArrayList<Spieler> players = new ArrayList<Spieler>();
-    // players.add(host);
+    host.setHost(true);
+    ArrayList<Spieler> players = new ArrayList<>();
     String lobbyID = generateLobbyID(spielerName);
     Lobby lobby = new Lobby(lobbyID, players, host);
 
     starteTimeout(lobby);
-    lobbies.add(lobby);
+    lobbys.add(lobby);
 
+    broker.convertAndSend(TOPIC_UEB, new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false));
     return lobby;
   }
 
+  /**
+   * Funktion für verlassen der Lobby, entfernt spielernamen aus der
+   * ArrayList<Spieler>
+   * 
+   * @param id          lobby ID
+   * @param spielerName spieler der die lobby verlassen will
+   * @return LobbyMessage dass eine spieler die lobby verlassen hat
+   *
+   */
+
   @Override
   public LobbyMessage spielerVerlaesstLobby(String id, String spielerName) {
-    logger.info("HIER GEHTS REIN: " + id + spielerName);
-    Lobby currLobby = getLobbyById(id);
-    ArrayList<Spieler> teilnehmer = currLobby.getTeilnehmerliste();
 
+    Lobby currLobby = getLobbyById(id);
+    ArrayList<Spieler> teilnehmer = new ArrayList<>(currLobby.getTeilnehmerliste());
+
+    // Spieler wird gesucht aus der aktuellenTeilnehmerList...
     for (int i = 0; i < teilnehmer.size(); i++) {
       Spieler currSpieler = teilnehmer.get(i);
       if (currSpieler.getName().equals(spielerName)) {
-        teilnehmer.remove(currSpieler);
+        // ... und entfernt
+        // wenn lobby leer ist wird sie geschlossen
+        if (teilnehmer.size() == 1) {
+          logger.info("Die Lobby ist leer und wird somit geschlossen!");
+          lobbys.remove(currLobby);
+          broker.convertAndSend(TOPIC_UEB, new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
+        } else {
+          currLobby.getTeilnehmerliste().remove(currSpieler);
+          // wenn der spieler der Host war wird der Status weitergegeben
+          if (spielerName.equals(currLobby.getHost().getName())) {
+            logger.info(String.format("Der Host: %s verlaesst die Lobby", spielerName));
+            int size = currLobby.getTeilnehmerliste().size();
+            double index = Math.floor(Math.random() * size);
+
+            Spieler neuerHost = teilnehmer.get((int) index);
+            logger.info("Der neue Host ist: " + neuerHost.getName());
+            neuerHost.setHost(true);
+            currLobby.setHost(neuerHost);
+          }
+        }
+
       }
       // TODO Else noch abdecken
     }
-
-    broker.convertAndSend("/topic/lobby/" + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
+    broker.convertAndSend(TOPIC_LOB + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
+    broker.convertAndSend(TOPIC_LOB + id + "/chat", new ChatNachricht(NachrichtenTyp.LEAVE, "", spielerName));
     return new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false);
 
   }
 
-  /** 
-   * Timeout Funktion für Lobbies die nach 10 Minuten Thread-Safe eine Lobby schliesst
+  /**
+   * Timeout Funktion für Lobbs die nach 10 Minuten Thread-Safe eine Lobby
+   * schliesst
    * 
    * @param lobby Lobby dessen Timeout gestartet wird.
    */
@@ -135,31 +175,36 @@ public class LobbyServiceImpl implements LobbyService {
           // Subscribed sind eine Fehlermeldung per Publish senden und im Frontend
           // abfangen.
           // @Chand das wuerde jetzt so gehen:
-          broker.convertAndSend("/topic/lobby/" + lobby.getlobbyID(),
+          broker.convertAndSend(TOPIC_UEB + lobby.getlobbyID(),
               new LobbyMessage(NachrichtenCode.LOBBYZEIT_ABGELAUFEN, true));
           // Das sendet an alle, die in der Lobby eingeschrieben sind die message
           // LOBBYZEIT_ABGELAUFEN
 
-          lobbies.remove(lobby);
+          lobbys.remove(lobby);
+          broker.convertAndSend(TOPIC_UEB, new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
 
         }
       }
 
     };
-    //timer.schedule(task, 15 * 1000); //für Testing auf 5 Sekunden setzen.
+    // timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
     timer.schedule(task, 10 * 60 * 1000);
   }
 
-  /**Startet den Countdown fuer den Spielstart einer Lobby - setzt die IstGestartet Variable
-   * nach 10 Sekunden auf true.
-   *@param lobbyId ID der Lobby dessen Countdown gestartet wird.
-   *@return gibt eine LobbyMessage zurueck die aussagt das der Countdown gestartet worden ist.
-   */ 
+  /**
+   * Startet den Countdown fuer den Spielstart einer Lobby - setzt die
+   * IstGestartet Variable nach 10 Sekunden auf true.
+   * 
+   * @param lobbyId ID der Lobby dessen Countdown gestartet wird.
+   * @return gibt eine LobbyMessage zurueck die aussagt das der Countdown
+   *         gestartet worden ist.
+   */
   @Override
   public LobbyMessage starteCountdown(String lobbyId) {
     Timer timer = new Timer();
 
-    broker.convertAndSend("/topic/lobby/" + lobbyId, new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false,"Sekunden=10"));
+    broker.convertAndSend(TOPIC_LOB + lobbyId,
+        new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10"));
 
     TimerTask task = new TimerTask() {
 
@@ -175,17 +220,17 @@ public class LobbyServiceImpl implements LobbyService {
       }
 
     };
-    timer.schedule(task, 10 * 1000); 
-    return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false,"Sekunden=10");  
+    timer.schedule(task, 10 * 1000);
+    return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10");
   }
 
   /**
-   * Gibt ALLE aktuellen Lobbies als Array zurueck.
+   * Gibt ALLE aktuellen Lobbs als Array zurueck.
    * 
    */
-  public ArrayList<Lobby> getLobbies() {
-    logger.info("Anzahl lobbies:" + this.lobbies.size());
-    return this.lobbies;
+  public ArrayList<Lobby> getLobbys() {
+    logger.info(String.format("Anzahl lobbys: %s", this.lobbys.size()));
+    return this.lobbys;
     // Bsp.:
     // [{"lobbyID":"4l1a7y16","playerList":[{"id":0,"name":"Player1"}],"host":{"id":0,"name":"Player1"},"istVoll":false,"istGestartet":false,"spielerlimit":0},
     // {"lobbyID":"1r4a4l08","playerList":[{"id":0,"name":"Player1"}],"host":{"id":0,"name":"Player1"},"istVoll":false,"istGestartet":false,"spielerlimit":0}],
@@ -195,14 +240,14 @@ public class LobbyServiceImpl implements LobbyService {
   /**
    * Gibt die eine Lobby mit der übergebenen id zurück.
    * 
-   * @param Id ist die Lobby ID der gewünschten Lobby
+   * @param id ist die Lobby ID der gewünschten Lobby
    * @return Lobby mit der mitgegebenen ID
    */
-  public Lobby getLobbyById(String Id) {
+  public Lobby getLobbyById(String id) {
     // Gibt die Lobby mit uebergebener ID zurueck. Wenn nicht vorhanden, dann return
     // 0.
-    for (Lobby currLobby : lobbies) {
-      if (currLobby.getlobbyID().equals(Id)) {
+    for (Lobby currLobby : lobbys) {
+      if (currLobby.getlobbyID().equals(id)) {
         return currLobby;
       }
     }
@@ -213,20 +258,20 @@ public class LobbyServiceImpl implements LobbyService {
    * Fuegt den Sessionspieler der mitgegebenen Lobby (ID) ueber die
    * nutzerHinzufuegen() Funktion der Lobby Klasse hinzu.
    * 
-   * @param Id          mitgegebene Lobby-ID
+   * @param id          mitgegebene Lobby-ID
    * @param spielername Der mitgegebene Name des Spielers
    * @return Gibt eine LobbyMessage mit passendem NachrichtenCode, sowie
    *         Erfolgsstatus zurueck
    */
   @Override
-  public LobbyMessage joinLobbybyId(String Id, String spielername) {
+  public LobbyMessage joinLobbybyId(String id, String spielername) {
     // Eigentlich ohne Spieler. In der Lobby.nutzerHinzufuegen() Methode muss der
     // Spieler aus der SessionScope geholt werden
-    logger.info(spielername + " will der Lobby " + Id + " joinen");
-    
-    Lobby currLobby = getLobbyById(Id);
-    if(currLobby==null){
-      return new LobbyMessage(NachrichtenCode.BEITRETEN_FEHLGESCHLAGEN, true);
+    logger.info("{} will der Lobby {} joinen", spielername, id);
+
+    Lobby currLobby = getLobbyById(id);
+    if (currLobby == null) {
+      return new LobbyMessage(NachrichtenCode.LOBBY_NICHT_GEFUNDEN, true);
     }
     // ueberpruefen, ob Spieler bereits in der Lobby ist
     if (!currLobby.getTeilnehmerliste().contains(new Spieler(spielername))) {
@@ -239,29 +284,33 @@ public class LobbyServiceImpl implements LobbyService {
       } else if (currLobby.getIstVoll()) {
         return new LobbyMessage(NachrichtenCode.LOBBY_VOLL, true);
       } else {
-        Spieler spieler = new Spieler(spielername);
-        /*
-         * Legt benutzer Instanz an wenn man einen User mit dem aktuellen Session
-         * Benutzernamen findet. Benutzer tempNutzer =
-         * benutzerService.getBenutzerByUsername(username);
-         */
+        Spieler spieler;
+        if (currLobby.getHost().getName().equals(spielername)) {
+          spieler = currLobby.getHost();
+        } else {
+          spieler = new Spieler(spielername);
+        }
         currLobby.getTeilnehmerliste().add(spieler);
         currLobby.setIstVoll((currLobby.getTeilnehmerliste().size() >= currLobby.getSpielerlimit()));
-        broker.convertAndSend("/topic/lobby/" + Id, new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID()));
-        return new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false,currLobby.getlobbyID());
+        broker.convertAndSend(TOPIC_LOB + id,
+            new LobbyMessage(NachrichtenCode.NEUER_MITSPIELER, false, currLobby.getlobbyID()));
+        broker.convertAndSend(TOPIC_LOB + id + "/chat", new ChatNachricht(NachrichtenTyp.JOIN, "", spielername));
+        return new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, currLobby.getlobbyID());
       }
     }
     return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false);
   }
 
-  /** Laesst einen Spieler einer zufaelligen freien Lobby beitreten
+  /**
+   * Laesst einen Spieler einer zufaelligen freien Lobby beitreten
+   * 
    * @param spielername Name des spielers der einer zufaelligen Lobby beitritt
    * @retun Gibt einene LobbyMessage mit dem ergebnis des beitretens zurueck
    */
   @Override
-  public LobbyMessage lobbieBeitretenZufaellig(String spielername) {
+  public LobbyMessage lobbyBeitretenZufaellig(String spielername) {
     Lobby tempLobby = null;
-    for (Lobby currLobby : lobbies) {
+    for (Lobby currLobby : lobbys) {
       if (!currLobby.getIstGestartet() && !currLobby.getIstVoll() && !currLobby.getIstPrivat()) {
         tempLobby = currLobby;
         break;
@@ -275,4 +324,39 @@ public class LobbyServiceImpl implements LobbyService {
 
   }
 
+  @Override
+  public LobbyMessage setSpielerlimit(String id, int spielerlimit, String spielerName) {
+    if (getLobbyById(id).getHost().getName() == spielerName) {
+      getLobbyById(id).setSpielerlimit(spielerlimit);
+      LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+      broker.convertAndSend(TOPIC_LOB + id, res);
+      return res;
+    }
+    return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
+  }
+
+  @Override
+  public LobbyMessage setPrivacy(String id, Boolean istPrivat, String spielerName) {
+    if (getLobbyById(id).getHost().getName() == spielerName) {
+      getLobbyById(id).setIstPrivat(istPrivat);
+      LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+      broker.convertAndSend(TOPIC_LOB + id, res);
+      return res;
+    }
+    return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
+  }
+
+  @Override
+  public LobbyMessage setHost(String id, Spieler host, String spielerName) {
+    // Da host ja nicht wirklich das Objekt ist, da in der Teilnehmerliste ist,
+    // müssen wir es erst mit dem gemeinten Objekt ersetzten
+    host = getLobbyById(id).getTeilnehmerliste().get(getLobbyById(id).getTeilnehmerliste().indexOf(host));
+    if (getLobbyById(id).getHost().getName() == spielerName) {
+      getLobbyById(id).setHost(host);
+      LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+      broker.convertAndSend(TOPIC_LOB + id, res);
+      return res;
+    }
+    return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
+  }
 }

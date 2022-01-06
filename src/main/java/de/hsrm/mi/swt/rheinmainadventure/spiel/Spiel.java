@@ -1,47 +1,52 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
-
-import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 
 public class Spiel {
+
+    private final String spielID;
     private ArrayList<Spieler> spielerListe;
-    private Timestamp startZeitpunkt;
-    private Karte karte;
-    private String id;
+    private final Timestamp startZeitpunkt;
+    private final Level level;
+
+    // TODO: Damit @Autowired geht, muss das Spiel eventuell ein @Service o.ä werden
+    @Autowired
+    LevelService levelService;
 
     public Spiel(Lobby lobby) {
-        this.karte = lobby.getGewaehlteKarte();
-        for(int i = 0; i<lobby.getTeilnehmerliste().size();i++){
-            lobby.getTeilnehmerliste().get(i).setPosition(this.karte.getStartpositionen().get(i));
+        this.spielID = lobby.getlobbyID();
+        this.level = lobby.getGewaehlteKarte();
+        for (int i = 0; i < lobby.getTeilnehmerliste().size(); i++) {
+            lobby.getTeilnehmerliste().get(i).getEigenschaften().setPosition(levelService.getStartPositionImRaum(levelService.getRaum(level, 0)));
             this.spielerListe.add(lobby.getTeilnehmerliste().get(i));
         }
         this.startZeitpunkt = new Timestamp(System.currentTimeMillis());
-        this.id = lobby.getlobbyID();
+    }
+
+    public String getSpielID() {
+        return spielID;
     }
 
     public ArrayList<Spieler> getSpielerListe() {
         return spielerListe;
     }
 
-
     public void setSpielerListe(ArrayList<Spieler> teilnehmerliste) {
         this.spielerListe = teilnehmerliste;
     }
-
-    public String getId(){
-        return this.id;
-    }
-
 
     public Timestamp getStartZeitpunkt() {
         return startZeitpunkt;
     }
 
-    public Karte getKarte() {
-        return karte;
+    public Level getKarte() {
+        return level;
     }
 
 }

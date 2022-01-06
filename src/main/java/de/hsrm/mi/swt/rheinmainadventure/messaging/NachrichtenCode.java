@@ -5,6 +5,20 @@ package de.hsrm.mi.swt.rheinmainadventure.messaging;
  * Bei änderungen auch die Nachrichtencodes im Frontend ändern!
  */
 public enum NachrichtenCode {
-    NEUER_MITSPIELER, MITSPIELER_VERLAESST, LOBBYZEIT_ABGELAUFEN, BEITRETEN_FEHLGESCHLAGEN, SCHON_BEIGETRETEN,
-    LOBBY_GESTARTET, LOBBY_VOLL, COUNTDOWN_GESTARTET, KEINE_LOBBY_FREI, SPIELER_POSITIONEN;
+
+    // Benachrichtigung in der LobbyÜBERSICHT
+    NEUE_LOBBY, LOBBY_ENTFERNT,
+
+    // Benachrichtigungen in der Lobby
+    NEUER_MITSPIELER, MITSPIELER_VERLAESST,
+    LOBBY_GESTARTET, COUNTDOWN_GESTARTET,
+    LOBBYZEIT_ABGELAUFEN,
+        
+    // Lobby beitreten Antworten:
+    ERFOLGREICH_BEIGETRETEN, BEITRETEN_FEHLGESCHLAGEN, SCHON_BEIGETRETEN,
+    LOBBY_VOLL, LOBBY_NICHT_GEFUNDEN, KEINE_LOBBY_FREI,
+
+    // Lobby Einstellungsänderungen Antworten:
+    NEUE_EINSTELLUNGEN, KEINE_BERECHTIGUNG;
+
 }
