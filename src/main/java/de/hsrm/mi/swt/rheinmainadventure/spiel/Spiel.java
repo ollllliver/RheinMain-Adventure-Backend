@@ -7,11 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Spiel {
 
     private final String spielID;
-    private ArrayList<Spieler> spielerListe;
+    private List<Spieler> spielerListe;
     private final Timestamp startZeitpunkt;
     private final Level level;
 
@@ -22,8 +23,11 @@ public class Spiel {
     public Spiel(Lobby lobby) {
         this.spielID = lobby.getlobbyID();
         this.level = lobby.getGewaehlteKarte();
+        this.spielerListe = new ArrayList<Spieler>();
+
         for (int i = 0; i < lobby.getTeilnehmerliste().size(); i++) {
-            lobby.getTeilnehmerliste().get(i).getEigenschaften().setPosition(levelService.getStartPositionImRaum(levelService.getRaum(level, 0)));
+            //wirft im Moment noch NullPointer, deswegen auskommentiert
+            //lobby.getTeilnehmerliste().get(i).getEigenschaften().setPosition(levelService.getStartPositionImRaum(levelService.getRaum(level, 0)));
             this.spielerListe.add(lobby.getTeilnehmerliste().get(i));
         }
         this.startZeitpunkt = new Timestamp(System.currentTimeMillis());
@@ -33,7 +37,7 @@ public class Spiel {
         return spielID;
     }
 
-    public ArrayList<Spieler> getSpielerListe() {
+    public List<Spieler> getSpielerListe() {
         return spielerListe;
     }
 

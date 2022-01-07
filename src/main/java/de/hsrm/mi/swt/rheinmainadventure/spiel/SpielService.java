@@ -13,7 +13,6 @@ public interface SpielService {
     List<Spieler> alleSpieler(String spielID);
     Spieler positionsAktualisierung(Spieler spieler, Position position);
     Spieler statusAktualisierung(Spieler spieler, SpielerStatus status);
-    Spiel getSpielByLobbyId(String id);
+    Spieler getSpieler(String lobbyID, String name);
     List<Spieler> getSpielerListeBySpiel(Spiel spiel);
-    void setSpielerPosition(String id, String name, Position position);
 }

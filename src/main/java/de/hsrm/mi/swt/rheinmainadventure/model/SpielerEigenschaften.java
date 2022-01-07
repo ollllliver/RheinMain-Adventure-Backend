@@ -11,7 +11,7 @@ public class SpielerEigenschaften {
     }
 
     public SpielerEigenschaften() {
-
+        this.position = new Position(0,0,0);
     }
 
     public Position getPosition() {

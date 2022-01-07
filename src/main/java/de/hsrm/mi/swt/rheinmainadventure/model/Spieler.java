@@ -13,6 +13,7 @@ public class Spieler {
 
     public Spieler(String name) {
         this.name = name;
+        this.eigenschaften = new SpielerEigenschaften();
     }
 
     public Spieler() {

@@ -1,6 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import de.hsrm.mi.swt.rheinmainadventure.model.SpielerStatus;
 @Service
 public class SpielServiceImpl implements SpielService {
 
-    private Map<String, Spiel> spielListe;
+    private Map<String, Spiel> spielListe = new HashMap<>();
 
     Logger logger = LoggerFactory.getLogger(SpielServiceImpl.class);
 
@@ -42,7 +43,7 @@ public class SpielServiceImpl implements SpielService {
      */
     @Override
     public List<Spieler> alleSpieler(String spielID) {
-        ArrayList<Spieler> spielerListe = new ArrayList<Spieler>();
+        List<Spieler> spielerListe = new ArrayList<Spieler>();
         spielerListe = spielListe.get(spielID).getSpielerListe();
         return spielerListe;
     }
@@ -69,31 +70,39 @@ public class SpielServiceImpl implements SpielService {
     }
 
     @Override
-    public void setSpielerPosition(String lobbyID, String name, Position position){
-        Spiel spiel = getSpielByLobbyId(lobbyID);
+    public Spieler getSpieler(String spielID, String name){
+        Spiel spiel = spielListe.get(spielID);
 
-        for ( Spieler spieler : getSpielerListeBySpiel(spiel)) {
+        for ( Spieler spieler : getSpielerListeBySpiel(spiel) ) {
             //logger.info("SpielerServiceImpl.setSpielerPosition  wird aufgerufen");
             if (spieler.getName().equals(name)) {
-                spieler.getEigenschaften().setPosition(position);
-            }   
-        }
-        updateSpielerPositionen(lobbyID);
+                return spieler;            }   
+        } 
+        return null; // throw SpielerNotFoundException
     }
+
+    // @Override
+    // public void setSpielerPosition(String lobbyID, String name, Position position){
+    //     Spiel spiel = getSpielByLobbyId(lobbyID);
+
+    //     for ( Spieler spieler : getSpielerListeBySpiel(spiel)) {
+    //         //logger.info("SpielerServiceImpl.setSpielerPosition  wird aufgerufen");
+    //         if (spieler.getName().equals(name)) {
+    //             spieler.getEigenschaften().setPosition(position);
+    //         }   
+    //     }
+    //     updateSpielerPositionen(lobbyID);
+    // }
 
     @Override
     public List<Spieler> getSpielerListeBySpiel(Spiel spiel) {
         return spiel.getSpielerListe();
     }
 
-    public void updateSpielerPositionen(String lobbyID){ //TODO
+    public void updateSpielerPositionen(String spielID){ //TODO
         //broker.convertAndSend("/topic/spiel" + lobbyID, getSpielerListeByLobbyId(lobbyID));
     }
 
-    @Override
-    public Spiel getSpielByLobbyId(String id) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+
     
 }

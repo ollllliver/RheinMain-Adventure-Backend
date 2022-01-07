@@ -14,7 +14,9 @@ import javax.persistence.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 @Controller
 
@@ -39,10 +41,11 @@ public class SpielerController {
      */
     @MessageMapping("/topic/spiel/{lobbyID}/pos/{name}")
     //@SendTo("/topic/spiel/{lobbyID}")
-    public void updatePosition(@Payload String s, @DestinationVariable String lobbyID, @DestinationVariable String name) throws Exception {  
-        logger.info("SpielerController.updatePosition: Payload=" + s + ", lobbyID="+lobbyID + ", name: " + name);
-        broker.convertAndSend("/topic/spiel/" + lobbyID, s); //nur Test
-        //spielService.setSpielerPosition(lobbyID, name, null); //TODO
+    public void updatePosition(@Payload Position pos, @DestinationVariable String lobbyID, @DestinationVariable String name) throws Exception {  
+        logger.info("SpielerController.updatePosition: Payload=" + pos + ", lobbyID="+lobbyID + ", name: " + name);
+        broker.convertAndSend("/topic/spiel/" + lobbyID, pos); //nur Test
+        Spieler spieler = spielService.getSpieler(lobbyID, name);
+        spielService.positionsAktualisierung(spieler, pos);
     }
 
 

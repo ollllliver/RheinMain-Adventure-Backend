@@ -5,31 +5,56 @@ import java.util.Map;
 
 public class Position {
 
-    private Map<Character, Integer> positionData;
+    private float x,y,z;
 
     public Position() {
-        this.positionData = new HashMap<>();
-        this.positionData.put('x', null);
-        this.positionData.put('y', null);
-        this.positionData.put('z', null);
+        this.x=0;
+        this.y=0;
+        this.z=0;
     }
 
-    public Position(int x, int y) {
-        this.positionData = new HashMap<>();
-        this.positionData.put('x', x);
-        this.positionData.put('y', y);
-        this.positionData.put('z', y);
+    public Position(float x, float y, float z) {
+        this.x=x;
+        this.y=y;
+        this.z=z;
     }
 
-    public Position(Map<Character, Integer> positionData) {
-        this.positionData = positionData;
+    public Position(float x, float y) {
+        this.x=x;
+        this.y=y;
+        this.z=0;
     }
 
-    public Map<Character, Integer> getPositionData() {
-        return positionData;
+
+    // public float[] getPosition(){
+    //     return new float[]{this.x,this.y,this.z};
+    // }
+
+    public float getX(){
+        return this.x;
     }
 
-    public void setPositionData(Map<Character, Integer> positionData) {
-        this.positionData = positionData;
+    public float getY(){
+        return this.y;
+    }
+
+    public float getZ(){
+        return this.z;
+    }
+
+    public void setPosition(float x, float y, float z) {
+        this.x=x;
+        this.y=y;
+        this.z=z;
+    }
+
+    public void setPosition(float x, float y) {
+        this.x=x;
+        this.y=y;
+    }
+
+
+    public String toString(){
+        return "pos: [x=" + x+ ", y=" + y + ", z=" + z + "]";
     }
 }
