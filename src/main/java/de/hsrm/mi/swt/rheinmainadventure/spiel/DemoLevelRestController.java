@@ -5,6 +5,7 @@ import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import java.util.List;
  * Eine Demo-Rest Api, um das Frontend probeweise anzukabeln.
  * Sehr schlecht gecodet, einfach nur um das Frontend benutzbar zu machen
  */
+@CrossOrigin
 @RestController
 public class DemoLevelRestController {
 
@@ -33,6 +35,4 @@ public class DemoLevelRestController {
     public FileSystemResource getGLTFObject(@PathVariable long mobiliarID) {
         return new FileSystemResource("src/main/resources/" + mobiliarRepository.getById(mobiliarID).getModellURI());
     }
-
-
 }
