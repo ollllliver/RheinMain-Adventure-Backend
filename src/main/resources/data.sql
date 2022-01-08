@@ -1,6 +1,9 @@
 INSERT INTO benutzer (benutzer_id, benutzername, passwort)
 VALUES (10, 'wubbo', 'test');
 
+INSERT INTO benutzer (benutzer_id, benutzername, passwort)
+VALUES (17, 'Oliver', 'Oliver');
+
 INSERT INTO level (level_id, name, min_spieler, max_spieler, bewertung, benutzer_id)
 VALUES (1, 'Wubbos wahnwitzige Wunderwelt', 2, 4, 17, 10);
 
@@ -17,7 +20,7 @@ INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (32, 'gltf/texturedBox_embedded/BoxInterleaved.gltf', 'Eingangs-Box', 0);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (33, 'gltf/duck_embedded/Duck.gltf', 'Ausgangs-Ente', 1);
+VALUES (33, 'gltf/duck_embedded/Duck.gltf', 'Eingangs-Ente', 0);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_id, raum_id)
 VALUES (40, 5, 5, 30, 20);

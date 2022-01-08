@@ -1,6 +1,8 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -10,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
 
@@ -36,6 +40,9 @@ public class LobbyServiceImpl implements LobbyService {
 
   @Autowired
   SpielService spielService;
+
+  @Autowired
+  LevelService levelService;
 
   /**
    * Liste aller Lobbyinstanzen.
@@ -102,13 +109,20 @@ public class LobbyServiceImpl implements LobbyService {
     host.setHost(true);
     ArrayList<Spieler> players = new ArrayList<>();
     String lobbyID = generateLobbyID(spielerName);
-    Lobby lobby = new Lobby(lobbyID, players, host);
 
-    starteTimeout(lobby);
-    lobbys.add(lobby);
-
-    broker.convertAndSend(TOPIC_UEB, new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false));
-    return lobby;
+    Optional<Level> optLevel = levelService.getLevel(1);
+    if (optLevel.isPresent()){
+      Lobby lobby = new Lobby(lobbyID, players, host, optLevel.get());
+      starteTimeout(lobby);
+      lobbys.add(lobby);
+  
+      broker.convertAndSend(TOPIC_UEB, new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false));
+      return lobby;
+    }
+    else{
+      throw new NoSuchElementException("es gibt kein level in der Datenbank mit ID == 1.");
+      // TODO: @Oliver eigene Exception schreiben!
+    }
   }
 
   /**

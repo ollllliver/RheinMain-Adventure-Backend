@@ -207,7 +207,7 @@ public class LevelServiceImpl implements LevelService {
         // Gehe sämtliches Mobiliar im Raum ab
         for (Map.Entry<Position, Mobiliar> entry : mobiliarMap.entrySet()) {
             // Wenn das aktuelle Mobiliar vom Typ Start ist, haben wir unseren Treffer
-            if (entry.getValue().getMobiliartyp().equals(Mobiliartyp.EINGANG)) {
+            if (Mobiliartyp.EINGANG.equals(entry.getValue().getMobiliartyp())) {
                 // Der Schlüssel der Map ist die Mobiliar-Position, also geben wir die zurück
                 lg.info("Gefunden!");
                 return entry.getKey();
