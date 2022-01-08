@@ -15,6 +15,7 @@ import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
 
 /**
@@ -33,6 +34,9 @@ public class LobbyServiceImpl implements LobbyService {
    */
   @Autowired
   SimpMessagingTemplate broker;
+
+  @Autowired
+  SpielService spielService;
 
   /**
    * Liste aller Lobbyinstanzen.
@@ -203,18 +207,22 @@ public class LobbyServiceImpl implements LobbyService {
   public LobbyMessage starteCountdown(String lobbyId) {
     Timer timer = new Timer();
 
+    Lobby lobby = getLobbyById(lobbyId);
+    spielService.starteSpiel(lobby);
+    logger.info(String.format("#### "+ lobbyId + " ist gestartet ####"));
+
     broker.convertAndSend(TOPIC_LOB + lobbyId,
         new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10"));
 
     TimerTask task = new TimerTask() {
 
       public void run() {
-        Lobby lobby = getLobbyById(lobbyId);
         if (!lobby.getIstGestartet()) {
           lobby.setIstGestartet(true);
 
           // TODO : Hier nach Spielcountdown Ansicht wechseln
           lobby.setSpiel(new Spiel(lobby));
+          
 
         }
       }

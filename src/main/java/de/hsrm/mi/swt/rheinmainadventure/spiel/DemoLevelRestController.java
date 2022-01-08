@@ -35,4 +35,5 @@ public class DemoLevelRestController {
     public FileSystemResource getGLTFObject(@PathVariable long mobiliarID) {
         return new FileSystemResource("src/main/resources/" + mobiliarRepository.getById(mobiliarID).getModellURI());
     }
+
 }

@@ -19,7 +19,6 @@ VALUES (32, 'gltf/texturedBox_embedded/BoxInterleaved.gltf', 'Eingangs-Box', 0);
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (33, 'gltf/duck_embedded/Duck.gltf', 'Ausgangs-Ente', 1);
 
-
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_id, raum_id)
 VALUES (40, 5, 5, 30, 20);
 

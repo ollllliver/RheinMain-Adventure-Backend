@@ -10,7 +10,8 @@ import de.hsrm.mi.swt.rheinmainadventure.model.SpielerStatus;
 public interface SpielService {
     void starteSpiel(Lobby lobby);
     List<Spiel> alleSpiele();
-    List<Spieler> alleSpieler(String spielID);
+    List<Spieler> getSpielerListeBySpiel(Spiel spiel);
     Spieler positionsAktualisierung(Spieler spieler, Position position);
     Spieler statusAktualisierung(Spieler spieler, SpielerStatus status);
+    Spieler getSpieler(String lobbyID, String name);
 }
