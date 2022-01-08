@@ -3,10 +3,13 @@ package de.hsrm.mi.swt.rheinmainadventure.lobby;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
 
+@Component
 public class Lobby {
     private String lobbyID;
     private ArrayList<Spieler> teilnehmerliste;

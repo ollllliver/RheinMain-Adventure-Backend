@@ -14,7 +14,6 @@ import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
-import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
 
@@ -206,8 +205,8 @@ public class LobbyServiceImpl implements LobbyService {
   @Override
   public LobbyMessage starteCountdown(String lobbyId) {
     Timer timer = new Timer();
-
     Lobby lobby = getLobbyById(lobbyId);
+
     spielService.starteSpiel(lobby);
     logger.info(String.format("#### "+ lobbyId + " ist gestartet ####"));
 
@@ -219,11 +218,7 @@ public class LobbyServiceImpl implements LobbyService {
       public void run() {
         if (!lobby.getIstGestartet()) {
           lobby.setIstGestartet(true);
-
           // TODO : Hier nach Spielcountdown Ansicht wechseln
-          lobby.setSpiel(new Spiel(lobby));
-          
-
         }
       }
 
