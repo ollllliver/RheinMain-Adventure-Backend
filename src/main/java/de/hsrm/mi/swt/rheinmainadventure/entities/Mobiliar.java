@@ -31,6 +31,13 @@ public class Mobiliar {
     @Column
     private Mobiliartyp mobiliartyp;
 
+    public Mobiliar(String name, String modellURI, Mobiliartyp mobiliartyp) {
+        this.name = name;
+        this.modellURI = modellURI;
+        this.mobiliartyp = mobiliartyp;
+    }
+
+    public Mobiliar() {}
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

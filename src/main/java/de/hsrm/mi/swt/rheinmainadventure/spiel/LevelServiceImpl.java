@@ -103,6 +103,27 @@ public class LevelServiceImpl implements LevelService {
     }
 
     @Override
+    public void levelHinzufuegen(String name, int minSpieler, int maxSpieler, byte bewertung, Object[][] karte) {
+
+        // TODO: level+raum erstellen
+        // TODO: durch uebergebene Karte iterieren und fuer jeden Eintrag im Array einen Eintrag in dem
+        // TODO: RaumMobiliar Repository erstellen (verlinkungen nicht vergessen)
+        //
+
+        // Zugriff mit karte[0][0]
+
+        Level erstellt = new Level(name, minSpieler, maxSpieler, bewertung);
+        levelRepository.save(erstellt);
+        Level aktLevel = levelRepository.findByName(name);
+        Raum aktRaum = new Raum(aktLevel);
+        raumRepository.save(aktRaum);
+        Mobiliar aktMobiliar = mobiliarRepository.getMobiliarByMobiliarId(30);
+        RaumMobiliar aktRaumMobiliar = new RaumMobiliar(aktMobiliar, aktRaum, 0,0);
+        raumMobiliarRepository.save(aktRaumMobiliar);
+    }
+
+
+    @Override
     public void loescheLevel(long levelId) {
         Optional<Level> zuLoeschen = levelRepository.findById(levelId);
         if (zuLoeschen.isPresent()) {
