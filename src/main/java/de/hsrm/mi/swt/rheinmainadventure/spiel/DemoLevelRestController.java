@@ -26,12 +26,12 @@ public class DemoLevelRestController {
     @Autowired
     MobiliarRepository mobiliarRepository;
 
-    @GetMapping(value = "/level/{levelID}/{raumindex}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/level/{levelID}/{raumindex}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<RaumMobiliar> getRauminhalt(@PathVariable long levelID, @PathVariable int raumindex) {
         return levelService.getRaum(levelService.getLevel(levelID).get(), raumindex).getRaumMobiliar();
     }
 
-    @GetMapping(value = "/level/{mobiliarID}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/api/level/{mobiliarID}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public FileSystemResource getGLTFObject(@PathVariable long mobiliarID) {
         return new FileSystemResource("src/main/resources/" + mobiliarRepository.getById(mobiliarID).getModellURI());
     }
