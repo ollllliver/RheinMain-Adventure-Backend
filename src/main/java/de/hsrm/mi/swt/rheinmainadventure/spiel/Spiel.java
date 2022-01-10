@@ -18,7 +18,6 @@ public class Spiel {
     private final Timestamp startZeitpunkt;
     private final Level level;
 
-    // TODO: Damit @Autowired geht, muss das Spiel eventuell ein @Service o.ä werden
     @Autowired
     LevelService levelService;
 

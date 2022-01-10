@@ -57,16 +57,19 @@ public class SpielServiceImpl implements SpielService {
     @Override
     public Spieler positionsAktualisierung(Spieler spieler, Position position) {
         spieler.getEigenschaften().setPosition(position);
-        // TODO: Sende Spieler Position über Stomp
         return spieler;
     }
 
     @Override
-    public Spieler statusAktualisierung(Spieler spieler, SpielerStatus status) {
-        for (SpielerStatus spielerStatus : spieler.getEigenschaften().getStatusListe()) {
-            // TODO: SpielerStatus ändern
+    public void anzahlSchluesselErhoehen(Spieler spieler) {
+        spieler.getEigenschaften().schlüssel++;
+    }
+
+    @Override
+    public void anzahlSchluesselVerringern(Spieler spieler) {
+        if (spieler.getEigenschaften().getSchlüssel() >= 0) {
+            spieler.getEigenschaften().schlüssel--;
         }
-        return spieler;
     }
 
     @Override

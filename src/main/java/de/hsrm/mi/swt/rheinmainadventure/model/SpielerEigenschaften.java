@@ -1,17 +1,17 @@
 package de.hsrm.mi.swt.rheinmainadventure.model;
 
-import java.util.ArrayList;
-
 public class SpielerEigenschaften {
     private Position position;
-    private ArrayList<SpielerStatus> statusListe;
+    public int schlüssel;
 
     public SpielerEigenschaften(Position position) {
         this.position = position;
+        this.schlüssel = 0;
     }
 
     public SpielerEigenschaften() {
         this.position = new Position(0,0,0);
+        this.schlüssel = 0;
     }
 
     public Position getPosition() {
@@ -22,12 +22,12 @@ public class SpielerEigenschaften {
         this.position = position;
     }
 
-    public ArrayList<SpielerStatus> getStatusListe() {
-        return statusListe;
+    public int getSchlüssel() {
+        return schlüssel;
     }
 
-    public void setStatusListe(ArrayList<SpielerStatus> statusListe) {
-        this.statusListe = statusListe;
+    public void setSchlüssel(int schlüssel) {
+        this.schlüssel = schlüssel;
     }
 
 }
