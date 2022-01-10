@@ -17,7 +17,7 @@ public class Level {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long levelId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
