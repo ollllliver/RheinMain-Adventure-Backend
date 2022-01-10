@@ -11,7 +11,7 @@ public interface SpielService {
     List<Spiel> alleSpiele();
     List<Spieler> getSpielerListeBySpiel(Spiel spiel);
     Spieler positionsAktualisierung(Spieler spieler, Position position);
-    void anzahlSchluesselErhoehen(Spieler spieler);
-    void anzahlSchluesselVerringern(Spieler spieler);
     Spieler getSpieler(String lobbyID, String name);
+    int anzahlSchluesselErhoehen(Spiel spiel);
+    int anzahlSchluesselVerringern(Spiel spiel);
 }
