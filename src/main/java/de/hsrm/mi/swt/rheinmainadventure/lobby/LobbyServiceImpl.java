@@ -10,18 +10,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 /**
  * Lobby Service für das verwalten aller Lobbys.
  * 
  */
 @Service
+@SessionAttributes(names = { "loggedinBenutzername","aktuelleLobby"})
 public class LobbyServiceImpl implements LobbyService {
   private Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
   private final static String TOPICLOB = "/topic/lobby/";
@@ -104,7 +106,7 @@ public class LobbyServiceImpl implements LobbyService {
     starteTimeout(lobby);
     lobbys.add(lobby);
 
-    broker.convertAndSend(TOPICUEB, new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false));
+    broker.convertAndSend(TOPICUEB, new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false,lobbyID));
     return lobby;
   }
 
@@ -181,6 +183,7 @@ public class LobbyServiceImpl implements LobbyService {
           // LOBBYZEIT_ABGELAUFEN
 
           lobbys.remove(lobby);
+          
           broker.convertAndSend(TOPICUEB, new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
 
         }
@@ -297,7 +300,7 @@ public class LobbyServiceImpl implements LobbyService {
         return new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, currLobby.getlobbyID());
       }
     }
-    return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false);
+    return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false,currLobby.getlobbyID());
   }
 
   /**
