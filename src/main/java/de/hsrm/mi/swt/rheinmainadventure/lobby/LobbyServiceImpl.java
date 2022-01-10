@@ -221,9 +221,6 @@ public class LobbyServiceImpl implements LobbyService {
     Timer timer = new Timer();
     Lobby lobby = getLobbyById(lobbyId);
 
-    spielService.starteSpiel(lobby);
-    logger.info(String.format("#### "+ lobbyId + " ist gestartet ####"));
-
     broker.convertAndSend(TOPIC_LOB + lobbyId,
         new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10"));
 
@@ -233,6 +230,8 @@ public class LobbyServiceImpl implements LobbyService {
         if (!lobby.getIstGestartet()) {
           lobby.setIstGestartet(true);
           // TODO : Hier nach Spielcountdown Ansicht wechseln
+          spielService.starteSpiel(lobby);
+          logger.info(String.format("#### "+ lobbyId + " ist gestartet ####"));
         }
       }
 
