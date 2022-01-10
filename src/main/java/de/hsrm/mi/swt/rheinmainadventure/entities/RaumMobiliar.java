@@ -11,6 +11,7 @@ import javax.persistence.*;
 public class RaumMobiliar {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long raumMobiliarId;
 
     @ManyToOne
@@ -27,6 +28,13 @@ public class RaumMobiliar {
     @Column(nullable = false)
     private int positionY;
 
+    public RaumMobiliar(Mobiliar mobiliar, Raum raum, int y, int x) {
+        this.mobiliar = mobiliar;
+        this.raum = raum;
+        this.positionY = y;
+        this.positionX = x;
+    }
+    public RaumMobiliar() {}
 
     public long getRaumMobiliarId() {
         return raumMobiliarId;

@@ -17,7 +17,7 @@ public class Level {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long levelId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
@@ -41,6 +41,18 @@ public class Level {
     @JsonIgnore
     @Version
     private Long version;
+
+
+    public Level(String name, int minSpieler, int maxSpieler, byte bewertung) {
+        this.name = name;
+        this.minSpieler = minSpieler;
+        this.maxSpieler = maxSpieler;
+        this.bewertung = bewertung;
+    }
+
+    public Level() {
+
+    }
 
     @Override
     public String toString() {

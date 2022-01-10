@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MobiliarRepository extends JpaRepository<Mobiliar, Long> {
+    Mobiliar getMobiliarByMobiliarId(long mobiliarID);
 }

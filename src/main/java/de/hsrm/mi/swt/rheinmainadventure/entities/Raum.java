@@ -27,6 +27,13 @@ public class Raum {
     @JsonIgnore
     private List<RaumMobiliar> raumMobiliar;
 
+
+    public Raum (Level level){
+        this.level = level;
+        //this.mobiliarListe = mobiliarListe
+    }
+
+
     @Override
     public String toString() {
         return "Raum{" +
