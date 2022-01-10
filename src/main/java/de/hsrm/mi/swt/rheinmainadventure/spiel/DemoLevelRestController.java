@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Eine Demo-Rest Api, um das Frontend probeweise anzukabeln.
@@ -45,11 +47,16 @@ public class DemoLevelRestController {
     @PostMapping(value = "/api/levelEditor/speichern", consumes = MediaType.APPLICATION_JSON_VALUE)
     // jackson deserialiszer
     // axion senden von daten
-    public Object[][] speichereLevel(@RequestBody Object[][] levelData){
+    public String speichereLevel(@RequestBody Map<String, ?> levelData) throws NoSuchFieldException {
+        Logger logger = LoggerFactory.getLogger(DemoLevelRestController.class);
 
-        levelService.levelHinzufuegen("test1", 1, 3, (byte)17, levelData);
+        List<List<Object>> karte = (ArrayList<List<Object>>) levelData.get("karte");
 
-        //Logger logger = LoggerFactory.getLogger(DemoLevelRestController.class);
+        String levelName = levelData.get("name").toString();
+        int minSpieler = Integer.parseInt(levelData.get("minSpieler").toString());
+        int maxSpieler = Integer.parseInt(levelData.get("maxSpieler").toString());
+        levelService.levelHinzufuegen(levelName, minSpieler, maxSpieler, (byte)17, karte);
+
         //logger.info(levelData[13][5].toString());
 
 
@@ -62,7 +69,7 @@ public class DemoLevelRestController {
 
 
 
-        return levelData;
+        return levelData.toString();
     }
     
 

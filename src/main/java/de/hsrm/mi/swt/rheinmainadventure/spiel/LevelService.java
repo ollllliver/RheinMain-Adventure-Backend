@@ -16,7 +16,7 @@ public interface LevelService {
 
     Level bearbeiteLevel(String benutzername, Level externesLevel);
 
-    void levelHinzufuegen(String name, int minSpieler, int maxSpieler, byte bewertung, Object[][] karte);
+    void levelHinzufuegen(String name, int minSpieler, int maxSpieler, byte bewertung, List<List<Object>> karte) throws NoSuchFieldException;
 
     void loescheLevel(long levelId);
 

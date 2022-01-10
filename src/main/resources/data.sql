@@ -6,7 +6,25 @@ VALUES (17, 'Oliver', 'Oliver');
 
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (30, 'gltf/texturedBox_embedded/Box_regular.gltf', 'Normale Box', null);
+VALUES (0, 'gltf/texturedBox_embedded/Box_regular.gltf', 'Normale Box', null);
+
+INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
+VALUES (1, 'gltf/texturedBox_embedded/Box_regular.gltf', 'Normale Box', null);
+
+INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
+VALUES (2, 'gltf/texturedBox_embedded/Box_regular.gltf', 'Normale Box', null);
+
+INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
+VALUES (3, 'gltf/texturedBox_embedded/Box_regular.gltf', 'Normale Box', null);
+
+INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
+VALUES (4, 'gltf/texturedBox_embedded/Box_regular.gltf', 'Normale Box', null);
+
+INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
+VALUES (5, 'gltf/texturedBox_embedded/Box_regular.gltf', 'Normale Box', null);
+
+INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
+VALUES (6, 'gltf/texturedBox_embedded/Box_regular.gltf', 'Normale Box', null);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (31, 'gltf/duck_embedded/Duck.gltf', 'Ente', 1);
