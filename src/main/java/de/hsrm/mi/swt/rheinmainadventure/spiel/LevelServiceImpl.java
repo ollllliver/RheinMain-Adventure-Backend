@@ -70,8 +70,7 @@ public class LevelServiceImpl implements LevelService {
                 level.setErsteller(ersteller);
 
                 level.setName(externesLevel.getName());
-                level.setMinSpieler(externesLevel.getMinSpieler());
-                level.setMaxSpieler(externesLevel.getMaxSpieler());
+                level.setBeschreibung(externesLevel.getBeschreibung());
                 level.setBewertung(externesLevel.getBewertung());
                 level.setRaeume(externesLevel.getRaeume());
                 level.setErsteller(ersteller);
@@ -115,7 +114,7 @@ public class LevelServiceImpl implements LevelService {
 
         //Element x = new Element(karte.get(0).get(0));
         logger.info("_______________________________________________");
-        Level erstellt = new Level(name, minSpieler, maxSpieler, bewertung);
+        Level erstellt = new Level();
         levelRepository.save(erstellt);
         Level aktLevel = levelRepository.findByName(name);
         Raum aktRaum = new Raum(aktLevel);

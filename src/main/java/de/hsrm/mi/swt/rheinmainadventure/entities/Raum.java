@@ -33,6 +33,8 @@ public class Raum {
         //this.mobiliarListe = mobiliarListe
     }
 
+    public Raum() {
+    }
 
     @Override
     public String toString() {

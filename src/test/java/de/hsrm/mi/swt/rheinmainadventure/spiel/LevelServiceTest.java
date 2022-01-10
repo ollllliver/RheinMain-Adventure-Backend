@@ -27,8 +27,7 @@ class LevelServiceTest {
 
         Level level = new Level();
         level.setName("Glogomirs Pointer-Party");
-        level.setMinSpieler(2);
-        level.setMaxSpieler(4);
+        level.setBeschreibung("");
         level.setBewertung((byte) 17);
         level.setRaeume(Collections.emptyList());
         level.setErsteller(benutzer);

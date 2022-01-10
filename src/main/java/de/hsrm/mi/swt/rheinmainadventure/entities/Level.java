@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Ein Level, das von Benutzern gespielt werden kann.
@@ -20,11 +21,8 @@ public class Level {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private int minSpieler;
-
-    @Column(nullable = false)
-    private int maxSpieler;
+    @Column
+    private String beschreibung;
 
     // Durchschnittliche Bewertung aller Nutzer oder so
     @Column
@@ -42,21 +40,15 @@ public class Level {
     @Version
     private Long version;
 
-
-    public Level(String name, int minSpieler, int maxSpieler, byte bewertung) {
+    public Level(String name, String beschreibung, byte bewertung, List<Raum> raeume, Benutzer ersteller) {
         this.name = name;
-        this.minSpieler = minSpieler;
-        this.maxSpieler = maxSpieler;
+        this.beschreibung = beschreibung;
         this.bewertung = bewertung;
+        this.raeume = raeume;
+        this.ersteller = ersteller;
     }
 
     public Level() {
-
-    }
-
-    @Override
-    public String toString() {
-        return "Level{" + "levelId=" + levelId + ", name='" + name + '\'' + ", minSpieler=" + minSpieler + ", maxSpieler=" + maxSpieler + ", version=" + version + '}';
     }
 
     @Override
@@ -66,35 +58,19 @@ public class Level {
 
         Level level = (Level) o;
 
-        if (getMinSpieler() != level.getMinSpieler()) return false;
-        if (getMaxSpieler() != level.getMaxSpieler()) return false;
-        if (!getLevelId().equals(level.getLevelId())) return false;
-        return getName().equals(level.getName());
+        if (!Objects.equals(name, level.name)) return false;
+        if (!Objects.equals(beschreibung, level.beschreibung)) return false;
+        if (!Objects.equals(raeume, level.raeume)) return false;
+        return Objects.equals(ersteller, level.ersteller);
     }
 
     @Override
     public int hashCode() {
-        int result = getLevelId().hashCode();
-        result = 31 * result + getName().hashCode();
-        result = 31 * result + getMinSpieler();
-        result = 31 * result + getMaxSpieler();
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (beschreibung != null ? beschreibung.hashCode() : 0);
+        result = 31 * result + (raeume != null ? raeume.hashCode() : 0);
+        result = 31 * result + (ersteller != null ? ersteller.hashCode() : 0);
         return result;
-    }
-
-    public List<Raum> getRaeume() {
-        return raeume;
-    }
-
-    public void setRaeume(List<Raum> raeume) {
-        this.raeume = raeume;
-    }
-
-    public byte getBewertung() {
-        return bewertung;
-    }
-
-    public void setBewertung(byte bewertung) {
-        this.bewertung = bewertung;
     }
 
     public Long getLevelId() {
@@ -113,28 +89,28 @@ public class Level {
         this.name = name;
     }
 
-    public int getMinSpieler() {
-        return minSpieler;
+    public String getBeschreibung() {
+        return beschreibung;
     }
 
-    public void setMinSpieler(int minSpieler) {
-        this.minSpieler = minSpieler;
+    public void setBeschreibung(String beschreibung) {
+        this.beschreibung = beschreibung;
     }
 
-    public int getMaxSpieler() {
-        return maxSpieler;
+    public byte getBewertung() {
+        return bewertung;
     }
 
-    public void setMaxSpieler(int maxSpieler) {
-        this.maxSpieler = maxSpieler;
+    public void setBewertung(byte bewertung) {
+        this.bewertung = bewertung;
     }
 
-    public Long getVersion() {
-        return version;
+    public List<Raum> getRaeume() {
+        return raeume;
     }
 
-    public void setVersion(Long version) {
-        this.version = version;
+    public void setRaeume(List<Raum> raeume) {
+        this.raeume = raeume;
     }
 
     public Benutzer getErsteller() {
@@ -143,5 +119,13 @@ public class Level {
 
     public void setErsteller(Benutzer ersteller) {
         this.ersteller = ersteller;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }
