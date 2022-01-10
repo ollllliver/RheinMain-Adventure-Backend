@@ -103,6 +103,41 @@ public class LevelServiceImpl implements LevelService {
     }
 
     @Override
+    public void levelHinzufuegen(String name, int minSpieler, int maxSpieler, byte bewertung, List<List<Object>> karte) throws NoSuchFieldException {
+
+        // TODO: level+raum erstellen
+        // TODO: durch uebergebene Karte iterieren und fuer jeden Eintrag im Array einen Eintrag in dem
+        // TODO: RaumMobiliar Repository erstellen (verlinkungen nicht vergessen)
+        //
+
+        // Zugriff mit karte[0][0]
+        Logger logger = LoggerFactory.getLogger(DemoLevelRestController.class);
+
+        //Element x = new Element(karte.get(0).get(0));
+        logger.info("_______________________________________________");
+        Level erstellt = new Level(name, minSpieler, maxSpieler, bewertung);
+        levelRepository.save(erstellt);
+        Level aktLevel = levelRepository.findByName(name);
+        Raum aktRaum = new Raum(aktLevel);
+        raumRepository.save(aktRaum);
+        for (int i = 0; i < karte.size(); i++) {
+            for (int j = 0; j < karte.get(0).size(); j++) {
+                String element = karte.get(i).get(j).toString();
+                element = element.replace("{","");
+                element = element.replace("}","");
+                String[] el = element.split( ",");
+                int y = Integer.parseInt(el[0].split("=")[1]);
+                int x = Integer.parseInt(el[1].split("=")[1]);
+                int e = Integer.parseInt(el[2].split("=")[1]);
+                Mobiliar aktMobiliar = mobiliarRepository.getMobiliarByMobiliarId(e);
+                RaumMobiliar aktRaumMobiliar = new RaumMobiliar(aktMobiliar, aktRaum, y,x);
+                raumMobiliarRepository.save(aktRaumMobiliar);
+            }
+        }
+    }
+
+
+    @Override
     public void loescheLevel(long levelId) {
         Optional<Level> zuLoeschen = levelRepository.findById(levelId);
         if (zuLoeschen.isPresent()) {

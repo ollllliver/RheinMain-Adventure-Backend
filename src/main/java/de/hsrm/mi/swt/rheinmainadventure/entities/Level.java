@@ -42,6 +42,18 @@ public class Level {
     @Version
     private Long version;
 
+
+    public Level(String name, int minSpieler, int maxSpieler, byte bewertung) {
+        this.name = name;
+        this.minSpieler = minSpieler;
+        this.maxSpieler = maxSpieler;
+        this.bewertung = bewertung;
+    }
+
+    public Level() {
+
+    }
+
     @Override
     public String toString() {
         return "Level{" + "levelId=" + levelId + ", name='" + name + '\'' + ", minSpieler=" + minSpieler + ", maxSpieler=" + maxSpieler + ", version=" + version + '}';
