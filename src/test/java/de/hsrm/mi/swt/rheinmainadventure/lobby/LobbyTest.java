@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 @SpringBootTest
@@ -64,7 +65,7 @@ class LobbyTest {
         ArrayList<Spieler> players = new ArrayList<Spieler>();
         players.add(host);
         String lobbyID = lobbyService.lobbyErstellen(spielerName).getlobbyID();
-        Lobby lobby = new Lobby(lobbyID, players, host);
+        Lobby lobby = new Lobby(lobbyID, players, host, new Level());
 
         assertNotNull(lobby);
 
@@ -80,7 +81,7 @@ class LobbyTest {
             ArrayList<Spieler> players = new ArrayList<Spieler>();
             players.add(host);
             String lobbyID = lobbyService.lobbyErstellen(spielerName).getlobbyID();
-            Lobby lobby = new Lobby(lobbyID, players, host);
+            Lobby lobby = new Lobby(lobbyID, players, host, new Level());
             lobbyList.add(lobby);
             assertNotNull(lobby);
         }

@@ -1,9 +1,11 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 public class Lobby {
     private String lobbyID;
@@ -13,25 +15,28 @@ public class Lobby {
     private boolean istGestartet;
     private boolean istPrivat;
     private int spielerlimit;
+    private Level gewaehlteKarte;
+    private Spiel spiel;
 
     // Aktuellen LobbyService reinreichen lassen da ich nicht weiß wie man bei einer
     // nicht Component Klasse Autowired.
+
     /**
      * Erstellt eine Lobby mit einer bestimmten ID
-     * 
+     *
      * @param lobbyID         einmalige LobbyID für eine Lobby
      * @param teilnehmerliste leere Liste der teilnehmer
      * @param host            ein Spieler der der host der Lobby ist
-     * 
      */
-    public Lobby(String lobbyID, List<Spieler> teilnehmerliste, Spieler host) {
+    public Lobby(String lobbyID, List<Spieler> teilnehmerliste, Spieler host, Level defaultlevel) {
         this.lobbyID = lobbyID;
-        this.teilnehmerliste = new ArrayList<>(teilnehmerliste);
+        this.teilnehmerliste = new ArrayList<Spieler>();
         this.host = host;
         this.istVoll = false;
         this.istGestartet = false;
         this.istPrivat = false;
         this.spielerlimit = 2;
+        this.gewaehlteKarte = defaultlevel;
     }
 
     public Lobby() {
@@ -79,11 +84,8 @@ public class Lobby {
         if (spielerlimit != other.spielerlimit)
             return false;
         if (teilnehmerliste == null) {
-            if (other.teilnehmerliste != null)
-                return false;
-        } else if (!teilnehmerliste.equals(other.teilnehmerliste))
-            return false;
-        return true;
+            return other.teilnehmerliste == null;
+        } else return teilnehmerliste.equals(other.teilnehmerliste);
     }
 
     /**
@@ -150,4 +152,21 @@ public class Lobby {
     public void setIstPrivat(boolean istPrivat) {
         this.istPrivat = istPrivat;
     }
+
+    public Spiel getSpiel() {
+        return spiel;
+    }
+
+    public void setSpiel(Spiel spiel) {
+        this.spiel = spiel;
+    }
+
+    public Level getGewaehlteKarte() {
+        return gewaehlteKarte;
+    }
+
+    public void setGewaehlteKarte(Level gewaehlteKarte) {
+        this.gewaehlteKarte = gewaehlteKarte;
+    }
+
 }

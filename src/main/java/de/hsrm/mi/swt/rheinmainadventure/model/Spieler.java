@@ -8,10 +8,12 @@ package de.hsrm.mi.swt.rheinmainadventure.model;
  */
 public class Spieler {
     private String name;
+    private SpielerEigenschaften eigenschaften;
     private boolean isHost;
 
     public Spieler(String name) {
         this.name = name;
+        this.eigenschaften = new SpielerEigenschaften();
     }
 
     public Spieler() {
@@ -23,6 +25,15 @@ public class Spieler {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    public SpielerEigenschaften getEigenschaften() {
+        return eigenschaften;
+    }
+
+    public void setEigenschaften(SpielerEigenschaften eigenschaften) {
+        this.eigenschaften = eigenschaften;
     }
 
     @Override
