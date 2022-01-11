@@ -2,7 +2,7 @@ INSERT INTO benutzer (benutzer_id, benutzername, passwort)
 VALUES (10, 'wubbo', 'test');
 
 INSERT INTO benutzer (benutzer_id, benutzername, passwort)
-VALUES (17, 'Oliver', 'Oliver');
+VALUES (17, 'Olive', 'Oliver');
 
 INSERT INTO level (level_id, name, beschreibung, bewertung, benutzer_id)
 VALUES (1, 'Wubbos wahnwitzige Wunderwelt', 'Abenteuer in den Niederlanden', 17, 10);

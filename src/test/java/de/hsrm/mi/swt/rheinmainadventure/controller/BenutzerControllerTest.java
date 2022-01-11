@@ -1,7 +1,10 @@
 package de.hsrm.mi.swt.rheinmainadventure.controller;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
+
+@ActiveProfiles("test")
 class BenutzerControllerTest {
 
     @Test

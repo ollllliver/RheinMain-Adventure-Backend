@@ -1,19 +1,14 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.ArrayList;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,21 +24,22 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
-import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class LobbyErstellenTest {
+class LobbyErstellenTest {
     Logger logger = LoggerFactory.getLogger(LobbyErstellenTest.class);
 
     // orientiert an 7.3.1 Use Case Diagramm Lobby hosten (und Spiel starten)
     // https://taiga.mi.hs-rm.de/project/weitz-2021swtpro03/wiki/732-use-case-diagramm-lobby-hosten-und-spiel-starten
-    
+
     // UCD -> UseCaseDiagramm
 
     @Autowired

@@ -1,10 +1,5 @@
 package de.hsrm.mi.swt.rheinmainadventure;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.hsrm.mi.swt.rheinmainadventure.controller.BenutzerController;
@@ -20,8 +15,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.HashMap;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests für die Restschnittstelle BenutzerController
@@ -30,6 +33,7 @@ import java.util.HashMap;
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class BenutzerRestTest {
     private static final String TESTBENUTZERNAME = "hopsi";
     private static final String TESTPASSWORT = "abcxyz";
@@ -72,8 +76,7 @@ class BenutzerRestTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
         mockmvc.perform(
@@ -89,10 +92,9 @@ class BenutzerRestTest {
                         post("/api/benutzer/register")
                                 .content(TESTLOGINJSON)
                                 .contentType(MediaType.APPLICATION_JSON)
-        )
+                )
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME));
     }
 
     @Test
@@ -104,8 +106,7 @@ class BenutzerRestTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
 
@@ -126,8 +127,7 @@ class BenutzerRestTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
         Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME);
@@ -139,8 +139,7 @@ class BenutzerRestTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME));
     }
 
     @Test
@@ -152,8 +151,7 @@ class BenutzerRestTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
         Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME);
@@ -165,8 +163,7 @@ class BenutzerRestTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME));
 
         HashMap<String, Object> sessionattr = new HashMap<String, Object>();
         sessionattr.put("loggedinBenutzername", b.getBenutzername()) ;
@@ -188,8 +185,7 @@ class BenutzerRestTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME));
 
         mockmvc.perform(
                         post("/api/benutzer/login")
@@ -197,8 +193,7 @@ class BenutzerRestTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
         Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME);

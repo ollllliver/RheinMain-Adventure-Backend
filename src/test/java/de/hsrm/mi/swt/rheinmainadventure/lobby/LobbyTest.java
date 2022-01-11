@@ -1,20 +1,21 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class LobbyTest {
 
     @Autowired

@@ -5,12 +5,14 @@ import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerServiceImpl;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 class BenutzerTests {
     @Autowired
     private BenutzerService benutzerService;
@@ -30,6 +33,11 @@ class BenutzerTests {
     final String TESTLOGINNAME = "jockel";
     final String TESTPASSWORT = "supergeheimesjockelpasswort";
 
+    @BeforeEach
+    void setUp() {
+        System.out.println("Hewwo");
+        benutzerrepo.deleteAll();
+    }
 
     @Test
     void vorabcheck() {
@@ -78,6 +86,7 @@ class BenutzerTests {
             u1.setBenutzername(TESTLOGINNAME + i);
             u1.setPasswort(TESTPASSWORT + i);
             benutzerrepo.save(u1);
+            System.out.println(benutzerrepo.findAll());
         }
         assertThat(benutzerrepo.count()).isEqualTo(ANZAHL);
 
