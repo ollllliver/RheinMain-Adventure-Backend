@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class LevelServiceImpl implements LevelService {
 
+    private final Logger lg = LoggerFactory.getLogger(LevelServiceImpl.class);
     @Autowired
     private LevelRepository levelRepository;
     @Autowired
@@ -29,8 +30,6 @@ public class LevelServiceImpl implements LevelService {
     private RaumMobiliarRepository raumMobiliarRepository;
     @Autowired
     private BenutzerService benutzerService;
-
-    private final Logger lg = LoggerFactory.getLogger(LevelServiceImpl.class);
 
     @Override
     public List<Level> alleLevel() {
@@ -102,6 +101,11 @@ public class LevelServiceImpl implements LevelService {
     }
 
 
+    /**
+     * Löscht ein Level über eine gegebene Level-ID.
+     *
+     * @param levelId ist die Level-ID des Levels, das aus der Datenbank gelöscht werden soll.
+     */
     @Override
     public void loescheLevel(long levelId) {
         Optional<Level> zuLoeschen = levelRepository.findById(levelId);
@@ -133,6 +137,8 @@ public class LevelServiceImpl implements LevelService {
     }
 
     /**
+     * Liefert von einem Level-Objekt den Raum an der gesuchten Stelle in der Raum-Abfolge.
+     *
      * @param externesLevel Das Level, zu dem man den bestimmten Raum finden möchte.
      * @param raumIndex     An welcher Stelle der gesuchte Raum im Level vorkommt.
      * @return Den gesuchten Raum, wenn die Kombination Level - Raum-Index existiert
@@ -154,6 +160,12 @@ public class LevelServiceImpl implements LevelService {
             throw new NoSuchElementException();
         }
     }
+
+    @Override
+    public String getMobiliar3DModellURI(long mobiliarID) {
+        return mobiliarRepository.getById(mobiliarID).getModellURI();
+    }
+
 
     /**
      * Findet sämtliches Mobiliar, das sich in einem Raum befindet.
