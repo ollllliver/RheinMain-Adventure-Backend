@@ -1,25 +1,20 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
-
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
+import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
+import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
-import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
-import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
-import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
-import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
-import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
-import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
+import java.util.*;
 
 /**
  * Lobby Service für das verwalten aller Lobbys.
@@ -27,7 +22,7 @@ import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
  */
 @Service
 public class LobbyServiceImpl implements LobbyService {
-  private Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
+  private final Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
   private final String TOPIC_LOB = "/topic/lobby/";
   private final String TOPIC_UEB = "/topic/lobby/uebersicht";
 
@@ -374,5 +369,11 @@ public class LobbyServiceImpl implements LobbyService {
       return res;
     }
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
+  }
+
+  @Override
+  public LobbyMessage removeSpieler(String id, Spieler zuEntfernendSpieler, String spielerName) {
+    // TODO Implementieren
+    return null;
   }
 }
