@@ -22,6 +22,8 @@ public interface LevelService {
 
     Raum getRaum(Level level, int raumindex);
 
+    String getMobiliar3DModellURI(long mobiliarID);
+
     Map<Position, Mobiliar> getMobiliarImRaum(Raum raum);
 
     Position getStartPositionImRaum(Raum raum);

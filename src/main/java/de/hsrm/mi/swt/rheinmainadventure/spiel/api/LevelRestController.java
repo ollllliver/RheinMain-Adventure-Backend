@@ -45,7 +45,7 @@ public class LevelRestController {
      *
      * @param levelID   Die Level-Id, die in der DB angefragt werden soll. Teil der Request-URL.
      * @param raumindex Der Raum-Index aus dem gesuchten Level.
-     * @return Eoine Liste an RaumMobiliar-Objekten, über die man das Mobiliar und seine Position erhält.
+     * @return Eine Liste an RaumMobiliar-Objekten, über die man das Mobiliar und seine Position erhält.
      */
     @GetMapping(value = "/api/level/{levelID}/{raumindex}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<RaumMobiliar> getRauminhalt(@PathVariable long levelID, @PathVariable int raumindex) {
@@ -69,7 +69,29 @@ public class LevelRestController {
      */
     @GetMapping(value = "/api/level/{mobiliarID}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public FileSystemResource getGLTFObject(@PathVariable long mobiliarID) {
-        return new FileSystemResource("src/main/resources/" + mobiliarRepository.getById(mobiliarID).getModellURI());
+        return new FileSystemResource("src/main/resources/" + levelService.getMobiliar3DModellURI(mobiliarID));
+    }
+
+    /**
+     * Gibt zu einem gesuchten Raum die Startposition als String zurück.
+     *
+     * @param levelID   Die Level-Id, die in der DB angefragt werden soll.
+     * @param raumindex Der Raum-Index aus dem gesuchten Level.
+     * @return Die Startposition als String, formatiert durch Position.toString()
+     * @see de.hsrm.mi.swt.rheinmainadventure.model.Position#toString()
+     */
+    @GetMapping(value = "/api/level/startposition/{levelID}/{raumindex}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String startPositionImRaum(@PathVariable long levelID, @PathVariable int raumindex) {
+        lg.info("Startposition von Level ID {} und Raumindex {} über REST angefragt", levelID, raumindex);
+        Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
+        if (angefragtesLevel.isPresent()) {
+            lg.info("Das Level existiert in der DB, jetzt wird der Raum geholt");
+            Raum angefragterRaum = levelService.getRaum(angefragtesLevel.get(), raumindex);
+            lg.info("Raumindex gibt es auch, Rauminhalt wird über JSON versendet");
+            return levelService.getStartPositionImRaum(angefragterRaum).toString();
+        }
+        lg.warn("Level nicht in DB gefunden, externer Aufrufer erhält 404");
+        throw new LevelNotFoundException();
     }
 
 
@@ -88,6 +110,5 @@ public class LevelRestController {
 
         return levelData.toString();
     }
-
 
 }

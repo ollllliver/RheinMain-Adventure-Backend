@@ -27,10 +27,9 @@ public class Raum {
     @JsonIgnore
     private List<RaumMobiliar> raumMobiliar;
 
-
-    public Raum (Level level){
-        this.level = level;
-        //this.mobiliarListe = mobiliarListe
+    public Raum(int raumIndex, List<RaumMobiliar> raumMobiliar) {
+        this.raumIndex = raumIndex;
+        this.raumMobiliar = raumMobiliar;
     }
 
     public Raum() {
