@@ -34,7 +34,24 @@ public class RaumMobiliar {
         this.positionY = y;
         this.positionX = x;
     }
-    public RaumMobiliar() {}
+
+    public RaumMobiliar() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RaumMobiliar that = (RaumMobiliar) o;
+
+        return raumMobiliarId == that.raumMobiliarId;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (raumMobiliarId ^ (raumMobiliarId >>> 32));
+    }
 
     public long getRaumMobiliarId() {
         return raumMobiliarId;
@@ -75,4 +92,6 @@ public class RaumMobiliar {
     public void setPositionY(int positionY) {
         this.positionY = positionY;
     }
+
+
 }

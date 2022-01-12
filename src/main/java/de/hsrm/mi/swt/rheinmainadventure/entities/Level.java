@@ -57,19 +57,12 @@ public class Level {
 
         Level level = (Level) o;
 
-        if (!Objects.equals(name, level.name)) return false;
-        if (!Objects.equals(beschreibung, level.beschreibung)) return false;
-        if (!Objects.equals(raeume, level.raeume)) return false;
-        return Objects.equals(ersteller, level.ersteller);
+        return Objects.equals(levelId, level.levelId);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (beschreibung != null ? beschreibung.hashCode() : 0);
-        result = 31 * result + (raeume != null ? raeume.hashCode() : 0);
-        result = 31 * result + (ersteller != null ? ersteller.hashCode() : 0);
-        return result;
+        return levelId != null ? levelId.hashCode() : 0;
     }
 
     public Long getLevelId() {

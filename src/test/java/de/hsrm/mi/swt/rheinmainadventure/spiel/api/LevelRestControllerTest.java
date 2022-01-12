@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -34,10 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 class LevelRestControllerTest {
-
-    private static final String TESTBENUTZERNAME = "hopsi";
-    private static final String TESTPASSWORT = "abcxyz";
-    private static String TESTLOGINJSON;
 
     @Autowired
     private MockMvc mockmvc;
@@ -116,6 +113,7 @@ class LevelRestControllerTest {
         raum1.getRaumMobiliar().add(raumMobiliar4);
         raum1.getRaumMobiliar().add(raumMobiliar5);
 
+
         List<Raum> raume1 = new ArrayList<>();
         raume1.add(raum1);
 
@@ -140,7 +138,7 @@ class LevelRestControllerTest {
     void getRauminhalt() throws Exception {
         List<Level> alleLevel = levelService.alleLevel();
 
-        String GETRequest = "/api/level/" + levelService.getRaum(alleLevel.get(1), 0).getLevel().getLevelId() + "/0";
+        String GETRequest = "/api/level/" + alleLevel.get(1).getLevelId() + "/0";
         mockmvc.perform(
                         get(GETRequest)
                                 .contentType("application/json"))
@@ -176,7 +174,6 @@ class LevelRestControllerTest {
                                 .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE));
-
     }
 
     @Test
@@ -190,15 +187,32 @@ class LevelRestControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/level/startposition/{levelID}/{raumindex} liefert die richtige Startposition")
     void startPositionImRaum() throws Exception {
         List<Level> alleLevel = levelService.alleLevel();
 
-        String GETRequest = "/api/level/startposition/" + levelService.getRaum(alleLevel.get(1), 0).getLevel().getLevelId() + "/0";
+        String GETRequest = "/api/level/startposition/" + alleLevel.get(1).getLevelId() + "/0";
         mockmvc.perform(
                         get(GETRequest)
                                 .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.x").value(5.0))
                 .andExpect(jsonPath("$.y").value(5.0));
+    }
+
+    @Test
+    @DisplayName("GET /api/level/startposition/{levelID}/{raumindex} liefert Fehler 404")
+    void startPositionImRaumGibtEsNicht() throws Exception {
+        List<Level> alleLevel = levelService.alleLevel();
+        List<Level> alleLevelNochmal = levelService.alleLevel();
+        Level einLevel = alleLevel.get(0);
+        Optional<Level> anderesLevel = levelService.getLevel(einLevel.getLevelId());
+        Optional<Level> anderesLevelOhneService = levelRepository.findById(einLevel.getLevelId());
+
+        String GETRequest = "/api/level/startposition/" + alleLevel.get(1).getLevelId() + "/1";
+        mockmvc.perform(
+                        get(GETRequest)
+                                .contentType("application/json"))
+                .andExpect(status().isNotFound());
     }
 }

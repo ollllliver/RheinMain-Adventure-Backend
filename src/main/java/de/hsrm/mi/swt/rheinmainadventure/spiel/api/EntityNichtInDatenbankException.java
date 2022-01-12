@@ -8,8 +8,4 @@ public class EntityNichtInDatenbankException extends RuntimeException {
     public EntityNichtInDatenbankException(String message) {
         super(message);
     }
-
-    public EntityNichtInDatenbankException() {
-
-    }
 }
