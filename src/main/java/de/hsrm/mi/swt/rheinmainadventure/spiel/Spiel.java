@@ -14,6 +14,7 @@ public class Spiel {
     private List<Spieler> spielerListe;
     private final Timestamp startZeitpunkt;
     private final Level level;
+    private int anzSchluessel;
 
     public Spiel(Lobby lobby, List<Spieler> spielerListe) {
         this.spielID = lobby.getlobbyID();
@@ -40,6 +41,14 @@ public class Spiel {
 
     public Level getKarte() {
         return level;
+    }
+
+    public int getAnzSchluessel() {
+        return anzSchluessel;
+    }
+
+    public void setAnzSchluessel(int anzSchluessel) {
+        this.anzSchluessel = anzSchluessel;
     }
 
 }

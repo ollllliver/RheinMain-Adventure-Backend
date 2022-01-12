@@ -28,9 +28,10 @@ public class SpielServiceImpl implements SpielService {
 
     @Override
     public void starteSpiel(Lobby lobby) {
-        
+
         List<Spieler> spielerListe = new ArrayList<Spieler>();
-        Position startposition = levelService.getStartPositionImRaum(levelService.getRaum(lobby.getGewaehlteKarte(), 0));
+        Position startposition = levelService
+                .getStartPositionImRaum(levelService.getRaum(lobby.getGewaehlteKarte(), 0));
 
         for (int i = 0; i < lobby.getTeilnehmerliste().size(); i++) {
             lobby.getTeilnehmerliste().get(i).getEigenschaften().setPosition(startposition);
@@ -64,7 +65,8 @@ public class SpielServiceImpl implements SpielService {
     /**
      * Methode zum aktualisieren der Spielerposition
      * 
-     * @param spieler  übermittelter Spieler, dessen Position aktualisiert werden soll
+     * @param spieler  übermittelter Spieler, dessen Position aktualisiert werden
+     *                 soll
      * @param position neue Position die an den Spieler übermittelt werden soll
      * @return Spieler mit aktualisierten positionierungs Koordinaten
      */
@@ -94,6 +96,52 @@ public class SpielServiceImpl implements SpielService {
             }
         }
         return null; // throw SpielerNotFoundException
+    }
+
+    /**
+     * Methode zum erhöhen der Schlüsselanzahl im Spiel
+     * 
+     * @param spiel aktuelles Spiel, in welchem der Zähler der gefundenen Schlüssel
+     *              erhöht wird
+     * @return gibt die aktuelle Anzahl an gefundenen Schlüsseln zurück
+     */
+    @Override
+    public int anzahlSchluesselErhoehen(Spiel spiel) {
+        spiel.setAnzSchluessel(spiel.getAnzSchluessel() + 1);
+        return spiel.getAnzSchluessel();
+    }
+
+    /**
+     * Methode zum verringern der Schlüsselanzahl im Spiel
+     * 
+     * @param spiel aktuelles Spiel, in welchem der Zähler der gefundenen Schlüssel
+     *              verringert wird
+     * @return gibt die aktuelle Anzahl an gefundenen Schlüsseln zurück
+     */
+    @Override
+    public int anzahlSchluesselVerringern(Spiel spiel) {
+        if (spiel.getAnzSchluessel() >= 0) {
+            spiel.setAnzSchluessel(spiel.getAnzSchluessel() - 1);
+        }
+        return spiel.getAnzSchluessel();
+    }
+
+    /**
+     * Methode zum finden eines SPiels
+     * 
+     * @param lobbyID , da lobbyID = spielID
+     * 
+     * @return das gewünschte SPiel
+     */
+
+    @Override
+    public Spiel findeSpiel(String lobbyID) {
+        for (Spiel spiel : alleSpiele()) {
+            if (spiel.getSpielID().equals(lobbyID)) {
+                return spiel;
+            }
+        }
+        return null;
     }
 
 }
