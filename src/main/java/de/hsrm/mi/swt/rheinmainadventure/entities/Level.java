@@ -29,7 +29,7 @@ public class Level {
     private byte bewertung;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "level")
+    @OneToMany(mappedBy = "level", fetch = FetchType.EAGER)
     List<Raum> raeume;
 
     @ManyToOne
@@ -40,12 +40,11 @@ public class Level {
     @Version
     private Long version;
 
-    public Level(String name, String beschreibung, byte bewertung, List<Raum> raeume, Benutzer ersteller) {
+    public Level(String name, String beschreibung, byte bewertung, List<Raum> raeume) {
         this.name = name;
         this.beschreibung = beschreibung;
         this.bewertung = bewertung;
         this.raeume = raeume;
-        this.ersteller = ersteller;
     }
 
     public Level() {
