@@ -53,8 +53,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -110,8 +110,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -156,8 +156,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -197,8 +197,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -239,8 +239,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -282,8 +282,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -326,8 +326,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -369,8 +369,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -412,8 +412,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -465,8 +465,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -510,8 +510,8 @@ class LevelServiceTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -537,8 +537,8 @@ class LevelServiceTest {
         Benutzer ersteller = new Benutzer("Glogomir", "Strings");
         benutzerRepository.save(ersteller);
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
@@ -569,7 +569,7 @@ class LevelServiceTest {
         Benutzer ersteller = new Benutzer("Glogomir", "Strings");
         benutzerRepository.save(ersteller);
 
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(raus);

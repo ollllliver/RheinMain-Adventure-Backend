@@ -81,8 +81,8 @@ class LevelRestControllerTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/texturedBox_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
         Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
