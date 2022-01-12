@@ -7,6 +7,8 @@ import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class LobbyServiceImpl implements LobbyService {
      */
     @Autowired
     SimpMessagingTemplate broker;
+
+    @Autowired
+    SpielService spielService;
 
     @Autowired
     LevelService levelService;
@@ -211,16 +216,16 @@ public class LobbyServiceImpl implements LobbyService {
         broker.convertAndSend(TOPICLOB + lobbyId,
                 new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10"));
 
+        Lobby lobby = getLobbyById(lobbyId);
+        if (!lobby.getIstGestartet()) {
+            lobby.setIstGestartet(true);
+            spielService.starteSpiel(lobby);
+        }
+
+        // TODO: FRAGE: für was brauchen wir den Timer jetzt?
         TimerTask task = new TimerTask() {
 
             public void run() {
-                Lobby lobby = getLobbyById(lobbyId);
-                if (!lobby.getIstGestartet()) {
-                    lobby.setIstGestartet(true);
-
-                    // TODO : Hier nach Spielcountdown Ansicht wechseln
-
-                }
             }
 
         };
