@@ -23,7 +23,7 @@ public class Raum {
     @JsonIgnore
     private Level level;
 
-    @OneToMany(mappedBy = "raum")
+    @OneToMany(mappedBy = "raum", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<RaumMobiliar> raumMobiliar;
 

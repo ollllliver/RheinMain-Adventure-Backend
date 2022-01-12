@@ -3,16 +3,14 @@ package de.hsrm.mi.swt.rheinmainadventure.spiel;
 import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
 import de.hsrm.mi.swt.rheinmainadventure.entities.*;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.LevelRepository;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.RaumMobiliarRepository;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.RaumRepository;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,6 +28,8 @@ public class LevelServiceImpl implements LevelService {
     private RaumMobiliarRepository raumMobiliarRepository;
     @Autowired
     private BenutzerService benutzerService;
+    @Autowired
+    IntBenutzerRepo benutzerRepository;
 
     @Override
     public List<Level> alleLevel() {
@@ -50,45 +50,66 @@ public class LevelServiceImpl implements LevelService {
      * @return Das neue Level, synchron mit der Datenbank
      */
     @Override
+    @Transactional
     public Level bearbeiteLevel(String benutzername, Level externesLevel) {
         try {
-            lg.info("LevelService - editLevel");
-            // Erst einmal Level anhand der ID versuchen aus der DB rausklamüsern
-            Optional<Level> levelZumAktualisieren = getLevel(externesLevel.getLevelId());
+            lg.info("LevelService - bearbeiteLevel");
 
-            // Jetzt den Benutzer anhand des Benutzernamens herausfinden.
+            // Wenn externes Level keine Level-ID hat, müssen wir das abfangen
+            Optional<Long> optionalLevelId = Optional.ofNullable(externesLevel.getLevelId());
+            Optional<Level> levelZumAktualisieren = Optional.empty();
+
+            // Den Benutzer anhand des Benutzernamens herausfinden.
             Benutzer ersteller = benutzerService.findeBenutzer(benutzername);
+            lg.info("DB erfolgreich nach Benutzer abgefragt");
 
-            lg.info("DB erfolgreich nach Level und Benutzer abgefragt");
+            if (optionalLevelId.isPresent()) {
+                lg.info("Das externe Level hat schon eine ID.");
+                levelZumAktualisieren = levelRepository.findById(externesLevel.getLevelId());
+
+                lg.info("DB erfolgreich nach externer Level-ID abgefragt");
+            }
 
             // Wenn das Optional befüllt ist, haben wir ein Level und können es einfach updaten
             // Speichern ist (hoffentlich) nicht nötig, da der Spaß hier @Transactional ist
             if (levelZumAktualisieren.isPresent()) {
                 lg.info("Level aus DB erhält ein Update");
                 Level level = levelZumAktualisieren.get();
-                level.setErsteller(ersteller);
 
                 level.setName(externesLevel.getName());
                 level.setBeschreibung(externesLevel.getBeschreibung());
                 level.setBewertung(externesLevel.getBewertung());
                 level.setRaeume(externesLevel.getRaeume());
-                level.setErsteller(ersteller);
+
+                // Alte Version des Levels raus
+                Collection<Level> erstellteLevel = ersteller.getErstellteLevel();
+                erstellteLevel.removeIf(listLevel -> Objects.equals(listLevel.getLevelId(), level.getLevelId()));
+
+                // Neue Version des Levels rein
+                erstellteLevel.add(level);
+                benutzerRepository.save(ersteller);
 
                 lg.info("Level aktualisiert");
 
                 return level;
 
             } else {
-                // Wenn das Optional leer ist, gibt es das Level noch nicht
-                // in der DB und wir legen ihn neu an
+                // Wenn das Optional leer ist, gibt es das Level noch nicht in der DB und wir legen es neu an
 
                 lg.info("Neues Level wird in DB angelegt");
+
+                // Alles abspeichern und beim Anbieter hinterlegen
+                for (Raum raum : externesLevel.getRaeume()) {
+                    raum.setLevel(externesLevel);
+                    raumMobiliarRepository.saveAll(raum.getRaumMobiliar());
+                }
+                raumRepository.saveAll(externesLevel.getRaeume());
                 externesLevel.setErsteller(ersteller);
 
-                // Abspeichern und beim Anbieter hinterlegen
                 Level level = levelRepository.save(externesLevel);
                 Collection<Level> erstellteLevel = ersteller.getErstellteLevel();
                 erstellteLevel.add(level);
+                benutzerRepository.save(ersteller);
 
                 lg.info("Level eingefügt");
 
