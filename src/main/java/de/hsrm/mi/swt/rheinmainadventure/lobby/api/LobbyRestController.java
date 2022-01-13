@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 /**
@@ -34,7 +35,7 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
  */
 @RestController
 @RequestMapping(value = { "/api/lobby/*" })
-@SessionAttributes(names = { "loggedinBenutzername" })
+@SessionAttributes(names = { "loggedinBenutzername","aktuelleLobby"})
 public class LobbyRestController {
     // Hier ist die REST Schnittstelle fuer /api/lobby/... Jede REST Anfrage auf
     // diese Domain geht hierueber und wird in dieser Klasse bearbeitet.
@@ -64,7 +65,14 @@ public class LobbyRestController {
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage lobbyBeitretenByID(@PathVariable String lobbyId, Model m) {
         logger.info("POST /api/lobby/join/" + lobbyId);
-        return lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
+        if(m.getAttribute("aktuelleLobby").equals("") || m.getAttribute("aktuelleLobby").equals(lobbyId)){
+            LobbyMessage tempLobbyMessage = lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
+            if(!tempLobbyMessage.getIstFehler()){
+                m.addAttribute("aktuelleLobby",tempLobbyMessage.getPayload());
+            }
+            return tempLobbyMessage;
+        }
+        return new LobbyMessage(NachrichtenCode.BEREITS_IN_ANDERER_LOBBY,true,m.getAttribute("aktuelleLobby").toString());
     }
 
     /**
@@ -80,6 +88,9 @@ public class LobbyRestController {
     public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m) {
         logger.info("DELETE /api/lobby/leave/" + lobbyId);
         logger.info("USER " + m.getAttribute("loggedinBenutzername").toString() + " will die Lobby verlassen");
+        if(!m.getAttribute("aktuelleLobby").equals("")){
+            m.addAttribute("aktuelleLobby","");
+        }
         return lobbyservice.spielerVerlaesstLobby(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
 
@@ -91,12 +102,16 @@ public class LobbyRestController {
      * @return neu erstellte Lobby
      */
     @PostMapping(value = "neu", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Lobby neueLobbyErstellen(Model m) {
+    public LobbyMessage neueLobbyErstellen(Model m) {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
         // zurueckgesendet wird die neu erstellte Lobbyinstanz, damit das Frontend auf
         // die Lobbyseite mit der im Backend erstellten LobbyID weiterleidten kann.
         logger.info("POST /api/lobby/neu  Von : " + m.getAttribute("loggedinBenutzername").toString());
-        return lobbyservice.lobbyErstellen(m.getAttribute("loggedinBenutzername").toString());
+        if(m.getAttribute("aktuelleLobby").equals("")){ 
+            String lobbyID = lobbyservice.lobbyErstellen(m.getAttribute("loggedinBenutzername").toString()).getlobbyID();
+            return new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false,lobbyID);
+        }
+        return new LobbyMessage(NachrichtenCode.BEREITS_IN_ANDERER_LOBBY,true,m.getAttribute("aktuelleLobby").toString());
     }
 
     /**

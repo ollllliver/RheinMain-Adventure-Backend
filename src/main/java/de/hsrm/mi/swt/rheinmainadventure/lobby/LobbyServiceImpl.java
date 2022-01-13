@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import java.util.*;
 
@@ -21,6 +22,7 @@ import java.util.*;
  * Lobby Service für das verwalten aller Lobbys.
  */
 @Service
+@SessionAttributes(names = { "loggedinBenutzername"})
 public class LobbyServiceImpl implements LobbyService {
     private final Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
     private final static String TOPICLOB = "/topic/lobby/";
@@ -111,7 +113,7 @@ public class LobbyServiceImpl implements LobbyService {
             starteTimeout(lobby);
             lobbys.add(lobby);
 
-            broker.convertAndSend(TOPICUEB, new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false));
+            broker.convertAndSend(TOPICUEB, new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false, lobbyID));
             return lobby;
         } else {
             throw new NoSuchElementException("es gibt kein level in der Datenbank mit ID == 1.");
@@ -131,10 +133,11 @@ public class LobbyServiceImpl implements LobbyService {
 
     @Override
     public LobbyMessage spielerVerlaesstLobby(String id, String spielerName) {
-
+        logger.info("############" + spielerName);
 
         // Spieler wird gesucht aus der aktuellenTeilnehmerList...
-        for (int i = 0; i < getLobbyById(id).getTeilnehmerliste().size(); i++) {
+        int teilnehmerzahl = getLobbyById(id).getTeilnehmerliste().size();
+        for (int i = 0; i < teilnehmerzahl; i++) {
             Spieler currSpieler = getLobbyById(id).getTeilnehmerliste().get(i);
             if (currSpieler.getName().equals(spielerName)) {
                 // ... und entfernt
@@ -159,7 +162,7 @@ public class LobbyServiceImpl implements LobbyService {
                         getLobbyById(id).setHost(neuerHost);
                     }
                 }
-
+                break;
             }
         }
         broker.convertAndSend(TOPICLOB + id, new LobbyMessage(NachrichtenCode.MITSPIELER_VERLAESST, false));
@@ -307,7 +310,7 @@ public class LobbyServiceImpl implements LobbyService {
                 return new LobbyMessage(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, false, currLobby.getlobbyID());
             }
         }
-        return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false);
+        return new LobbyMessage(NachrichtenCode.SCHON_BEIGETRETEN, false, currLobby.getlobbyID());
     }
 
     /**

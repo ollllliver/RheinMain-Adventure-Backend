@@ -5,7 +5,7 @@ INSERT INTO benutzer (benutzer_id, benutzername, passwort)
 VALUES (11, 'Marvin', 'Marvin');
 
 INSERT INTO benutzer (benutzer_id, benutzername, passwort)
-VALUES (11, 'Friedrich', 'Friedrich');
+VALUES (12, 'Friedrich', 'Friedrich');
 
 INSERT INTO benutzer (benutzer_id, benutzername, passwort)
 VALUES (17, 'Oliver', 'Oliver');
