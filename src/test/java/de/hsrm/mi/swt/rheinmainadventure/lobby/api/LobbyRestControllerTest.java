@@ -86,7 +86,8 @@ class LobbyRestControllerTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
         assertTrue(lobby instanceof Lobby);
         assertEquals(lobbyService.getLobbys().size(), 1);
         assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()), lobby);
@@ -98,7 +99,8 @@ class LobbyRestControllerTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
 
         result = mockmvc
                 .perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session).contentType("application/json"))
@@ -117,7 +119,8 @@ class LobbyRestControllerTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
 
         result = mockmvc.perform(post("/api/lobby/joinRandom").session(session).contentType("application/json"))
                 .andReturn();
@@ -135,7 +138,8 @@ class LobbyRestControllerTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
 
         mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session1).contentType("application/json"))
                 .andReturn();
@@ -166,7 +170,8 @@ class LobbyRestControllerTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
 
         result = mockmvc
                 .perform(get("/api/lobby/" + lobby.getlobbyID()).session(session).contentType("application/json"))
@@ -184,12 +189,12 @@ class LobbyRestControllerTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        new ObjectMapper().readValue(jsonString, Lobby.class);
+        new ObjectMapper().readValue(jsonString, LobbyMessage.class);
 
         MockHttpSession session2 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         result = mockmvc.perform(post("/api/lobby/neu").session(session2).contentType("application/json")).andReturn();
         jsonString = result.getResponse().getContentAsString();
-        new ObjectMapper().readValue(jsonString, Lobby.class);
+        new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         assertEquals(lobbyService.getLobbys().size(), 2);
 
         result = mockmvc.perform(get("/api/lobby/alle").session(session1).contentType("application/json")).andReturn();
@@ -212,7 +217,8 @@ class LobbyRestControllerTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
 
         mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session1).contentType("application/json"))
                 .andReturn();
@@ -243,7 +249,8 @@ class LobbyRestControllerTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
 
         mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session1)
                 .contentType("application/json")).andReturn();
@@ -272,7 +279,8 @@ class LobbyRestControllerTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
 
         mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session1).contentType("application/json"))
                 .andReturn();
@@ -346,7 +354,8 @@ class LobbyRestControllerTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
 
         mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session1).contentType("application/json"))
                 .andReturn();

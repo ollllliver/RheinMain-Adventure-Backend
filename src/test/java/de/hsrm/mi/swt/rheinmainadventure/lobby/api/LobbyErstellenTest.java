@@ -74,7 +74,8 @@ class LobbyErstellenTest {
     private Lobby lobbyErstellenREST(MockHttpSession session) throws Exception {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
         assertTrue(lobby instanceof Lobby);
         return lobby;
     }
@@ -171,7 +172,7 @@ class LobbyErstellenTest {
 
 
         // also Lobby zwei sollte nicht erstellt worden sein.
-        assertNull(zweitelobby);
+        assertEquals(ersteLobby, zweitelobby);
         assertEquals(lobbyService.getLobbys().size(), 1);
     }
 
