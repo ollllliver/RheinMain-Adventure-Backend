@@ -35,7 +35,7 @@ class LobbyTest {
     void testLobbyID() {
 
         // zu testende Benutzernamen
-        String lobbyID1 = lobbyService.lobbyErstellen("Oliver").getlobbyID();
+        String lobbyID1 = lobbyService.lobbyErstellen("Olive").getlobbyID();
         String lobbyID2 = lobbyService.lobbyErstellen("Chand").getlobbyID();
         String lobbyID3 = lobbyService.lobbyErstellen("Raoul").getlobbyID();
         String lobbyID4 = lobbyService.lobbyErstellen("Andreas").getlobbyID();

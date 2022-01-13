@@ -46,7 +46,7 @@ class LobbyRestControllerTest {
     @Autowired
     private MockMvc mockmvc;
 
-    private final String ERSTER_SPIELER = "Oliver";
+    private final String ERSTER_SPIELER = "Olive";
     private final String ZWEITER_SPIELER = "Chand";
 
     @Autowired
