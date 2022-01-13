@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Interagierbar;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
@@ -39,20 +40,30 @@ public class SpielerController {
     @SendTo("/topic/spiel/{lobbyID}")
     public Spieler updatePosition(@Payload Position pos, @DestinationVariable String lobbyID,
             @DestinationVariable String name) throws Exception {
-        logger.info("SpielerController.updatePosition: Payload=" + pos + ", lobbyID=" + lobbyID + ", name: " + name);
+        //logger.info("SpielerController.updatePosition: Payload=" + pos + ", lobbyID=" + lobbyID + ", name: " + name);
         // broker.convertAndSend("/topic/spiel/" + lobbyID, pos); //nur Test
         Spieler spieler = spielService.getSpieler(lobbyID, name);
         return spielService.positionsAktualisierung(spieler, pos);
     }
 
-    @MessageMapping("/topic/spiel/{lobbyID}/interagieren")
-    // @SendTo("/topic/spiel/{lobbyID}/schluessel")
-    public void interagieren(@Payload String interagierenNamen, @DestinationVariable String lobbyID) throws Exception {
-        logger.info("ES wurde interagiert");
+    @MessageMapping("/topic/spiel/{lobbyID}/schluessel")
+    @SendTo("/topic/spiel/{lobbyID}/schluessel")
+    public int schluesselEingesammelt(@Payload String interagierenNamen, @DestinationVariable String lobbyID) throws Exception {
+        logger.info("ES wurde interagiert mit: " + interagierenNamen);
         spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
-        logger.info("Anzahl Schlüssel in Spiel" + lobbyID + " beträgt"
-                + spielService.findeSpiel(lobbyID).getAnzSchluessel());
+        logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
+            + spielService.findeSpiel(lobbyID).getAnzSchluessel());
+        return spielService.findeSpiel(lobbyID).getAnzSchluessel();
+    }
 
+    @MessageMapping("/topic/spiel/{lobbyID}/tuer")
+    @SendTo("/topic/spiel/{lobbyID}/schluessel")
+    public int tuerOEffnen(@Payload String interagierenNamen, @DestinationVariable String lobbyID) throws Exception {
+        logger.info(interagierenNamen + " wird aufgeschlossen");
+        spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
+        logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
+            + spielService.findeSpiel(lobbyID).getAnzSchluessel());
+        return spielService.findeSpiel(lobbyID).getAnzSchluessel();
     }
 
     @MessageMapping("/topic/spiel")
