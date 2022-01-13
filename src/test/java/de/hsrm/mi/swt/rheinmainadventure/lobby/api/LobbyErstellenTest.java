@@ -181,7 +181,8 @@ class LobbyErstellenTest {
     void UCD_Lobby_erstellen_1a_2_1() throws Exception {
         // einloggen:
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
-        lobbyErstellenREST(session);
+        Lobby test = lobbyErstellenREST(session);
+        lobbyBeitretenREST(session, test.getlobbyID());
         lobbyErstellenREST(session);
         assertEquals(lobbyService.getLobbys().size(), 1);
     }
