@@ -38,6 +38,7 @@ public class Mobiliar {
     }
 
     public Mobiliar() {}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -45,19 +46,12 @@ public class Mobiliar {
 
         Mobiliar mobiliar = (Mobiliar) o;
 
-        if (!Objects.equals(mobiliarId, mobiliar.mobiliarId)) return false;
-        if (!Objects.equals(name, mobiliar.name)) return false;
-        if (!Objects.equals(modellURI, mobiliar.modellURI)) return false;
-        return mobiliartyp == mobiliar.mobiliartyp;
+        return Objects.equals(mobiliarId, mobiliar.mobiliarId);
     }
 
     @Override
     public int hashCode() {
-        int result = mobiliarId != null ? mobiliarId.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (modellURI != null ? modellURI.hashCode() : 0);
-        result = 31 * result + (mobiliartyp != null ? mobiliartyp.hashCode() : 0);
-        return result;
+        return mobiliarId != null ? mobiliarId.hashCode() : 0;
     }
 
     public Long getMobiliarId() {
