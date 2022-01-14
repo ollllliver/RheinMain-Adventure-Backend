@@ -46,7 +46,7 @@ public class SpielerController {
         return spielService.positionsAktualisierung(spieler, pos);
     }
 
-    @MessageMapping("/topic/spiel/{lobbyID}/schluessel")
+    @MessageMapping("/topic/spiel/{lobbyID}/key")
     @SendTo("/topic/spiel/{lobbyID}/schluessel")
     public int schluesselEingesammelt(@Payload String interagierenNamen, @DestinationVariable String lobbyID) throws Exception {
         logger.info("ES wurde interagiert mit: " + interagierenNamen);
