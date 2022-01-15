@@ -17,7 +17,7 @@ INSERT INTO raum (raum_id, raum_index, level_level_id)
 VALUES (20, 0, 1);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (0, 'gltf/models_embedded/wall.gltf', 'Wand', null);
+VALUES (0, 'gltf/models_embedded/dirt.gltf', 'Wand', null);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (1, '', 'Weg', null);
@@ -73,9 +73,6 @@ INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobi
 VALUES (49, 3, 0, 6, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (53, 4, 0, 0, 20);
-
-INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
 VALUES (50, 5, 0, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
@@ -83,6 +80,9 @@ VALUES (51, 8, 8, 3, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
 VALUES (52, 0, 6, 2, 20);
+
+INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
+VALUES (53, 4, 0, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
 VALUES (54, 1, 1, 4, 20);
