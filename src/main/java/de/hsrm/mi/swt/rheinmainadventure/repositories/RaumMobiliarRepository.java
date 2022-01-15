@@ -11,5 +11,4 @@ public interface RaumMobiliarRepository extends JpaRepository<RaumMobiliar, Long
 
     List<RaumMobiliar> findAllByRaum_RaumId(Long raumId);
 
-
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -95,11 +96,23 @@ public class LevelRestController {
     public Position startPositionImRaum(@PathVariable long levelID, @PathVariable int raumindex) {
         lg.info("Startposition von Level ID {} und Raumindex {} über REST angefragt", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
+
         if (angefragtesLevel.isPresent()) {
             lg.info("Das Level existiert in der DB, jetzt wird der Raum geholt");
-            Raum angefragterRaum = levelService.getRaum(angefragtesLevel.get(), raumindex);
-            lg.info("Raumindex gibt es auch, Rauminhalt wird über JSON versendet");
-            return levelService.getStartPositionImRaum(angefragterRaum);
+
+            try {
+                // Wenn der RaumIndex zu hoch ist, wirft der LevelService eine NoSuchElementException, die wir fangen
+                // und in eine EntityNichtInDatenbankException umwandeln müssen
+
+                Raum angefragterRaum = levelService.getRaum(angefragtesLevel.get(), raumindex);
+                lg.info("Raumindex gibt es auch, Rauminhalt wird über JSON versendet");
+                return levelService.getStartPositionImRaum(angefragterRaum);
+
+            } catch (NoSuchElementException e) {
+                lg.warn("levelService.getRaum lieferte NoSuchElementException, breche mit Error 400 ab. " +
+                        "Vielleicht war der RaumIndex zu hoch?");
+                throw new LevelAttributZugriffsException("Das Level gab es in der Datenbank, aber den Raum nicht.");
+            }
         }
         lg.warn("Level nicht in DB gefunden, externer Aufrufer erhält 404");
         throw new EntityNichtInDatenbankException("Das Level gibt es nicht in der Datenbank");

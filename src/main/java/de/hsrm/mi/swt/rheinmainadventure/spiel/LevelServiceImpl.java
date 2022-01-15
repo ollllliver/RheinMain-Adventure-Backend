@@ -11,7 +11,10 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,14 +83,7 @@ public class LevelServiceImpl implements LevelService {
                 level.setBeschreibung(externesLevel.getBeschreibung());
                 level.setBewertung(externesLevel.getBewertung());
                 level.setRaeume(externesLevel.getRaeume());
-
-                // Alte Version des Levels raus
-                Collection<Level> erstellteLevel = ersteller.getErstellteLevel();
-                erstellteLevel.removeIf(listLevel -> Objects.equals(listLevel.getLevelId(), level.getLevelId()));
-
-                // Neue Version des Levels rein
-                erstellteLevel.add(level);
-                benutzerRepository.save(ersteller);
+                level.setErsteller(externesLevel.getErsteller());
 
                 lg.info("Level aktualisiert");
 
@@ -107,10 +103,6 @@ public class LevelServiceImpl implements LevelService {
                 externesLevel.setErsteller(ersteller);
 
                 Level level = levelRepository.save(externesLevel);
-                Collection<Level> erstellteLevel = ersteller.getErstellteLevel();
-                erstellteLevel.add(level);
-                benutzerRepository.save(ersteller);
-
                 lg.info("Level eingefügt");
 
                 return level;
@@ -131,8 +123,13 @@ public class LevelServiceImpl implements LevelService {
     public void loescheLevel(long levelId) {
         Optional<Level> zuLoeschen = levelRepository.findById(levelId);
         if (zuLoeschen.isPresent()) {
-            lg.info("Level aus DB gelöscht, Anzeige ist raus.");
+            for (Raum raum : zuLoeschen.get().getRaeume()) {
+                raumMobiliarRepository.deleteAllInBatch(raum.getRaumMobiliar());
+                raumRepository.deleteById(raum.getRaumId());
+            }
+
             levelRepository.deleteById(levelId);
+            lg.info("Level aus DB gelöscht, Anzeige ist raus.");
         }
     }
 
@@ -147,7 +144,7 @@ public class LevelServiceImpl implements LevelService {
     public List<Raum> getAlleRaumeImLevel(Level externesLevel) throws NoSuchElementException {
         lg.info("Level {} wird in der Datenbank nach seinen Räumen abgefragt", externesLevel);
 
-        Optional<Level> dbLevel = getLevel(externesLevel.getLevelId());
+        Optional<Level> dbLevel = levelRepository.findById(externesLevel.getLevelId());
         if (dbLevel.isPresent()) {
             lg.info("Level existiert in DB, Räume werden abgefragt");
             return raumRepository.findAllByLevel_LevelIdOrderByRaumIndex(dbLevel.get().getLevelId());
@@ -168,8 +165,8 @@ public class LevelServiceImpl implements LevelService {
     @Override
     public Raum getRaum(Level externesLevel, int raumIndex) throws NoSuchElementException {
         lg.info("Im Level {} wird nach dem Raum Nummer {} gesucht", externesLevel, raumIndex);
-        Optional<Level> dbLevel = getLevel(externesLevel.getLevelId());
-        if (dbLevel.isPresent() && dbLevel.get().getRaeume().size() >= raumIndex) {
+        Optional<Level> dbLevel = levelRepository.findById(externesLevel.getLevelId());
+        if (dbLevel.isPresent() && dbLevel.get().getRaeume().size() - 1 >= raumIndex) {
             lg.info("Passendes Level existiert, jetzt nur noch in der DB den passenden Raum finden.");
             return raumRepository.findAllByLevel_LevelIdAndRaumIndex(dbLevel.get().getLevelId(), raumIndex);
         } else {

@@ -5,7 +5,8 @@ import javax.persistence.*;
 /**
  * Diese Klasse stellt die N zu M Beziehung zwischen Raum und Mobiliar dar.
  * Da Mobiliar an einer gewissen Stelle im Raum steht, ist diese Klasse vonnöten um das zusätzliche Feld abzudecken.
- * Siehe https://www.baeldung.com/jpa-many-to-many#many-to-many-with-a-new-entity
+ *
+ * @see <a href="https://www.baeldung.com/jpa-many-to-many#many-to-many-with-a-new-entity">Baeldung Tutorial</a>
  */
 @Entity
 public class RaumMobiliar {
@@ -15,11 +16,9 @@ public class RaumMobiliar {
     private long raumMobiliarId;
 
     @ManyToOne
-    @JoinColumn(name = "raum_id")
     private Raum raum;
 
     @ManyToOne
-    @JoinColumn(name = "mobiliar_id")
     private Mobiliar mobiliar;
 
     @Column(nullable = false)
@@ -28,11 +27,11 @@ public class RaumMobiliar {
     @Column(nullable = false)
     private int positionY;
 
-    public RaumMobiliar(Mobiliar mobiliar, Raum raum, int y, int x) {
+    public RaumMobiliar(Mobiliar mobiliar, Raum raum, int x, int y) {
         this.mobiliar = mobiliar;
         this.raum = raum;
-        this.positionY = y;
         this.positionX = x;
+        this.positionY = y;
     }
 
     public RaumMobiliar() {
