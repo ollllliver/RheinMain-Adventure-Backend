@@ -20,20 +20,20 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 public class SpielerController {
 
     @Autowired
-    SpielService spielService;
+    private SpielService spielService;
 
     @Autowired
-    SimpMessagingTemplate broker;
+    private SimpMessagingTemplate broker;
 
-    Logger logger = LoggerFactory.getLogger(SpielerController.class);
+    private Logger logger = LoggerFactory.getLogger(SpielerController.class);
 
 
     /**
+     * Stomp Mapping für das empfangen von neuen Positionen der Spieler und senden der Spieler mit neuer Position an alle Mitspieler
      * 
-     * 
-     * @param s
-     * @param lobbyID
-     * @param name
+     * @param pos ist eine Position, die ein Spieler einnehmen möchte
+     * @param lobbyID ist die ID der Lobby, in der der Spieler gerade spielt.
+     * @param name ist der Name des Spielers, der seine Position ändern möchte.
      * @throws Exception
      */
     @MessageMapping("/topic/spiel/{lobbyID}/pos/{name}")
@@ -43,12 +43,5 @@ public class SpielerController {
         // broker.convertAndSend("/topic/spiel/" + lobbyID, pos); //nur Test
         Spieler spieler = spielService.getSpieler(lobbyID, name);
         return spielService.positionsAktualisierung(spieler, pos);
-    }
-
-
-    @MessageMapping("/topic/spiel")
-    //@SendTo("/topic/spiel/")
-    public void updatePosition(@Payload String s) throws Exception {  
-       // logger.info("\n\n\n\n\n\nUpdate Position: " + s +"\n\n\n\n\n\n");
     }
 }

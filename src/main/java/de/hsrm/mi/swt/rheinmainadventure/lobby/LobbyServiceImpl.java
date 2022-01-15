@@ -33,18 +33,18 @@ public class LobbyServiceImpl implements LobbyService {
      * koennen Nachrichten ueber STOMP an die Subscriber gesendet werden
      */
     @Autowired
-    SimpMessagingTemplate broker;
+    private SimpMessagingTemplate broker;
 
     @Autowired
-    SpielService spielService;
+    private SpielService spielService;
 
     @Autowired
-    LevelService levelService;
+    private LevelService levelService;
 
     /**
      * Liste aller Lobbyinstanzen.
      */
-    ArrayList<Lobby> lobbys = new ArrayList<>();
+    private ArrayList<Lobby> lobbys = new ArrayList<>();
 
     /**
      * Generiert eine einmalige Lobby-ID aus dem Namen des Spielers, kombiniert mit
@@ -117,7 +117,6 @@ public class LobbyServiceImpl implements LobbyService {
             return lobby;
         } else {
             throw new NoSuchElementException("es gibt kein level in der Datenbank mit ID == 1.");
-            // TODO: @Oliver eigene Exception schreiben!
         }
     }
 
@@ -130,11 +129,8 @@ public class LobbyServiceImpl implements LobbyService {
      * @return LobbyMessage dass eine spieler die lobby verlassen hat
      *
      */
-
     @Override
     public LobbyMessage spielerVerlaesstLobby(String id, String spielerName) {
-        logger.info("############" + spielerName);
-
         // Spieler wird gesucht aus der aktuellenTeilnehmerList...
         int teilnehmerzahl = getLobbyById(id).getTeilnehmerliste().size();
         for (int i = 0; i < teilnehmerzahl; i++) {

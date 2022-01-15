@@ -29,9 +29,6 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
  * Alle REST aufrufe zum Thema Lobby kommen hier an, werden zum verarbeiten an
  * den LobbyService weitergeleitet und hier wieder als Antwort zurück gesendet.
  * 
- * Es gibt: GET - api/lobby/alle POST - api/lobby/join{id} POST - api/lobby/neu
- * GET - api/lobby/{id}
- * 
  */
 @RestController
 @RequestMapping(value = { "/api/lobby/*" })
@@ -44,8 +41,12 @@ public class LobbyRestController {
     Logger logger = LoggerFactory.getLogger(LobbyRestController.class);
 
     @Autowired
-    LobbyService lobbyservice;
+    private LobbyService lobbyservice;
 
+    /**
+     * Erfragt eine Liste aller vorhandenen Lobbys.
+     * @return Liste von allen Lobbys.
+     */
     @GetMapping("alle")
     public List<Lobby> getAlleLobbys() {
         // GET /api/lobby/alle - liefert alle Lobbys.
@@ -83,7 +84,6 @@ public class LobbyRestController {
      * @param m        eingeloggter User
      * @return LobbyMessage mit Nachrichtencode
      */
-
     @DeleteMapping(value = "/leave/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m) {
         logger.info("DELETE /api/lobby/leave/" + lobbyId);
@@ -139,21 +139,53 @@ public class LobbyRestController {
         return lobbyservice.starteCountdown(lobbyId);
     }
 
+    /**
+     * Setzt bei richtiger Berechtigung das Spielerlimit der Loby neu.
+     * 
+     * @param lobbyId der zu ändernden Lobby
+     * @param spielerlimit das neu gesetzt werden soll
+     * @param m
+     * @return LobbyMessage mit information über Erfolg/Misserfolg
+     */
     @PatchMapping("/{lobbyId}/spielerlimit")
     public LobbyMessage patchSpielerlimit(@PathVariable String lobbyId, @RequestBody int spielerlimit, Model m) {
         return lobbyservice.setSpielerlimit(lobbyId, spielerlimit, m.getAttribute("loggedinBenutzername").toString());
     }
 
+    /**
+     * Setzt bei richtiger Berechtigung die Privatsphäre der Loby neu.
+     * 
+     * @param lobbyId der zu ändernden Lobby
+     * @param istPrivat boolean, das neu gesetzt werden soll.
+     * @param m
+     * @return LobbyMessage mit information über Erfolg/Misserfolg
+     */
     @PatchMapping("/{lobbyId}/privacy")
     public LobbyMessage patchPrivacy(@PathVariable String lobbyId, @RequestBody Boolean istPrivat, Model m) {
         return lobbyservice.setPrivacy(lobbyId, istPrivat, m.getAttribute("loggedinBenutzername").toString());
     }
 
+    /**
+     * Ändert bei richtiger Berechtigung den Host der Loby.
+     * 
+     * @param lobbyId der zu ändernden Lobby
+     * @param host der neuer Host der Lobby werden soll.
+     * @param m
+     * @return LobbyMessage mit information über Erfolg/Misserfolg
+     */
     @PatchMapping("/{lobbyId}/host")
     public LobbyMessage patchHost(@PathVariable String lobbyId, @RequestBody Spieler host, Model m) {
         return lobbyservice.setHost(lobbyId, host, m.getAttribute("loggedinBenutzername").toString());
     }
 
+    /**
+     * Wirft beu richtiger Berechtigung einen Mitspieler aus der Lobby.
+     * 
+     * @param lobbyId der zu ändernden Lobby
+     * @param zuEntfernendSpieler der zu entfernende Mitspieler
+     * @param m
+     * @return LobbyMessage mit information über Erfolg/Misserfolg
+     */
     @DeleteMapping("/{lobbyId}/teilnehmer")
     public LobbyMessage deleteTeilnehmer(@PathVariable String lobbyId, @RequestBody Spieler zuEntfernendSpieler,
             Model m) {
