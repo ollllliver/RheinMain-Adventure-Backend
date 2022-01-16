@@ -14,14 +14,14 @@ public class Spiel {
     private List<Spieler> spielerListe;
     private final Timestamp startZeitpunkt;
     private final Level level;
-    private int anzSchlüssel;
+    private int anzSchluessel;
 
     public Spiel(Lobby lobby, List<Spieler> spielerListe) {
         this.spielID = lobby.getlobbyID();
         this.level = lobby.getGewaehlteKarte();
         this.spielerListe = spielerListe;
         this.startZeitpunkt = new Timestamp(System.currentTimeMillis());
-        this.anzSchlüssel = 0;
+        this.anzSchluessel = 0;
     }
 
     public String getSpielID() {
@@ -44,12 +44,12 @@ public class Spiel {
         return level;
     }
 
-    public int getAnzSchlüssel() {
-        return anzSchlüssel;
+    public int getAnzSchluessel() {
+        return anzSchluessel;
     }
 
-    public void setAnzSchlüssel(int anzSchlüssel) {
-        this.anzSchlüssel = anzSchlüssel;
+    public void setAnzSchluessel(int anzSchluessel) {
+        this.anzSchluessel = anzSchluessel;
     }
 
 }

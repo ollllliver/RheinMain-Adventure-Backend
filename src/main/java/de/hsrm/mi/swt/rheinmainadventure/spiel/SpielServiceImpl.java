@@ -32,9 +32,10 @@ public class SpielServiceImpl implements SpielService {
      */
     @Override
     public void starteSpiel(Lobby lobby) {
-        
+
         List<Spieler> spielerListe = new ArrayList<Spieler>();
-        Position startposition = levelService.getStartPositionImRaum(levelService.getRaum(lobby.getGewaehlteKarte(), 0));
+        Position startposition = levelService
+                .getStartPositionImRaum(levelService.getRaum(lobby.getGewaehlteKarte(), 0));
 
         for (int i = 0; i < lobby.getTeilnehmerliste().size(); i++) {
             lobby.getTeilnehmerliste().get(i).getEigenschaften().setPosition(startposition);
@@ -106,8 +107,8 @@ public class SpielServiceImpl implements SpielService {
      */
     @Override
     public int anzahlSchluesselErhoehen(Spiel spiel) {
-        spiel.setAnzSchlüssel(spiel.getAnzSchlüssel() + 1);
-        return spiel.getAnzSchlüssel();
+        spiel.setAnzSchluessel(spiel.getAnzSchluessel() + 1);
+        return spiel.getAnzSchluessel();
     }
 
     /**
@@ -118,10 +119,28 @@ public class SpielServiceImpl implements SpielService {
      */
     @Override
     public int anzahlSchluesselVerringern(Spiel spiel) {
-        if (spiel.getAnzSchlüssel() >= 0) {
-            spiel.setAnzSchlüssel(spiel.getAnzSchlüssel() - 1);
+        if (spiel.getAnzSchluessel() >= 0) {
+            spiel.setAnzSchluessel(spiel.getAnzSchluessel() - 1);
         }
-        return spiel.getAnzSchlüssel();
+        return spiel.getAnzSchluessel();
+    }
+
+    /**
+     * Methode zum finden eines SPiels
+     * 
+     * @param lobbyID , da lobbyID = spielID
+     * 
+     * @return das gewünschte SPiel
+     */
+
+    @Override
+    public Spiel findeSpiel(String lobbyID) {
+        for (Spiel spiel : alleSpiele()) {
+            if (spiel.getSpielID().equals(lobbyID)) {
+                return spiel;
+            }
+        }
+        return null;
     }
 
 }
