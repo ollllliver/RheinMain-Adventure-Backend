@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 class BenutzerTests {
     @Autowired
     private BenutzerService benutzerService;
@@ -29,7 +31,6 @@ class BenutzerTests {
 
     final String TESTLOGINNAME = "jockel";
     final String TESTPASSWORT = "supergeheimesjockelpasswort";
-
 
     @Test
     void vorabcheck() {
@@ -78,6 +79,7 @@ class BenutzerTests {
             u1.setBenutzername(TESTLOGINNAME + i);
             u1.setPasswort(TESTPASSWORT + i);
             benutzerrepo.save(u1);
+            System.out.println(benutzerrepo.findAll());
         }
         assertThat(benutzerrepo.count()).isEqualTo(ANZAHL);
 

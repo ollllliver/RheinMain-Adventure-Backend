@@ -10,8 +10,6 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
  * {@link de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyServiceImpl}.
  */
 public interface LobbyService {
-    // Das hier ist das Interface fuer aktionen auf die Lobbyinstanzen.
-    // Alles, was an einer Lobby gemacht wird, soll hierueber passieren.
     public Lobby lobbyErstellen(String spielername);
 
     public Lobby getLobbyById(String id);
@@ -33,4 +31,6 @@ public interface LobbyService {
     public LobbyMessage setPrivacy(String id, Boolean istPrivat, String spielerName);
 
     public LobbyMessage setHost(String id, Spieler host, String spielerName);
+
+    public LobbyMessage removeSpieler(String id, Spieler zuEntfernendSpieler, String spielerName);
 }

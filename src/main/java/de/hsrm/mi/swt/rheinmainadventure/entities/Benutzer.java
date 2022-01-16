@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,13 +36,20 @@ public class Benutzer {
     @JsonIgnore
     private Long version;
 
-    public Benutzer(Long benutzerId, String benutzername, String passwort) {
-        this.benutzerId = benutzerId;
+    public Benutzer(String benutzername, String passwort, List<Level> erstellteLevel) {
         this.benutzername = benutzername;
         this.passwort = passwort;
+        this.erstellteLevel = erstellteLevel;
+    }
+
+    public Benutzer(String benutzername, String passwort) {
+        this.benutzername = benutzername;
+        this.passwort = passwort;
+        this.erstellteLevel = Collections.emptyList();
     }
 
     public Benutzer() {
+        this.erstellteLevel = Collections.emptyList();
     }
 
     @Override

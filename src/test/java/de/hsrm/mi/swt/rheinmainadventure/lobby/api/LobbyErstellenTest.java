@@ -1,19 +1,14 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.ArrayList;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,21 +24,22 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
-import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class LobbyErstellenTest {
+class LobbyErstellenTest {
     Logger logger = LoggerFactory.getLogger(LobbyErstellenTest.class);
 
     // orientiert an 7.3.1 Use Case Diagramm Lobby hosten (und Spiel starten)
     // https://taiga.mi.hs-rm.de/project/weitz-2021swtpro03/wiki/732-use-case-diagramm-lobby-hosten-und-spiel-starten
-    
+
     // UCD -> UseCaseDiagramm
 
     @Autowired
@@ -52,7 +48,7 @@ public class LobbyErstellenTest {
     @Autowired
     private MockMvc mockmvc;
 
-    private final String ERSTER_SPIELER = "Oliver";
+    private final String ERSTER_SPIELER = "Olive";
     private final String ZWEITER_SPIELER = "Chand";
 
     @Autowired
@@ -78,7 +74,8 @@ public class LobbyErstellenTest {
     private Lobby lobbyErstellenREST(MockHttpSession session) throws Exception {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
         assertTrue(lobby instanceof Lobby);
         return lobby;
     }
@@ -159,7 +156,7 @@ public class LobbyErstellenTest {
 
 
     @Test
-    @DisplayName("Spieler will Lobby hosten, ist aber bereits Mitglied einer anderen Lobby.")
+    @DisplayName("#101 Ein Spieler darf nur in max. einer Lobby zeitgleich sein - Spieler will Lobby hosten, ist aber bereits Mitglied einer anderen Lobby.")
     void UCD_Lobby_erstellen_1a_1() throws Exception {
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MockHttpSession sessionChand = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
@@ -175,16 +172,17 @@ public class LobbyErstellenTest {
 
 
         // also Lobby zwei sollte nicht erstellt worden sein.
-        assertNull(zweitelobby);
+        assertEquals(ersteLobby, zweitelobby);
         assertEquals(lobbyService.getLobbys().size(), 1);
     }
 
     @Test
-    @DisplayName(" Spieler will Lobby hosten, ist aber bereits HOST einer anderen Lobby")
+    @DisplayName("#101 Ein Spieler darf nur in max. einer Lobby zeitgleich sein - Spieler will Lobby hosten, ist aber bereits HOST einer anderen Lobby")
     void UCD_Lobby_erstellen_1a_2_1() throws Exception {
         // einloggen:
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
-        lobbyErstellenREST(session);
+        Lobby test = lobbyErstellenREST(session);
+        lobbyBeitretenREST(session, test.getlobbyID());
         lobbyErstellenREST(session);
         assertEquals(lobbyService.getLobbys().size(), 1);
     }

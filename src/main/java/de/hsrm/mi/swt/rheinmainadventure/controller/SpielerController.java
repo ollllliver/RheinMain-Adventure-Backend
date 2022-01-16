@@ -11,6 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
@@ -20,20 +23,23 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 public class SpielerController {
 
     @Autowired
-    SpielService spielService;
+    private LobbyService lobbyService;
 
     @Autowired
-    SimpMessagingTemplate broker;
+    private SpielService spielService;
 
-    Logger logger = LoggerFactory.getLogger(SpielerController.class);
+    @Autowired
+    private SimpMessagingTemplate broker;
+
+    private Logger logger = LoggerFactory.getLogger(SpielerController.class);
 
 
     /**
+     * Stomp Mapping für das empfangen von neuen Positionen der Spieler und senden der Spieler mit neuer Position an alle Mitspieler
      * 
-     * 
-     * @param s
-     * @param lobbyID
-     * @param name
+     * @param pos ist eine Position, die ein Spieler einnehmen möchte
+     * @param lobbyID ist die ID der Lobby, in der der Spieler gerade spielt.
+     * @param name ist der Name des Spielers, der seine Position ändern möchte.
      * @throws Exception
      */
     @MessageMapping("/topic/spiel/{lobbyID}/pos/{name}")
@@ -45,10 +51,11 @@ public class SpielerController {
         return spielService.positionsAktualisierung(spieler, pos);
     }
 
-
-    @MessageMapping("/topic/spiel")
-    //@SendTo("/topic/spiel/")
-    public void updatePosition(@Payload String s) throws Exception {  
-       // logger.info("\n\n\n\n\n\nUpdate Position: " + s +"\n\n\n\n\n\n");
-    }
+    // @MessageMapping("/topic/lobby/{lobbId}")
+    // public void beendeGame(@DestinationVariable String lobbyID, @Payload LobbyMessage msg) throws Exception {
+    //     logger.info("SpielerController.BackToLobby: lobbyID=" + lobbyID);
+    //     if (msg.getPayload().equals(NachrichtenCode.BEENDE_SPIEL.toString())) {
+    //         lobbyService.zurueckZurLobby(lobbyID);
+    //     }
+    // }
 }

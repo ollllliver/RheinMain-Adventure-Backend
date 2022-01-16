@@ -1,16 +1,15 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,13 +25,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
-import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
-import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -51,7 +46,7 @@ class LobbyBeitretenTest {
     @Autowired
     private MockMvc mockmvc;
 
-    private final String ERSTER_SPIELER = "Oliver";
+    private final String ERSTER_SPIELER = "Olive";
     private final String ZWEITER_SPIELER = "Chand";
 
     @Autowired
@@ -77,7 +72,8 @@ class LobbyBeitretenTest {
     private Lobby lobbyErstellenREST(MockHttpSession session) throws Exception {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
         assertTrue(lobby instanceof Lobby);
         return lobby;
     }
@@ -171,14 +167,14 @@ class LobbyBeitretenTest {
         
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertEquals(lobbyNach1malBeitreten, lobbyNach2malBeitreten);
-        assertEquals(lm1.getIstFehler(), false);
-        assertSame(lm1.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertEquals(lm2.getIstFehler(), false);
-        assertSame(lm2.getTyp(), NachrichtenCode.SCHON_BEIGETRETEN);
+        assertFalse(lm1.getIstFehler());
+        assertSame(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, lm1.getTyp());
+        assertFalse(lm2.getIstFehler());
+        assertSame(NachrichtenCode.SCHON_BEIGETRETEN, lm2.getTyp());
     }
 
     @Test
-    @DisplayName("Spieler befindet sich bereits in einer anderen Lobby.")
+    @DisplayName("#101 Ein Spieler darf nur in max. einer Lobby zeitgleich sein - Spieler befindet sich bereits in einer anderen Lobby.")
     void UCD_Lobby_beitreten_1d_2() throws Exception {
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MockHttpSession sessionChand = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
@@ -214,10 +210,10 @@ class LobbyBeitretenTest {
         
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertEquals(lobbyNach1malBeitreten, lobbyNach2malBeitreten);
-        assertEquals(lm1.getIstFehler(), false);
-        assertSame(lm1.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertEquals(lm2.getIstFehler(), false);
-        assertSame(lm2.getTyp(), NachrichtenCode.SCHON_BEIGETRETEN);
+        assertFalse(lm1.getIstFehler());
+        assertSame(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, lm1.getTyp());
+        assertFalse(lm2.getIstFehler());
+        assertSame(NachrichtenCode.SCHON_BEIGETRETEN, lm2.getTyp());
     }
 
 }

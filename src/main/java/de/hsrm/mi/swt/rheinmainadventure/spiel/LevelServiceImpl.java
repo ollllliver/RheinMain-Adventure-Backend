@@ -3,17 +3,18 @@ package de.hsrm.mi.swt.rheinmainadventure.spiel;
 import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
 import de.hsrm.mi.swt.rheinmainadventure.entities.*;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.LevelRepository;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.RaumMobiliarRepository;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.RaumRepository;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
-import java.util.*;
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +31,8 @@ public class LevelServiceImpl implements LevelService {
     private RaumMobiliarRepository raumMobiliarRepository;
     @Autowired
     private BenutzerService benutzerService;
+    @Autowired
+    IntBenutzerRepo benutzerRepository;
 
     @Override
     public List<Level> alleLevel() {
@@ -50,46 +53,56 @@ public class LevelServiceImpl implements LevelService {
      * @return Das neue Level, synchron mit der Datenbank
      */
     @Override
+    @Transactional
     public Level bearbeiteLevel(String benutzername, Level externesLevel) {
         try {
-            lg.info("LevelService - editLevel");
-            // Erst einmal Level anhand der ID versuchen aus der DB rausklamüsern
-            Optional<Level> levelZumAktualisieren = getLevel(externesLevel.getLevelId());
+            lg.info("LevelService - bearbeiteLevel");
 
-            // Jetzt den Benutzer anhand des Benutzernamens herausfinden.
+            // Wenn externes Level keine Level-ID hat, müssen wir das abfangen
+            Optional<Long> optionalLevelId = Optional.ofNullable(externesLevel.getLevelId());
+            Optional<Level> levelZumAktualisieren = Optional.empty();
+
+            // Den Benutzer anhand des Benutzernamens herausfinden.
             Benutzer ersteller = benutzerService.findeBenutzer(benutzername);
+            lg.info("DB erfolgreich nach Benutzer abgefragt");
 
-            lg.info("DB erfolgreich nach Level und Benutzer abgefragt");
+            if (optionalLevelId.isPresent()) {
+                lg.info("Das externe Level hat schon eine ID.");
+                levelZumAktualisieren = levelRepository.findById(externesLevel.getLevelId());
+
+                lg.info("DB erfolgreich nach externer Level-ID abgefragt");
+            }
 
             // Wenn das Optional befüllt ist, haben wir ein Level und können es einfach updaten
             // Speichern ist (hoffentlich) nicht nötig, da der Spaß hier @Transactional ist
             if (levelZumAktualisieren.isPresent()) {
                 lg.info("Level aus DB erhält ein Update");
                 Level level = levelZumAktualisieren.get();
-                level.setErsteller(ersteller);
 
                 level.setName(externesLevel.getName());
                 level.setBeschreibung(externesLevel.getBeschreibung());
                 level.setBewertung(externesLevel.getBewertung());
                 level.setRaeume(externesLevel.getRaeume());
-                level.setErsteller(ersteller);
+                level.setErsteller(externesLevel.getErsteller());
 
                 lg.info("Level aktualisiert");
 
                 return level;
 
             } else {
-                // Wenn das Optional leer ist, gibt es das Level noch nicht
-                // in der DB und wir legen ihn neu an
+                // Wenn das Optional leer ist, gibt es das Level noch nicht in der DB und wir legen es neu an
 
                 lg.info("Neues Level wird in DB angelegt");
+
+                // Alles abspeichern und beim Anbieter hinterlegen
+                for (Raum raum : externesLevel.getRaeume()) {
+                    raum.setLevel(externesLevel);
+                    raumMobiliarRepository.saveAll(raum.getRaumMobiliar());
+                }
+                raumRepository.saveAll(externesLevel.getRaeume());
                 externesLevel.setErsteller(ersteller);
 
-                // Abspeichern und beim Anbieter hinterlegen
                 Level level = levelRepository.save(externesLevel);
-                Collection<Level> erstellteLevel = ersteller.getErstellteLevel();
-                erstellteLevel.add(level);
-
                 lg.info("Level eingefügt");
 
                 return level;
@@ -110,8 +123,13 @@ public class LevelServiceImpl implements LevelService {
     public void loescheLevel(long levelId) {
         Optional<Level> zuLoeschen = levelRepository.findById(levelId);
         if (zuLoeschen.isPresent()) {
-            lg.info("Level aus DB gelöscht, Anzeige ist raus.");
+            for (Raum raum : zuLoeschen.get().getRaeume()) {
+                raumMobiliarRepository.deleteAllInBatch(raum.getRaumMobiliar());
+                raumRepository.deleteById(raum.getRaumId());
+            }
+
             levelRepository.deleteById(levelId);
+            lg.info("Level aus DB gelöscht, Anzeige ist raus.");
         }
     }
 
@@ -126,7 +144,7 @@ public class LevelServiceImpl implements LevelService {
     public List<Raum> getAlleRaumeImLevel(Level externesLevel) throws NoSuchElementException {
         lg.info("Level {} wird in der Datenbank nach seinen Räumen abgefragt", externesLevel);
 
-        Optional<Level> dbLevel = getLevel(externesLevel.getLevelId());
+        Optional<Level> dbLevel = levelRepository.findById(externesLevel.getLevelId());
         if (dbLevel.isPresent()) {
             lg.info("Level existiert in DB, Räume werden abgefragt");
             return raumRepository.findAllByLevel_LevelIdOrderByRaumIndex(dbLevel.get().getLevelId());
@@ -147,8 +165,8 @@ public class LevelServiceImpl implements LevelService {
     @Override
     public Raum getRaum(Level externesLevel, int raumIndex) throws NoSuchElementException {
         lg.info("Im Level {} wird nach dem Raum Nummer {} gesucht", externesLevel, raumIndex);
-        Optional<Level> dbLevel = getLevel(externesLevel.getLevelId());
-        if (dbLevel.isPresent() && dbLevel.get().getRaeume().size() >= raumIndex) {
+        Optional<Level> dbLevel = levelRepository.findById(externesLevel.getLevelId());
+        if (dbLevel.isPresent() && dbLevel.get().getRaeume().size() - 1 >= raumIndex) {
             lg.info("Passendes Level existiert, jetzt nur noch in der DB den passenden Raum finden.");
             return raumRepository.findAllByLevel_LevelIdAndRaumIndex(dbLevel.get().getLevelId(), raumIndex);
         } else {
@@ -165,7 +183,6 @@ public class LevelServiceImpl implements LevelService {
     public String getMobiliar3DModellURI(long mobiliarID) {
         return mobiliarRepository.getById(mobiliarID).getModellURI();
     }
-
 
     /**
      * Findet sämtliches Mobiliar, das sich in einem Raum befindet.

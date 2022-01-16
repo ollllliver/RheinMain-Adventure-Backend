@@ -32,13 +32,10 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
  * Alle REST aufrufe zum Thema Lobby kommen hier an, werden zum verarbeiten an
  * den LobbyService weitergeleitet und hier wieder als Antwort zurück gesendet.
  * 
- * Es gibt: GET - api/lobby/alle POST - api/lobby/join{id} POST - api/lobby/neu
- * GET - api/lobby/{id}
- * 
  */
 @RestController
 @RequestMapping(value = { "/api/lobby/*" })
-@SessionAttributes(names = { "loggedinBenutzername" })
+@SessionAttributes(names = { "loggedinBenutzername","aktuelleLobby"})
 public class LobbyRestController {
     // Hier ist die REST Schnittstelle fuer /api/lobby/... Jede REST Anfrage auf
     // diese Domain geht hierueber und wird in dieser Klasse bearbeitet.
@@ -47,8 +44,12 @@ public class LobbyRestController {
     Logger logger = LoggerFactory.getLogger(LobbyRestController.class);
 
     @Autowired
-    LobbyService lobbyservice;
+    private LobbyService lobbyservice;
 
+    /**
+     * Erfragt eine Liste aller vorhandenen Lobbys.
+     * @return Liste von allen Lobbys.
+     */
     @GetMapping("alle")
     public List<Lobby> getAlleLobbys() {
         // GET /api/lobby/alle - liefert alle Lobbys.
@@ -67,8 +68,15 @@ public class LobbyRestController {
      */
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage lobbyBeitretenByID(@PathVariable String lobbyId, Model m) {
-        logger.info(String.format("POST /api/lobby/join/%s", lobbyId));
-        return lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
+        logger.info("POST /api/lobby/join/" + lobbyId);
+        if(m.getAttribute("aktuelleLobby").equals("") || m.getAttribute("aktuelleLobby").equals(lobbyId)){
+            LobbyMessage tempLobbyMessage = lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
+            if(!tempLobbyMessage.getIstFehler()){
+                m.addAttribute("aktuelleLobby",tempLobbyMessage.getPayload());
+            }
+            return tempLobbyMessage;
+        }
+        return new LobbyMessage(NachrichtenCode.BEREITS_IN_ANDERER_LOBBY,true,m.getAttribute("aktuelleLobby").toString());
     }
 
     /**
@@ -79,12 +87,13 @@ public class LobbyRestController {
      * @param m        eingeloggter User
      * @return LobbyMessage mit Nachrichtencode
      */
-
     @DeleteMapping(value = "/leave/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m) {
-        logger.info(String.format("DELETE /api/lobby/leave/%s", lobbyId));
-        logger.info(
-                String.format("USER %s will die Lobby verlassen", m.getAttribute("loggedinBenutzername").toString()));
+        logger.info("DELETE /api/lobby/leave/" + lobbyId);
+        logger.info("USER " + m.getAttribute("loggedinBenutzername").toString() + " will die Lobby verlassen");
+        if(!m.getAttribute("aktuelleLobby").equals("")){
+            m.addAttribute("aktuelleLobby","");
+        }
         return lobbyservice.spielerVerlaesstLobby(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }
 
@@ -96,12 +105,16 @@ public class LobbyRestController {
      * @return neu erstellte Lobby
      */
     @PostMapping(value = "neu", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Lobby neueLobbyErstellen(Model m) {
+    public LobbyMessage neueLobbyErstellen(Model m) {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
         // zurueckgesendet wird die neu erstellte Lobbyinstanz, damit das Frontend auf
         // die Lobbyseite mit der im Backend erstellten LobbyID weiterleidten kann.
-        logger.info(String.format("POST /api/lobby/neu  Von : %s", m.getAttribute("loggedinBenutzername").toString()));
-        return lobbyservice.lobbyErstellen(m.getAttribute("loggedinBenutzername").toString());
+        logger.info("POST /api/lobby/neu  Von : " + m.getAttribute("loggedinBenutzername").toString());
+        if(m.getAttribute("aktuelleLobby").equals("")){ 
+            String lobbyID = lobbyservice.lobbyErstellen(m.getAttribute("loggedinBenutzername").toString()).getlobbyID();
+            return new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false,lobbyID);
+        }
+        return new LobbyMessage(NachrichtenCode.BEREITS_IN_ANDERER_LOBBY,true,m.getAttribute("aktuelleLobby").toString());
     }
 
     /**
@@ -113,7 +126,7 @@ public class LobbyRestController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Lobby getLobbyById(@PathVariable String id) {
         // GET /api/lobby/{id} - gibt die Lobby ueber die ID zurueck
-        logger.info(String.format("GET /api/lobby/%s", id));
+        logger.info("GET /api/lobby/" + id);
         return lobbyservice.getLobbyById(id);
     }
 
@@ -129,25 +142,64 @@ public class LobbyRestController {
         return lobbyservice.starteCountdown(lobbyId);
     }
 
-    @MessageMapping("/topic/lobby/{lobbId}")
-    public void beendeGame(@DestinationVariable String lobbyId, @Payload LobbyMessage msg) {
-        if (msg.getPayload().equals(NachrichtenCode.BEENDE_SPIEL.toString())) {
-            lobbyservice.zurueckZurLobby(lobbyId);
-        }
-    }
+    // @MessageMapping("/{lobbId}")
+    // public void beendeGame(@DestinationVariable String lobbyId, @Payload LobbyMessage msg) {
+    //     if (msg.getPayload().equals(NachrichtenCode.BEENDE_SPIEL.toString())) {
+    //         lobbyservice.zurueckZurLobby(lobbyId);
+    //     }
+    // }
 
+    /**
+     * Setzt bei richtiger Berechtigung das Spielerlimit der Loby neu.
+     * 
+     * @param lobbyId der zu ändernden Lobby
+     * @param spielerlimit das neu gesetzt werden soll
+     * @param m
+     * @return LobbyMessage mit information über Erfolg/Misserfolg
+     */
     @PatchMapping("/{lobbyId}/spielerlimit")
     public LobbyMessage patchSpielerlimit(@PathVariable String lobbyId, @RequestBody int spielerlimit, Model m) {
         return lobbyservice.setSpielerlimit(lobbyId, spielerlimit, m.getAttribute("loggedinBenutzername").toString());
     }
 
+    /**
+     * Setzt bei richtiger Berechtigung die Privatsphäre der Loby neu.
+     * 
+     * @param lobbyId der zu ändernden Lobby
+     * @param istPrivat boolean, das neu gesetzt werden soll.
+     * @param m
+     * @return LobbyMessage mit information über Erfolg/Misserfolg
+     */
     @PatchMapping("/{lobbyId}/privacy")
     public LobbyMessage patchPrivacy(@PathVariable String lobbyId, @RequestBody Boolean istPrivat, Model m) {
         return lobbyservice.setPrivacy(lobbyId, istPrivat, m.getAttribute("loggedinBenutzername").toString());
     }
 
+    /**
+     * Ändert bei richtiger Berechtigung den Host der Loby.
+     * 
+     * @param lobbyId der zu ändernden Lobby
+     * @param host der neuer Host der Lobby werden soll.
+     * @param m
+     * @return LobbyMessage mit information über Erfolg/Misserfolg
+     */
     @PatchMapping("/{lobbyId}/host")
     public LobbyMessage patchHost(@PathVariable String lobbyId, @RequestBody Spieler host, Model m) {
         return lobbyservice.setHost(lobbyId, host, m.getAttribute("loggedinBenutzername").toString());
+    }
+
+    /**
+     * Wirft beu richtiger Berechtigung einen Mitspieler aus der Lobby.
+     * 
+     * @param lobbyId der zu ändernden Lobby
+     * @param zuEntfernendSpieler der zu entfernende Mitspieler
+     * @param m
+     * @return LobbyMessage mit information über Erfolg/Misserfolg
+     */
+    @DeleteMapping("/{lobbyId}/teilnehmer")
+    public LobbyMessage deleteTeilnehmer(@PathVariable String lobbyId, @RequestBody Spieler zuEntfernendSpieler,
+            Model m) {
+        return lobbyservice.removeSpieler(lobbyId, zuEntfernendSpieler,
+                m.getAttribute("loggedinBenutzername").toString());
     }
 }

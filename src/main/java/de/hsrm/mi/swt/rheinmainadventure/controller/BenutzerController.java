@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @RequestMapping(value="/api")
-@SessionAttributes(names = {"loggedinBenutzername"})
+@SessionAttributes(names = {"loggedinBenutzername","aktuelleLobby"})
 @RestController
 public class BenutzerController {
 
@@ -28,6 +28,12 @@ public class BenutzerController {
     //Session-Attribut wird gesetzt
     @ModelAttribute("loggedinBenutzername")
     public String merkeUser() {
+        return new String();
+    }
+
+    //Session-Attribut wird gesetzt
+    @ModelAttribute("aktuelleLobby")
+    public String merkeLobby() {
         return new String();
     }
 
@@ -101,6 +107,7 @@ public class BenutzerController {
         try {
             if (benutzerService.pruefeLogin(benutzer.getBenutzername(), benutzer.getPasswort())) {
                 m.addAttribute("loggedinBenutzername", benutzer.getBenutzername());
+                m.addAttribute("aktuelleLobby","");
                 logger.info("Session attribut gesetzt -> Nutzer eingeloggt");
                 return new ResponseEntity<Benutzer>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
             }else{
@@ -121,6 +128,7 @@ public class BenutzerController {
     public  ResponseEntity<Benutzer>  logout(Model m, @RequestBody Benutzer benutzer) {
         if ((benutzerRepo.findByBenutzername(benutzer.getBenutzername())) != null) {
             m.addAttribute("loggedinBenutzername", "");
+            m.addAttribute("aktuelleLobby","");
             logger.info("Session attribut leer gesetzt -> Nutzer ausgeloggt");
             return new ResponseEntity<Benutzer>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
         }else {

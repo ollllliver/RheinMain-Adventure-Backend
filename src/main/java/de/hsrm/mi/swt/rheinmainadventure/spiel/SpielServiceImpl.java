@@ -19,11 +19,11 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 public class SpielServiceImpl implements SpielService {
 
     @Autowired
-    LevelService levelService;
+    private LevelService levelService;
 
     private Map<String, Spiel> spielListe = new HashMap<>();
 
-    Logger logger = LoggerFactory.getLogger(SpielServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(SpielServiceImpl.class);
 
     /**
      * Methode welche beim Spielstart die Spiel-ID angibt und die Startpositionen der teilnehmenden Spieler festlegt
