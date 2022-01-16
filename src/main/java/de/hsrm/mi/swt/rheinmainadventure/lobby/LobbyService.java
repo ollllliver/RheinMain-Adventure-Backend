@@ -22,6 +22,8 @@ public interface LobbyService {
 
     public LobbyMessage starteCountdown(String lobbyId);
 
+    public LobbyMessage zurueckZurLobby(String lobbyId);
+
     public LobbyMessage lobbyBeitretenZufaellig(String username);
 
     public LobbyMessage spielerVerlaesstLobby(String id, String spielerName);

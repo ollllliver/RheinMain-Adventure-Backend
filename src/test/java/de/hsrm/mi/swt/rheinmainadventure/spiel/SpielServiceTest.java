@@ -1,10 +1,12 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,44 +30,38 @@ class SpielServiceTest {
   @Autowired
   SpielService spielService;
 
-  Lobby lobbyA = lobbyService.lobbyErstellen("Lobby A");
-  Lobby lobbyB = lobbyService.lobbyErstellen("Lobby B");
+  Lobby lobbyA;
+  Spiel spielA;
+
+  Lobby lobbyB;
+  Spiel spielB;
 
   List<Spieler> spielerListeA = new ArrayList<Spieler>();
   List<Spieler> spielerListeB = new ArrayList<Spieler>();
-  
-  Spieler spielerHostA = new Spieler("HostA");
-  Spieler spielerTeilnehmerA = new Spieler("TeilnehmerA");
-  Spieler spielerTeilnehmerB = new Spieler("TeilnehmerB");
+
+  @BeforeEach
+  void init() {
+    Spieler spielerHostA = new Spieler("HostA");
+    Spieler spielerTeilnehmerA = new Spieler("TeilnehmerA");
+    Spieler spielerTeilnehmerB = new Spieler("TeilnehmerB");
+    
+    lobbyA = lobbyService.lobbyErstellen("HostA");
+    spielerListeA.add(spielerHostA);
+    spielerListeA.add(spielerTeilnehmerA);
+    spielerListeA.add(spielerTeilnehmerB);
+
+    for (Spieler spieler : spielerListeA) {
+      lobbyService.joinLobbybyId(lobbyA.getlobbyID(), spieler.getName());
+    }
+
+    spielService.starteSpiel(lobbyA);
+    spielA = spielService.getSpielByLobbyId(lobbyA.getlobbyID());
+  }
 
   @Test
   void testAlleSpieleAbrufen() {
-
-    spielerHostA.setHost(true);
-    spielerListeA.add(spielerHostA);
-
-    spielerTeilnehmerA.setHost(false);
-    spielerListeA.add(spielerTeilnehmerA);
-
-    spielerTeilnehmerB.setHost(false);
-    spielerListeA.add(spielerTeilnehmerB);
-
-    Spiel spielA = new Spiel(lobbyA, spielerListeA);
-
-    spielService.starteSpiel(lobbyA);
-    assertEquals(1, spielService.alleSpiele().size());
-
-    Spieler spielerHostB = new Spieler("HostB");
-    spielerHostB.setHost(true);
-    spielerListeB.add(spielerHostB);
-
-    Spieler spielerTeilnehmerC = new Spieler("TeilnehmerC");
-    spielerTeilnehmerC.setHost(false);
-    spielerListeB.add(spielerTeilnehmerC);
-
-    Spiel spielB = new Spiel(lobbyB, spielerListeB);
-    spielService.starteSpiel(lobbyB);
-    assertEquals(2, spielService.alleSpiele().size());
+    List<Spiel> spieleListe = spielService.alleSpiele();
+    assertNotNull(spieleListe);
   }
 
   @Test

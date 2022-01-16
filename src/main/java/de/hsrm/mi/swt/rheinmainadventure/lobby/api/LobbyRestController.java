@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 /**
@@ -123,6 +127,13 @@ public class LobbyRestController {
     @PostMapping("/{lobbyId}/start")
     public LobbyMessage startGame(@PathVariable String lobbyId) {
         return lobbyservice.starteCountdown(lobbyId);
+    }
+
+    @MessageMapping("/topic/lobby/{lobbId}")
+    public void beendeGame(@DestinationVariable String lobbyId, @Payload LobbyMessage msg) {
+        if (msg.getPayload().equals(NachrichtenCode.BEENDE_SPIEL.toString())) {
+            lobbyservice.zurueckZurLobby(lobbyId);
+        }
     }
 
     @PatchMapping("/{lobbyId}/spielerlimit")

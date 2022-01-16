@@ -61,8 +61,18 @@ public class SpielServiceImpl implements SpielService {
      * @return alle teilnehmenden Spieler
      */
     @Override
-    public List<Spieler> getSpielerListeZumSpiel(Spiel spiel) {
+    public List<Spieler> getSpielerListeBySpiel(Spiel spiel) {
         return spiel.getSpielerListe();
+    }
+
+    /**
+     * 
+     * @param
+     * @return
+     */
+    @Override
+    public Spiel getSpielByLobbyId(String lobbyId) {
+        return spielListe.get(lobbyId);
     }
 
     /**
@@ -89,7 +99,7 @@ public class SpielServiceImpl implements SpielService {
     public Spieler getSpieler(String spielID, String name) {
         Spiel spiel = spielListe.get(spielID);
 
-        for (Spieler spieler : getSpielerListeZumSpiel(spiel)) {
+        for (Spieler spieler : getSpielerListeBySpiel(spiel)) {
             // logger.info("SpielerServiceImpl.setSpielerPosition wird aufgerufen");
             if (spieler.getName().equals(name)) {
                 return spieler;

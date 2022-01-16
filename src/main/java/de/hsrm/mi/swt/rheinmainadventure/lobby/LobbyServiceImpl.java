@@ -1,6 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Timer;
@@ -18,6 +19,7 @@ import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
 
@@ -240,6 +242,18 @@ public class LobbyServiceImpl implements LobbyService {
     return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10");
   }
 
+  @Override
+  public LobbyMessage zurueckZurLobby(String lobbyId) {
+
+    Lobby lobby = getLobbyById(lobbyId);
+    Spiel spiel = spielService.getSpielByLobbyId(lobbyId);
+    spielService.alleSpiele().remove(spiel);
+    logger.info(String.format("Spiel beendent: ", spiel));
+    lobby.setIstGestartet(false);
+
+    return new LobbyMessage(NachrichtenCode.BEENDE_SPIEL, false, "Spiel beendet. Kehre zurück zur Lobby");
+  }
+
   /**
    * Gibt ALLE aktuellen Lobbs als Array zurueck.
    * 
@@ -375,4 +389,5 @@ public class LobbyServiceImpl implements LobbyService {
     }
     return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
   }
+
 }
