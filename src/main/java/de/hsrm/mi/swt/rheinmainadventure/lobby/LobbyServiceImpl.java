@@ -439,7 +439,10 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     /**
+     * Wechselt nach beenden des Spiels zurück in die lobby Ansicht
      * 
+     * @param lobbyId Die id der Lobby zu der gewechselt werden soll
+     * @return LobbyMessage mit Information über den Ausgang der Anfrage
      */
     @Override
     public LobbyMessage zurueckZurLobby(String lobbyId) {

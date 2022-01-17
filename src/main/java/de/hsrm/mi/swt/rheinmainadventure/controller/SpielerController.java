@@ -33,29 +33,37 @@ public class SpielerController {
 
     private Logger logger = LoggerFactory.getLogger(SpielerController.class);
 
-
     /**
-     * Stomp Mapping für das empfangen von neuen Positionen der Spieler und senden der Spieler mit neuer Position an alle Mitspieler
+     * Stomp Mapping für das empfangen von neuen Positionen der Spieler und senden
+     * der Spieler mit neuer Position an alle Mitspieler
      * 
-     * @param pos ist eine Position, die ein Spieler einnehmen möchte
+     * @param pos     ist eine Position, die ein Spieler einnehmen möchte
      * @param lobbyID ist die ID der Lobby, in der der Spieler gerade spielt.
-     * @param name ist der Name des Spielers, der seine Position ändern möchte.
+     * @param name    ist der Name des Spielers, der seine Position ändern möchte.
+     * @return den Spieler mit der aktualisierten Position
      * @throws Exception
      */
     @MessageMapping("/topic/spiel/{lobbyID}/pos/{name}")
     @SendTo("/topic/spiel/{lobbyID}")
-    public Spieler updatePosition(@Payload Position pos, @DestinationVariable String lobbyID, @DestinationVariable String name) throws Exception {  
-        logger.info("SpielerController.updatePosition: Payload=" + pos + ", lobbyID="+lobbyID + ", name: " + name);
+    public Spieler updatePosition(@Payload Position pos, @DestinationVariable String lobbyID,
+            @DestinationVariable String name) throws Exception {
+        logger.info("SpielerController.updatePosition: Payload=" + pos + ", lobbyID=" + lobbyID + ", name: " + name);
         // broker.convertAndSend("/topic/spiel/" + lobbyID, pos); //nur Test
         Spieler spieler = spielService.getSpieler(lobbyID, name);
         return spielService.positionsAktualisierung(spieler, pos);
     }
 
-    // @MessageMapping("/topic/lobby/{lobbId}")
-    // public void beendeGame(@DestinationVariable String lobbyID, @Payload LobbyMessage msg) throws Exception {
-    //     logger.info("SpielerController.BackToLobby: lobbyID=" + lobbyID);
-    //     if (msg.getPayload().equals(NachrichtenCode.BEENDE_SPIEL.toString())) {
-    //         lobbyService.zurueckZurLobby(lobbyID);
-    //     }
-    // }
+    /**
+     * 
+     * @param msg     ist die Nachricht, welche vom Frontend als reference vermittelt wird
+     * @param lobbyID ist die ID der Lobby, in welcher die Spieler nach beenden des Spiels umschalten
+     * @throws Exception
+     */
+    @MessageMapping("/topic/lobby/{lobbyID}")
+    public void beendeSpiel(@Payload LobbyMessage msg, @DestinationVariable String lobbyID) throws Exception {
+        logger.info("SpielerController.BackToLobby: lobbyID=" + lobbyID);
+        if (msg.getPayload().equals(NachrichtenCode.BEENDE_SPIEL.toString())) {
+            lobbyService.zurueckZurLobby(lobbyID);
+        }
+    }
 }

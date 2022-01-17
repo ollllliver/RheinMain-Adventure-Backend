@@ -66,9 +66,10 @@ public class SpielServiceImpl implements SpielService {
     }
 
     /**
+     * Methode zum Abrufen des gesuchten Spiels, mittels LobbyId
      * 
-     * @param
-     * @return
+     * @param lobbyId die id der Lobby an welcher das Spiel geknüpft ist
+     * @return das an die passende Lobby geknüpfte Spiel
      */
     @Override
     public Spiel getSpielByLobbyId(String lobbyId) {
