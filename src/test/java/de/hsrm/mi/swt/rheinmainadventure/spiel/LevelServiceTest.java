@@ -31,11 +31,10 @@ class LevelServiceTest {
     private IntBenutzerRepo benutzerRepository;
 
     @Autowired
-    private LevelService levelService;
-
-    @Autowired
     private MobiliarRepository mobiliarRepository;
 
+    @Autowired
+    private LevelService levelService;
 
     @Test
     void vorabcheck() {

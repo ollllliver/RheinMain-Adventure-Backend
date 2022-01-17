@@ -62,7 +62,7 @@ public class SpielerController {
     @MessageMapping("/topic/lobby/{lobbyID}")
     public void beendeSpiel(@Payload LobbyMessage msg, @DestinationVariable String lobbyID) throws Exception {
         logger.info("SpielerController.BackToLobby: lobbyID=" + lobbyID);
-        if (msg.getPayload().equals(NachrichtenCode.BEENDE_SPIEL.toString())) {
+        if (msg.getTyp().equals(NachrichtenCode.BEENDE_SPIEL)) {
             lobbyService.zurueckZurLobby(lobbyID);
         }
     }
