@@ -184,6 +184,11 @@ public class LevelServiceImpl implements LevelService {
         return mobiliarRepository.getById(mobiliarID).getModellURI();
     }
 
+    @Override
+    public Mobiliar getMobiliar(long mobiliarID) {
+        return mobiliarRepository.getById(mobiliarID);
+    }
+
     /**
      * Findet sämtliches Mobiliar, das sich in einem Raum befindet.
      *
