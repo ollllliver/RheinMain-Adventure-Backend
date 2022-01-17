@@ -59,11 +59,18 @@ public class SpielerController {
     @MessageMapping("/topic/spiel/{lobbyID}/tuer")
     @SendTo("/topic/spiel/{lobbyID}/schluessel")
     public int tuerOEffnen(@Payload String interagierenNamen, @DestinationVariable String lobbyID) throws Exception {
-        logger.info(interagierenNamen + " wird aufgeschlossen");
-        spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
-        logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
-            + spielService.findeSpiel(lobbyID).getAnzSchluessel());
-        return spielService.findeSpiel(lobbyID).getAnzSchluessel();
+        
+        if(spielService.findeSpiel(lobbyID).getAnzSchluessel()==0){
+            logger.info("Du brauchst erst einen Schlüssel");
+            return 0;
+        }else{
+            logger.info(interagierenNamen + " wird aufgeschlossen");
+            spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
+            logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
+                + spielService.findeSpiel(lobbyID).getAnzSchluessel());
+            return spielService.findeSpiel(lobbyID).getAnzSchluessel();
+        }
+     
     }
 
     @MessageMapping("/topic/spiel")
