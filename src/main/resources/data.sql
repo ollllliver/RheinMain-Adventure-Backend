@@ -23,7 +23,7 @@ INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (1, '', 'Weg', null);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (2, 'gltf/texturedBox_embedded/Box_regular.gltf', 'Start', 0);
+VALUES (2, 'gltf/models_embedded/Box_regular.gltf', 'Start', 0);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (3, 'gltf/duck_embedded/Duck.gltf', 'Ziel', 1);
@@ -32,7 +32,7 @@ INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (4, 'gltf/models_embedded/key.gltf', 'Schluessel', 2);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (5, 'gltf/texturedBox_embedded/Box_regular.gltf', 'NPC', 3);
+VALUES (5, 'gltf/models_embedded/Box_regular.gltf', 'NPC', 3);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (6, 'gltf/models_embedded/door.gltf', 'Tuer-Horizontal', 4);
