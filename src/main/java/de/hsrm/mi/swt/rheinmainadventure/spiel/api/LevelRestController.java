@@ -4,7 +4,6 @@ import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
 import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,11 +26,13 @@ import java.util.*;
 @RestController
 public class LevelRestController {
 
+    public static final String LEVEL_EXISTIERT_IN_DB_JETZT_RAUM_ABFRAGE = "Das Level existiert in der DB, jetzt wird der Raum geholt";
+    public static final String LEVEL_NICHT_IN_DB_404_LOG_MESSAGE = "Level nicht in DB gefunden, externer Aufrufer erhält 404";
+    public static final EntityNichtInDatenbankException LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION = new EntityNichtInDatenbankException("Das Level gibt es nicht in der Datenbank");
     private final Logger lg = LoggerFactory.getLogger(LevelRestController.class);
     @Autowired
     private LevelService levelService;
-    @Autowired
-    private MobiliarRepository mobiliarRepository;
+
 
     /**
      * @return Eine Liste aller in der DB gespeicherten Level
@@ -39,6 +40,24 @@ public class LevelRestController {
     @GetMapping(value = "/api/level/alle")
     public List<Level> getAlleLevel() {
         return levelService.alleLevel();
+    }
+
+
+    /**
+     * Erstellt für den Nutzer 'benutzername' ein neues, leeres Level und befüllt es direkt rudimentär mit Werten.
+     * Bislang können Level nur erstellt werden, nicht bearbeitet
+     *
+     * @param benutzername   ist ein in der DB vorhandener Nutzername, über den Level und Benutzer verknüpft werden.
+     * @param levelParameter Eine Map, die die Schlüssel "name" und "beschreibung" enthalten muss, um diese Werte beim Level zu setzen
+     * @return Ein mit der Datenbank verknüpftes Level, das als JSON zurückgegeben wird
+     */
+    @PostMapping(value = "/api/level/neu/{benutzername}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Level neuesLevel(@PathVariable String benutzername, Map<String, String> levelParameter) {
+        // Nicht sonderlich sauber, jedoch für UserStory ausreichend
+        return levelService.bearbeiteLevel(
+                benutzername,
+                new Level(levelParameter.get("name"), levelParameter.get("beschreibung"), (byte) 0, new ArrayList<>())
+        );
     }
 
     /**
@@ -53,13 +72,13 @@ public class LevelRestController {
         lg.info("Rauminhalt von Level ID {} und Raumindex {} über REST angefragt", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
         if (angefragtesLevel.isPresent()) {
-            lg.info("Das Level existiert in der DB, jetzt wird der Raum geholt");
+            lg.info(LEVEL_EXISTIERT_IN_DB_JETZT_RAUM_ABFRAGE);
             Raum angefragterRaum = levelService.getRaum(angefragtesLevel.get(), raumindex);
             lg.info("Raumindex gibt es auch, Rauminhalt wird über JSON versendet");
             return angefragterRaum.getRaumMobiliar();
         }
-        lg.warn("Level nicht in DB gefunden, externer Aufrufer erhält 404");
-        throw new EntityNichtInDatenbankException("Das Level gibt es nicht in der Datenbank");
+        lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
+        throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
     }
 
     /**
@@ -89,12 +108,12 @@ public class LevelRestController {
      * @see de.hsrm.mi.swt.rheinmainadventure.model.Position
      */
     @GetMapping(value = "/api/level/startposition/{levelID}/{raumindex}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Position startPositionImRaum(@PathVariable long levelID, @PathVariable int raumindex) {
+    public Position getStartPositionImRaum(@PathVariable long levelID, @PathVariable int raumindex) {
         lg.info("Startposition von Level ID {} und Raumindex {} über REST angefragt", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
 
         if (angefragtesLevel.isPresent()) {
-            lg.info("Das Level existiert in der DB, jetzt wird der Raum geholt");
+            lg.info(LEVEL_EXISTIERT_IN_DB_JETZT_RAUM_ABFRAGE);
 
             try {
                 // Wenn der RaumIndex zu hoch ist, wirft der LevelService eine NoSuchElementException, die wir fangen
@@ -110,8 +129,8 @@ public class LevelRestController {
                 throw new LevelAttributZugriffsException("Das Level gab es in der Datenbank, aber den Raum nicht.");
             }
         }
-        lg.warn("Level nicht in DB gefunden, externer Aufrufer erhält 404");
-        throw new EntityNichtInDatenbankException("Das Level gibt es nicht in der Datenbank");
+        lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
+        throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
     }
 
     /**
@@ -127,7 +146,7 @@ public class LevelRestController {
         lg.info("Einfacher Rauminhalt von Level ID {} und Raumindex {} über REST angefragt", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
         if (angefragtesLevel.isPresent()) {
-            lg.info("Das Level existiert in der DB, jetzt wird der Raum geholt");
+            lg.info(LEVEL_EXISTIERT_IN_DB_JETZT_RAUM_ABFRAGE);
 
             try {
                 // Wenn der RaumIndex zu hoch ist, wirft der LevelService eine NoSuchElementException, die wir fangen sollten.
@@ -160,8 +179,8 @@ public class LevelRestController {
             }
 
         }
-        lg.warn("Level nicht in DB gefunden, externer Aufrufer erhält 404");
-        throw new EntityNichtInDatenbankException("Das Level gibt es nicht in der Datenbank");
+        lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
+        throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
     }
 
 
@@ -171,7 +190,7 @@ public class LevelRestController {
         lg.info("Einfachen Rauminhalt zu Level ID {} und Raumindex {} über REST erhalten", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
         if (angefragtesLevel.isPresent()) {
-            lg.info("Das Level existiert in der DB, jetzt wird der Raum geholt");
+            lg.info(LEVEL_EXISTIERT_IN_DB_JETZT_RAUM_ABFRAGE);
 
             try {
                 // Wenn der RaumIndex zu hoch ist, wirft der LevelService eine NoSuchElementException, die wir fangen sollten.
@@ -221,12 +240,11 @@ public class LevelRestController {
                 angefragtesLevel.get().getRaeume().add(angefragterRaum);
                 return angefragterRaum;
             }
-
         }
-        // TODO: neues Level erstelen falls noch nicht existent
         // TODO: DeleteMapping fuer Level
-        lg.warn("Level nicht in DB gefunden, externer Aufrufer erhält 404");
-        throw new EntityNichtInDatenbankException("Das Level gibt es nicht in der Datenbank");
+        lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
+        throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
     }
+
 
 }
