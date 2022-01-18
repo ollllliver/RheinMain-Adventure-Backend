@@ -2,16 +2,22 @@ package de.hsrm.mi.swt.rheinmainadventure.controller;
 
 import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
+import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.api.EntityNichtInDatenbankException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping(value="/api")
 @SessionAttributes(names = {"loggedinBenutzername","aktuelleLobby"})
@@ -134,5 +140,16 @@ public class BenutzerController {
         }else {
             return new ResponseEntity<Benutzer>(benutzer, HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    @GetMapping(value = "/benutzer/level/{benutzername}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Level> getLevelVonBenutzername(@PathVariable String benutzername) {
+        Benutzer angefragerNutzer = benutzerService.findeBenutzer(benutzername);
+        return angefragerNutzer.getErstellteLevel();
+        /*
+           TESTWEISE
+           TODO: Fehler fangen falls nutzer nicht existiert
+
+         */
     }
 }

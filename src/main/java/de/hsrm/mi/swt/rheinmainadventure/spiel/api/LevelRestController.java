@@ -223,6 +223,8 @@ public class LevelRestController {
             }
 
         }
+        // TODO: neues Level erstelen falls noch nicht existent
+        // TODO: DeleteMapping fuer Level
         lg.warn("Level nicht in DB gefunden, externer Aufrufer erhält 404");
         throw new EntityNichtInDatenbankException("Das Level gibt es nicht in der Datenbank");
     }
