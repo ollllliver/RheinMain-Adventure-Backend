@@ -70,7 +70,11 @@ public class LevelRestController {
      */
     @DeleteMapping("/api/level/{levelID}")
     public void deleteLevel(@PathVariable long levelID) {
-        levelService.loescheLevel(levelID);
+        try {
+            levelService.loescheLevel(levelID);
+        } catch (NoSuchElementException e) {
+            throw new EntityNichtInDatenbankException("Es gibt kein Level, das man löschen könnte");
+        }
     }
 
     /**
