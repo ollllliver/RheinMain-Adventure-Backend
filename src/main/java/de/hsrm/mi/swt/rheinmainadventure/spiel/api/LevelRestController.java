@@ -5,6 +5,7 @@ import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
 import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,18 @@ public class LevelRestController {
                 benutzername,
                 new Level(levelParameter.get("name"), levelParameter.get("beschreibung"), (byte) 0, new ArrayList<>())
         );
+    }
+
+
+    /**
+     * Löscht ein Level über eine gegebene Level-ID. Das löscht übrigens auch alle Räume des Levels.
+     *
+     * @param levelID ist die Level-ID, die in der DB existieren sollte
+     * @see LevelServiceImpl#loescheLevel
+     */
+    @DeleteMapping("/api/level/{levelID}")
+    public void deleteLevel(@PathVariable long levelID) {
+        levelService.loescheLevel(levelID);
     }
 
     /**
