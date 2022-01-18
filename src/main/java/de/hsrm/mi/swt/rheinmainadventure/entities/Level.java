@@ -28,6 +28,9 @@ public class Level {
     @Column
     private byte bewertung;
 
+    @Column
+    private boolean istFreigegeben;
+
     @JsonIgnore
     @OneToMany(mappedBy = "level", fetch = FetchType.EAGER)
     List<Raum> raeume;
@@ -40,11 +43,20 @@ public class Level {
     @Version
     private Long version;
 
+    public Level(String name, String beschreibung, byte bewertung, List<Raum> raeume, boolean istFreigegeben) {
+        this.name = name;
+        this.beschreibung = beschreibung;
+        this.bewertung = bewertung;
+        this.raeume = raeume;
+        this.istFreigegeben = istFreigegeben;
+    }
+
     public Level(String name, String beschreibung, byte bewertung, List<Raum> raeume) {
         this.name = name;
         this.beschreibung = beschreibung;
         this.bewertung = bewertung;
         this.raeume = raeume;
+        this.istFreigegeben = false;
     }
 
     public Level() {
@@ -111,6 +123,14 @@ public class Level {
 
     public void setErsteller(Benutzer ersteller) {
         this.ersteller = ersteller;
+    }
+
+    public boolean isIstFreigegeben() {
+        return istFreigegeben;
+    }
+
+    public void setIstFreigegeben(boolean istFreigegeben) {
+        this.istFreigegeben = istFreigegeben;
     }
 
     public Long getVersion() {

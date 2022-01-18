@@ -1,13 +1,11 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import de.hsrm.mi.swt.rheinmainadventure.entities.*;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,22 +14,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliar;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliartyp;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
-import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayName("SpielService Tests")
+// TODO: Damit das funktioniert, sollte hier @ActiveProfiles("test") stehen
 class SpielServiceTest {
 
   @Autowired
