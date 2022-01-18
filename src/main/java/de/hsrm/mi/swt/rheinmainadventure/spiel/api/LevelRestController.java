@@ -30,9 +30,9 @@ public class LevelRestController {
     public static final String LEVEL_NICHT_IN_DB_404_LOG_MESSAGE = "Level nicht in DB gefunden, externer Aufrufer erhält 404";
     public static final EntityNichtInDatenbankException LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION = new EntityNichtInDatenbankException("Das Level gibt es nicht in der Datenbank");
     private final Logger lg = LoggerFactory.getLogger(LevelRestController.class);
+
     @Autowired
     private LevelService levelService;
-
 
     /**
      * @return Eine Liste aller in der DB gespeicherten Level
@@ -141,7 +141,7 @@ public class LevelRestController {
      * @param raumindex Der Raum-Index aus dem gesuchten Level.
      * @return Eine Liste an RaumMobiliar-Objekten, über die man das Mobiliar und seine Position erhält.
      */
-    @GetMapping(value = "/api/level/{levelID}/{raumindex}/einfach", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/level/einfach/{levelID}/{raumindex}", produces = MediaType.APPLICATION_JSON_VALUE)
     public long[][] getEinfachenRauminhalt(@PathVariable long levelID, @PathVariable int raumindex) {
         lg.info("Einfacher Rauminhalt von Level ID {} und Raumindex {} über REST angefragt", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
@@ -184,7 +184,7 @@ public class LevelRestController {
     }
 
 
-    @PutMapping(value = "/api/level/{levelID}/{raumindex}/einfach", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/api/level/einfach/{levelID}/{raumindex}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     public Raum putEinfachenRauminhalt(@PathVariable long levelID, @PathVariable int raumindex, long[][] einfacherRaumInhalt) {
         lg.info("Einfachen Rauminhalt zu Level ID {} und Raumindex {} über REST erhalten", levelID, raumindex);
@@ -241,7 +241,6 @@ public class LevelRestController {
                 return angefragterRaum;
             }
         }
-        // TODO: DeleteMapping fuer Level
         lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
         throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
     }
