@@ -16,14 +16,10 @@ import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 @Controller
-
 public class SpielerController {
 
     @Autowired
     private SpielService spielService;
-
-    @Autowired
-    private SimpMessagingTemplate broker;
 
     private Logger logger = LoggerFactory.getLogger(SpielerController.class);
 
