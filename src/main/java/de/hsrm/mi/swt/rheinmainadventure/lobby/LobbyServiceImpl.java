@@ -139,21 +139,21 @@ public class LobbyServiceImpl implements LobbyService {
                 // ... und entfernt
                 // wenn lobby leer ist wird sie geschlossen
                 if (getLobbyById(id).getTeilnehmerliste().size() == 1) {
-                    logger.info("Die Lobby ist leer und wird somit geschlossen!");
+                  
                     lobbys.remove(getLobbyById(id));
                     broker.convertAndSend(TOPICUEB, new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
                 } else {
-                    logger.info(getLobbyById(id).getTeilnehmerliste().toString());
+                    
                     getLobbyById(id).getTeilnehmerliste().remove(currSpieler);
-                    logger.info(getLobbyById(id).getTeilnehmerliste().toString());
+                    
                     // wenn der spieler der Host war wird der Status weitergegeben
                     if (spielerName.equals(getLobbyById(id).getHost().getName())) {
-                        logger.info("Der Host: " + spielerName + " verlaesst die Lobby");
+                        
                         int size = getLobbyById(id).getTeilnehmerliste().size();
                         double index = Math.floor(Math.random() * size);
 
                         Spieler neuerHost = getLobbyById(id).getTeilnehmerliste().get((int) index);
-                        logger.info("Der neue Host ist: " + neuerHost.getName());
+                        
                         neuerHost.setHost(true);
                         getLobbyById(id).setHost(neuerHost);
                     }
