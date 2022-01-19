@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,7 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests für die Restschnittstelle LevelRestController, auf /api/level/*
@@ -81,9 +81,9 @@ class LevelRestControllerTest {
         benutzerRepository.save(ersteller);
 
 
-        Mobiliar rein = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
-        Mobiliar raus = new Mobiliar("Box", "gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
-        Mobiliar ente = new Mobiliar("Ente", "gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
+        Mobiliar rein = new Mobiliar("Box", "static/gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "static/gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar ente = new Mobiliar("Ente", "static/gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
 
         mobiliarRepository.save(rein);
         mobiliarRepository.save(raus);
@@ -135,6 +135,14 @@ class LevelRestControllerTest {
     }
 
     @Test
+    void deleteLevel() {
+    }
+
+    @Test
+    void deleteLevelAberDasLevelGibtEsNicht() {
+    }
+
+    @Test
     @DisplayName("GET /api/level/{levelID}/{raumindex} liefert kompletten Raum-Inhalt (der richtigen Länge) als JSON")
     void getRauminhalt() throws Exception {
         List<Level> alleLevel = levelService.alleLevel();
@@ -158,23 +166,22 @@ class LevelRestControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/level/{mobiliarID} liefert von einem Mobiliar die passende gltf-Datei")
-    void getGLTFObject() throws Exception {
+    @DisplayName("GET /api/level/{mobiliarID} liefert von einem Mobiliar den passenden gltf-Link")
+    void getGLTFLink() throws Exception {
         List<Level> alleLevel = levelService.alleLevel();
         List<Raum> alleRaeume = levelService.getAlleRaumeImLevel(alleLevel.get(1));
         Map<Position, Mobiliar> mobiliarImRaum = levelService.getMobiliarImRaum(alleRaeume.get(0));
         Position vierVier = new Position(4, 4);
         Mobiliar testMobiliar = mobiliarImRaum.get(vierVier);
 
-        assertEquals("gltf/duck_embedded/Duck.gltf", testMobiliar.getModellURI());
+        assertEquals("static/gltf/duck_embedded/Duck.gltf", testMobiliar.getModellURI());
         long mobiliarID = testMobiliar.getMobiliarId();
         String GETRequest = "/api/level/" + mobiliarID;
 
         mockmvc.perform(
                         get(GETRequest)
                                 .contentType("application/json"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -221,4 +228,13 @@ class LevelRestControllerTest {
                                 .contentType("application/json"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void getEinfachenRauminhalt() {
+    }
+
+    @Test
+    void putEinfachenRauminhalt() {
+    }
+
 }

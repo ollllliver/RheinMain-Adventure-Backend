@@ -9,7 +9,6 @@ import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,12 +71,11 @@ public class LevelRestController {
      * @param mobiliarID ist die Mobiliar-ID, zu der die gltf-Datei heruntergeladen werden soll
      * @return Die gewünschte gltf-Datei (als Datei).
      */
-    @GetMapping(value = "/api/level/{mobiliarID}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public FileSystemResource getGLTFObject(@PathVariable long mobiliarID) {
-        lg.info("GET-Anfrage für die gltf-Datei von Mobiliar-ID {}", mobiliarID);
+    @GetMapping(value = "/api/level/{mobiliarID}")
+    public String getGLTFLink(@PathVariable long mobiliarID) {
+        lg.info("GET-Anfrage für die gltf-Datei-URL von Mobiliar-ID {}", mobiliarID);
         try {
-            String resourcePath = levelService.getMobiliar3DModellURI(mobiliarID);
-            return new FileSystemResource(("src/main/resources/" + resourcePath));
+            return levelService.getMobiliar3DModellURI(mobiliarID);
         } catch (EntityNotFoundException e) {
             throw new EntityNichtInDatenbankException("Das Mobiliar gibt es nicht in der Datenbank, oder es hat kein 3D Modell");
         }
