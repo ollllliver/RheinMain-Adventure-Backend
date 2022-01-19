@@ -222,7 +222,7 @@ public class LevelRestController {
     public void putEinfachenRauminhalt(@PathVariable String benutzername,
                                        @PathVariable long levelID,
                                        @PathVariable int raumindex,
-                                       RaumPOJO raumPOJO) {
+                                       @RequestBody RaumPOJO raumPOJO) {
         lg.info("Einfachen Rauminhalt zu Level ID {} und Raumindex {} über REST erhalten", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
         if (angefragtesLevel.isPresent()) {
@@ -260,9 +260,10 @@ public class LevelRestController {
                         "Vielleicht wurde zu Beginn das GET vergessen?");
                 throw new LevelAttributZugriffsException("Das Level gab es in der Datenbank, aber den Raum nicht.");
             }
+        } else {
+            lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
+            throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
         }
-        lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
-        throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
     }
 
 
