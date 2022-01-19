@@ -82,7 +82,7 @@ class BenutzerTests {
         assertThat(benutzerrepo.count()).isEqualTo(ANZAHL);
 
         for (int i = 0; i < ANZAHL; i++) {
-            Benutzer fund = benutzerrepo.findByBenutzername(TESTLOGINNAME + i);
+            Benutzer fund = benutzerrepo.findByBenutzername(TESTLOGINNAME + i).orElse(null);
             assertThat(fund.getPasswort()).isEqualTo(TESTPASSWORT + i);
         }
     }
@@ -99,7 +99,7 @@ class BenutzerTests {
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
 
-        Benutzer b = benutzerrepo.findByBenutzername("gibtsnicht");
+        Benutzer b = benutzerrepo.findByBenutzername("gibtsnicht").orElse(null);
         assertThat(b).isNull();
     }
 

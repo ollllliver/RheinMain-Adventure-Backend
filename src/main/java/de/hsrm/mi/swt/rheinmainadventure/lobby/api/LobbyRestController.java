@@ -1,5 +1,6 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -62,7 +63,8 @@ public class LobbyRestController {
      * 
      */
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public LobbyMessage lobbyBeitretenByID(@PathVariable String lobbyId, Model m) {
+    public LobbyMessage lobbyBeitretenByID(@PathVariable String lobbyId, Model m, Principal principal) {
+        logger.info("Principal: " + principal);
         logger.info(String.format("POST /api/lobby/join/%s", lobbyId));
         return lobbyservice.joinLobbybyId(lobbyId, m.getAttribute("loggedinBenutzername").toString());
     }

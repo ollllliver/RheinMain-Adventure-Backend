@@ -33,6 +33,8 @@ import java.util.HashMap;
 class BenutzerRestTest {
     private static final String TESTBENUTZERNAME = "hopsi";
     private static final String TESTPASSWORT = "abcxyz";
+    private static final boolean TESTACTIVE = false;
+    private static final String TESTROLES = "BENUTZER";
     private static String TESTLOGINJSON;
 
     @Autowired
@@ -55,6 +57,8 @@ class BenutzerRestTest {
         ObjectNode json = JsonNodeFactory.instance.objectNode();
         json.put("benutzername", TESTBENUTZERNAME);
         json.put("passwort", TESTPASSWORT);
+        json.put("active", TESTACTIVE);
+        json.put("roles", TESTROLES);
         TESTLOGINJSON = json.toString();
     }
     @BeforeEach
@@ -73,7 +77,9 @@ class BenutzerRestTest {
                 )
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT))
+                .andExpect(jsonPath("$.active").value(TESTACTIVE))
+                .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
         mockmvc.perform(
@@ -92,7 +98,9 @@ class BenutzerRestTest {
         )
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT))
+                .andExpect(jsonPath("$.active").value(TESTACTIVE))
+                .andExpect(jsonPath("$.roles").value(TESTROLES));
     }
 
     @Test
@@ -105,7 +113,9 @@ class BenutzerRestTest {
                 )
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT))
+                .andExpect(jsonPath("$.active").value(TESTACTIVE))
+                .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
 
@@ -127,10 +137,12 @@ class BenutzerRestTest {
                 )
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT))
+                .andExpect(jsonPath("$.active").value(TESTACTIVE))
+                .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
-        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME);
+        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME).get();
         assertThat(b).isNotNull();
 
         mockmvc.perform(
@@ -140,7 +152,9 @@ class BenutzerRestTest {
                 )
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT))
+                .andExpect(jsonPath("$.active").value(TESTACTIVE))
+                .andExpect(jsonPath("$.roles").value(TESTROLES));
     }
 
     @Test
@@ -153,10 +167,12 @@ class BenutzerRestTest {
                 )
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT))
+                .andExpect(jsonPath("$.active").value(TESTACTIVE))
+                .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
-        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME);
+        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME).get();
         assertThat(b).isNotNull();
 
         mockmvc.perform(
@@ -166,7 +182,9 @@ class BenutzerRestTest {
                 )
                 .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT))
+                .andExpect(jsonPath("$.active").value(TESTACTIVE))
+                .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         HashMap<String, Object> sessionattr = new HashMap<String, Object>();
         sessionattr.put("loggedinBenutzername", b.getBenutzername()) ;
@@ -189,7 +207,9 @@ class BenutzerRestTest {
                 )
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT))
+                .andExpect(jsonPath("$.active").value(TESTACTIVE))
+                .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         mockmvc.perform(
                         post("/api/benutzer/login")
@@ -198,10 +218,12 @@ class BenutzerRestTest {
                 )
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
-                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT));
+                .andExpect(jsonPath("$.passwort").value(TESTPASSWORT))
+                .andExpect(jsonPath("$.active").value(TESTACTIVE))
+                .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
-        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME);
+        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME).get();
         assertThat(b).isNotNull();
 
         mockmvc.perform(

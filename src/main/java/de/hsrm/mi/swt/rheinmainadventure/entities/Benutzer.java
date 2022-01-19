@@ -35,10 +35,18 @@ public class Benutzer {
     @JsonIgnore
     private Long version;
 
-    public Benutzer(Long benutzerId, String benutzername, String passwort) {
+    @Column
+    private boolean active;
+
+    @Column
+    private String roles;
+
+    public Benutzer(Long benutzerId, String benutzername, String passwort, boolean active, String roles) {
         this.benutzerId = benutzerId;
         this.benutzername = benutzername;
         this.passwort = passwort;
+        this.active = active;
+        this.roles = roles;
     }
 
     public Benutzer() {
@@ -106,5 +114,21 @@ public class Benutzer {
 
     public void setErstellteLevel(List<Level> erstellteLevel) {
         this.erstellteLevel = erstellteLevel;
+    }
+
+    public boolean getActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles;
     }
 }

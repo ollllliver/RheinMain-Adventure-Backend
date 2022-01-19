@@ -1,8 +1,8 @@
-INSERT INTO benutzer (benutzer_id, benutzername, passwort)
-VALUES (10, 'wubbo', 'test');
+INSERT INTO benutzer (benutzer_id, benutzername, passwort, active, roles)
+VALUES (10, 'wubbo', '$2a$10$OGmmgxpW.jXyWbbkWGaMguN8kREJd6km/ryN3ie2KxodM5of3d3CO', true, 'BENUTZER');
 
-INSERT INTO benutzer (benutzer_id, benutzername, passwort)
-VALUES (17, 'Oliver', 'Oliver');
+INSERT INTO benutzer (benutzer_id, benutzername, passwort, active, roles)
+VALUES (17, 'Oliver', 'Oliver', true, 'BENUTZER');
 
 INSERT INTO level (level_id, name, beschreibung, bewertung, benutzer_id)
 VALUES (1, 'Wubbos wahnwitzige Wunderwelt', 'Abenteuer in den Niederlanden', 17, 10);

@@ -6,15 +6,26 @@ import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.persistence.EntityManager;
+import java.util.Optional;
 
 
 @Service
 public class BenutzerServiceImpl implements BenutzerService {
 
     @Autowired
-    IntBenutzerRepo benutzerrepository;
+    private IntBenutzerRepo benutzerrepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+            private EntityManager entityManager;
 
     Logger logger = LoggerFactory.getLogger(BenutzerController.class);
 
@@ -26,12 +37,12 @@ public class BenutzerServiceImpl implements BenutzerService {
      */
     @Override
     public boolean pruefeLogin(String loginname, String passwort) {
-        String pw = findeBenutzer(loginname).getPasswort();
-        if(passwort.equals(pw)) {
-            return true;
-        } else {
-            return false;
+        if (findeBenutzer(loginname) != null){
+            if(passwort.equals(findeBenutzer(loginname).getPasswort())) {
+                return true;
+            }
         }
+        return false;
     }
 
 
@@ -42,11 +53,21 @@ public class BenutzerServiceImpl implements BenutzerService {
      */
     @Transactional
     @Override
-    public Benutzer registriereBenutzer(Benutzer neubenutzer) {
+    public Benutzer registriereBenutzer(@RequestBody de.hsrm.mi.swt.rheinmainadventure.jwt.JwtLoginRequest neubenutzer) {
        logger.info(neubenutzer.toString());
         if(benutzerrepository.findByBenutzername(neubenutzer.getBenutzername()) == null) {
-            Benutzer gespeichert = benutzerrepository.save(neubenutzer);
-            return gespeichert;
+
+            Benutzer benutzer = new Benutzer();
+            benutzer.setBenutzername(neubenutzer.getBenutzername());
+            benutzer.setPasswort(passwordEncoder.encode(neubenutzer.getPasswort()));
+            benutzer.setRoles("BENUTZER");
+            benutzer.setActive(true);
+
+            Benutzer benutzer2222222 = entityManager.merge(benutzer);
+
+            logger.info("benutezr mir id : " + benutzer2222222.getBenutzerId());
+
+            return benutzer2222222;
         } else {
             return null;
         }
