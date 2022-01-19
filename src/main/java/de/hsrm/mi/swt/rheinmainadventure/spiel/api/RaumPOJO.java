@@ -14,7 +14,11 @@ public class RaumPOJO {
 
     private long[][] levelInhalt;
 
-    public RaumPOJO(long levelID, String benutzername, String levelName, String levelBeschreibung, long[][] levelInhalt) {
+    public RaumPOJO(long levelID,
+                    String benutzername,
+                    String levelName,
+                    String levelBeschreibung,
+                    long[][] levelInhalt) {
         this.levelID = levelID;
         this.benutzername = benutzername;
         this.levelName = levelName;

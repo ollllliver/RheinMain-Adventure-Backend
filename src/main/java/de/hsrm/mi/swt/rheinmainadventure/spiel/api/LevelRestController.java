@@ -142,7 +142,9 @@ public class LevelRestController {
      * @return Ein einfaches, nicht mit der DB verknüpftes Raum-Objekt, das grobe Infos über Raum-Inahalt und Level enthält.
      */
     @GetMapping(value = "/api/level/einfach/{benutzername}/{levelID}/{raumindex}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RaumPOJO getEinfachenRauminhalt(@PathVariable String benutzername, @PathVariable long levelID, @PathVariable int raumindex) {
+    public RaumPOJO getEinfachenRauminhalt(@PathVariable String benutzername,
+                                           @PathVariable long levelID,
+                                           @PathVariable int raumindex) {
         lg.info("Einfacher Rauminhalt von Level ID {} und Raumindex {} über REST angefragt", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
         if (angefragtesLevel.isPresent()) {
@@ -215,9 +217,12 @@ public class LevelRestController {
     }
 
 
-    @PutMapping(value = "/api/level/einfach/{levelID}/{raumindex}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/api/level/einfach/{benutzername}/{levelID}/{raumindex}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public Raum putEinfachenRauminhalt(@PathVariable long levelID, @PathVariable int raumindex, long[][] einfacherRaumInhalt) {
+    public void putEinfachenRauminhalt(@PathVariable String benutzername,
+                                       @PathVariable long levelID,
+                                       @PathVariable int raumindex,
+                                       RaumPOJO raumPOJO) {
         lg.info("Einfachen Rauminhalt zu Level ID {} und Raumindex {} über REST erhalten", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
         if (angefragtesLevel.isPresent()) {
@@ -231,11 +236,11 @@ public class LevelRestController {
 
                 // Wir machen uns eine neue leere Liste...
                 List<RaumMobiliar> neuesRaumMobiliar = new ArrayList<>();
-                for (int x = 0; x < einfacherRaumInhalt.length; x++) {
-                    for (int y = 0; y < einfacherRaumInhalt[x].length; y++) {
+                for (int x = 0; x < raumPOJO.getLevelInhalt().length; x++) {
+                    for (int y = 0; y < raumPOJO.getLevelInhalt()[x].length; y++) {
                         // iterieren über den externen Rauminhalt und mappen ihn auf RaumMobiliar-Objekte der DB
                         neuesRaumMobiliar.add(new RaumMobiliar(
-                                levelService.getMobiliar(einfacherRaumInhalt[x][y]),
+                                levelService.getMobiliar(raumPOJO.getLevelInhalt()[x][y]),
                                 angefragterRaum,
                                 x,
                                 y)
@@ -245,31 +250,15 @@ public class LevelRestController {
                 // Jetzt haben wir einen korrekt befüllten Raum, den werfen wir jetzt noch in das Level rein
                 angefragterRaum.setRaumMobiliar(neuesRaumMobiliar);
 
-                // Da der Spaß transactional ist, sollte es das vielleicht schon gewesen sein. Ansonsten einfach nochmal
-                // bearbeiteLevel() aufrufen
+                // Jetzt setzen wir noch alle anderen Eigenschaften aus dem POJO neu auf das Level
+                angefragtesLevel.get().setName(raumPOJO.getLevelName());
+                angefragtesLevel.get().setBeschreibung(raumPOJO.getLevelBeschreibung());
 
-                return angefragterRaum;
 
             } catch (NoSuchElementException e) {
-                // Wenn es den Raum also noch nicht gibt, erstellen wir einen neuen im Level.
-                // Wir machen uns einen neuen Raum mit frischem RaumMobiliar
-                List<RaumMobiliar> neuesRaumMobiliar = new ArrayList<>();
-                Raum angefragterRaum = new Raum(raumindex, neuesRaumMobiliar);
-
-                // und befüllen das RaumMobiliar
-                for (int x = 0; x < einfacherRaumInhalt.length; x++) {
-                    for (int y = 0; y < einfacherRaumInhalt[x].length; y++) {
-                        // iterieren über den externen Rauminhalt und mappen ihn auf RaumMobiliar-Objekte der DB
-                        neuesRaumMobiliar.add(new RaumMobiliar(
-                                levelService.getMobiliar(einfacherRaumInhalt[x][y]),
-                                angefragterRaum,
-                                x,
-                                y)
-                        );
-                    }
-                }
-                angefragtesLevel.get().getRaeume().add(angefragterRaum);
-                return angefragterRaum;
+                lg.warn("levelService.getRaum lieferte NoSuchElementException, breche mit Error 400 ab. " +
+                        "Vielleicht wurde zu Beginn das GET vergessen?");
+                throw new LevelAttributZugriffsException("Das Level gab es in der Datenbank, aber den Raum nicht.");
             }
         }
         lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
