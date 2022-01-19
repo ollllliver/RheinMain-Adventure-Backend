@@ -43,25 +43,6 @@ public class LevelRestController {
         return levelService.alleLevel();
     }
 
-
-    /**
-     * Erstellt für den Nutzer 'benutzername' ein neues, leeres Level und befüllt es direkt rudimentär mit Werten.
-     * Bislang können Level nur erstellt werden, nicht bearbeitet
-     *
-     * @param benutzername   ist ein in der DB vorhandener Nutzername, über den Level und Benutzer verknüpft werden.
-     * @param levelParameter Eine Map, die die Schlüssel "name" und "beschreibung" enthalten muss, um diese Werte beim Level zu setzen
-     * @return Ein mit der Datenbank verknüpftes Level, das als JSON zurückgegeben wird
-     */
-    @PostMapping(value = "/api/level/neu/{benutzername}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Level neuesLevel(@PathVariable String benutzername, Map<String, String> levelParameter) {
-        // Nicht sonderlich sauber, jedoch für UserStory ausreichend
-        return levelService.bearbeiteLevel(
-                benutzername,
-                new Level(levelParameter.get("name"), levelParameter.get("beschreibung"), (byte) 0, new ArrayList<>())
-        );
-    }
-
-
     /**
      * Löscht ein Level über eine gegebene Level-ID. Das löscht übrigens auch alle Räume des Levels.
      *
@@ -151,22 +132,24 @@ public class LevelRestController {
     }
 
     /**
-     * Liefert mit einem GET-Aufruf den Inhalt eines Levels in Form eines 2D-Arrays, das an dan passenden Stellen
-     * im Array die Mobiliar-IDs enthält.
+     * Liefert mit einem GET-Aufruf den Inhalt eines Levels in Form eines Raum-POJOs, das rudimentär einen Raum abbildet.
+     * Wenn Raum-Index oder Level-ID nicht in der Datenbank existieren, wird jeweils passend entweder ein neuer Raum
+     * oder ein neues Level angelegt und auf das Raum-POJO gemappt, sodass immer ein valider Output geliefert wird.
      *
-     * @param levelID   Die Level-Id, die in der DB angefragt werden soll. Teil der Request-URL.
-     * @param raumindex Der Raum-Index aus dem gesuchten Level.
-     * @return Eine Liste an RaumMobiliar-Objekten, über die man das Mobiliar und seine Position erhält.
+     * @param benutzername ist der Benutzername, unter dem ein eventuell nicht vorhandenes Level erstellt werden soll.
+     * @param levelID      Die Level-Id, die in der DB angefragt werden soll.
+     * @param raumindex    Der Raum-Index aus dem gesuchten Level.
+     * @return Ein einfaches, nicht mit der DB verknüpftes Raum-Objekt, das grobe Infos über Raum-Inahalt und Level enthält.
      */
-    @GetMapping(value = "/api/level/einfach/{levelID}/{raumindex}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public long[][] getEinfachenRauminhalt(@PathVariable long levelID, @PathVariable int raumindex) {
+    @GetMapping(value = "/api/level/einfach/{benutzername}/{levelID}/{raumindex}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public RaumPOJO getEinfachenRauminhalt(@PathVariable String benutzername, @PathVariable long levelID, @PathVariable int raumindex) {
         lg.info("Einfacher Rauminhalt von Level ID {} und Raumindex {} über REST angefragt", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
         if (angefragtesLevel.isPresent()) {
             lg.info(LEVEL_EXISTIERT_IN_DB_JETZT_RAUM_ABFRAGE);
 
+            // Wenn der RaumIndex zu hoch ist, wirft der LevelService eine NoSuchElementException, deshalb try/catch
             try {
-                // Wenn der RaumIndex zu hoch ist, wirft der LevelService eine NoSuchElementException, die wir fangen sollten.
 
                 Raum angefragterRaum = levelService.getRaum(angefragtesLevel.get(), raumindex);
                 lg.info("Raumindex gibt es auch, jetzt wird das Array befüllt");
@@ -179,25 +162,56 @@ public class LevelRestController {
                     einfacherRaumInhalt[r.getPositionX()][r.getPositionY()] = r.getMobiliar().getMobiliarId();
                 }
 
-                // Es kann jetzt noch sein, dass manche Stellen im Array nicht befüllt sind. Das muss man entweder im
-                // Frontend abfangen, oder wir füllen die leeren stellen einfach hier noch mit Wänden oder so
+                // Da das versenden und Empfangen von @Entities gefährlich ist, geben wir dem Frontend nur ein
+                // rudimentäres Raum-POJO mit, das es befüllen soll
 
-                return einfacherRaumInhalt;
+                return new RaumPOJO(
+                        angefragtesLevel.get().getLevelId(),
+                        angefragtesLevel.get().getErsteller().getBenutzername(),
+                        angefragtesLevel.get().getName(),
+                        angefragtesLevel.get().getBeschreibung(),
+                        einfacherRaumInhalt
+                );
 
             } catch (NoSuchElementException e) {
-                // Wenn es den Raum also noch nicht gibt, geben wir einfach einen mit Wänden (ID 0) gefüllten zurück.
+                // Wenn es den Raum noch nicht gibt, geben wir einfach einen mit Wänden (ID 0) gefüllten zurück.
 
                 long[][] einfacherRaumInhalt = new long[14][22];
                 for (long[] yAchse : einfacherRaumInhalt) {
                     Arrays.fill(yAchse, 0L);
                 }
 
-                return einfacherRaumInhalt;
+                // Wieder nur ein Raum-POJO
+                return new RaumPOJO(
+                        angefragtesLevel.get().getLevelId(),
+                        angefragtesLevel.get().getErsteller().getBenutzername(),
+                        angefragtesLevel.get().getName(),
+                        angefragtesLevel.get().getBeschreibung(),
+                        einfacherRaumInhalt
+                );
             }
-
         }
-        lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
-        throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
+        // Wenn die Level-ID noch nicht in
+        Raum raum = new Raum(raumindex, new ArrayList<>());
+        List<Raum> raume = new ArrayList<>();
+        raume.add(raum);
+
+        Level level = new Level("", "", (byte) 0, raume);
+        level = levelService.bearbeiteLevel(benutzername, level);
+
+        long[][] einfacherRaumInhalt = new long[14][22];
+        for (long[] yAchse : einfacherRaumInhalt) {
+            Arrays.fill(yAchse, 0L);
+        }
+
+        return new RaumPOJO(
+                level.getLevelId(),
+                level.getErsteller().getBenutzername(),
+                level.getName(),
+                level.getBeschreibung(),
+                einfacherRaumInhalt
+        );
+
     }
 
 
