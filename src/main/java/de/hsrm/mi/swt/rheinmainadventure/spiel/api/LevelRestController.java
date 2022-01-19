@@ -75,7 +75,7 @@ public class LevelRestController {
     public String getGLTFLink(@PathVariable long mobiliarID) {
         lg.info("GET-Anfrage für die gltf-Datei-URL von Mobiliar-ID {}", mobiliarID);
         try {
-            return levelService.getMobiliar3DModellURI(mobiliarID);
+            return String.format("{\"gltfPfad\":\"%s\"}", levelService.getMobiliar3DModellURI(mobiliarID));
         } catch (EntityNotFoundException e) {
             throw new EntityNichtInDatenbankException("Das Mobiliar gibt es nicht in der Datenbank, oder es hat kein 3D Modell");
         }
