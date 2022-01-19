@@ -222,15 +222,14 @@ public class LevelRestController {
     public void putEinfachenRauminhalt(@PathVariable String benutzername,
                                        @PathVariable long levelID,
                                        @PathVariable int raumindex,
-                                       @RequestBody RaumPOJO raumPOJO) {
+                                       RaumPOJO raumPOJO) {
         lg.info("Einfachen Rauminhalt zu Level ID {} und Raumindex {} über REST erhalten", levelID, raumindex);
         Optional<Level> angefragtesLevel = levelService.getLevel(levelID);
         if (angefragtesLevel.isPresent()) {
             lg.info(LEVEL_EXISTIERT_IN_DB_JETZT_RAUM_ABFRAGE);
 
             try {
-                Level levelZumBearbeiten = angefragtesLevel.get();
-                // Wenn der RaumIndex zu hoch ist, wirft der LevelService eine NoSuchElementException, hier existiert der Raum
+                // Wenn der RaumIndex zu hoch ist, wirft der LevelService eine NoSuchElementException, die wir fangen sollten.
 
                 Raum angefragterRaum = levelService.getRaum(angefragtesLevel.get(), raumindex);
                 lg.info("Raumindex gibt es auch, jetzt wird das Array befüllt");
@@ -250,14 +249,10 @@ public class LevelRestController {
                 }
                 // Jetzt haben wir einen korrekt befüllten Raum, den werfen wir jetzt noch in das Level rein
                 angefragterRaum.setRaumMobiliar(neuesRaumMobiliar);
-                levelZumBearbeiten.getRaeume().remove(raumindex);
-                levelZumBearbeiten.getRaeume().add(raumindex, angefragterRaum);
 
                 // Jetzt setzen wir noch alle anderen Eigenschaften aus dem POJO neu auf das Level
-                levelZumBearbeiten.setName(raumPOJO.getLevelName());
-                levelZumBearbeiten.setBeschreibung(raumPOJO.getLevelBeschreibung());
-
-                levelService.bearbeiteLevel(benutzername, levelZumBearbeiten);
+                angefragtesLevel.get().setName(raumPOJO.getLevelName());
+                angefragtesLevel.get().setBeschreibung(raumPOJO.getLevelBeschreibung());
 
 
             } catch (NoSuchElementException e) {
@@ -265,10 +260,9 @@ public class LevelRestController {
                         "Vielleicht wurde zu Beginn das GET vergessen?");
                 throw new LevelAttributZugriffsException("Das Level gab es in der Datenbank, aber den Raum nicht.");
             }
-        } else {
-            lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
-            throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
         }
+        lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
+        throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
     }
 
 
