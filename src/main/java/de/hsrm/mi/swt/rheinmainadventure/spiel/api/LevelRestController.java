@@ -155,7 +155,7 @@ public class LevelRestController {
             try {
 
                 Raum angefragterRaum = levelService.getRaum(angefragtesLevel.get(), raumindex);
-                lg.info("Raumindex gibt es auch, jetzt wird das Array befüllt");
+                lg.info("Raum ist in Datenbank vorhanden, wandle Rauminhalt um");
 
                 // Jetzt holen wir uns das gesamte RaumMobiliar des Raumes...
                 List<RaumMobiliar> raumMobiliar = angefragterRaum.getRaumMobiliar();
@@ -168,6 +168,7 @@ public class LevelRestController {
                 // Da das versenden und Empfangen von @Entities gefährlich ist, geben wir dem Frontend nur ein
                 // rudimentäres Raum-POJO mit, das es befüllen soll
 
+                lg.info("Versende einfachen Raum-Inhalt als POJO");
                 return new RaumPOJO(
                         angefragtesLevel.get().getLevelId(),
                         angefragtesLevel.get().getErsteller().getBenutzername(),
@@ -180,6 +181,7 @@ public class LevelRestController {
                 // Wenn es den Raum noch nicht gibt, erstellen wir einen neuen und
                 // geben einfach einen mit Wänden (ID 0) gefüllten zurück.
 
+                lg.info("Raum ist nicht in der Datenbank wir erstellen einen Neuen, mit Index {}", raumindex);
                 Raum raum = new Raum(raumindex, new ArrayList<>());
                 angefragtesLevel.get().getRaeume().add(raumindex, raum);
                 levelService.bearbeiteLevel(benutzername, angefragtesLevel.get());
@@ -190,6 +192,7 @@ public class LevelRestController {
                     Arrays.fill(yAchse, 0L);
                 }
 
+                lg.info("Versende einfachen Raum-Inhalt als POJO");
                 // Wieder nur ein Raum-POJO
                 return new RaumPOJO(
                         angefragtesLevel.get().getLevelId(),
@@ -201,12 +204,14 @@ public class LevelRestController {
             }
         }
         // Wenn die Level-ID noch nicht in der DB ist, erstellen wir ein neues Level
+        lg.info("Level-ID nicht in DB gefunden, erstelle neues Level...");
         Raum raum = new Raum(raumindex, new ArrayList<>());
         List<Raum> raume = new ArrayList<>();
         raume.add(raum);
 
         Level level = new Level("", "", (byte) 0, raume);
         level = levelService.bearbeiteLevel(benutzername, level);
+        lg.info("Level erfolgreich erstellt, es hat die ID {}", level.getLevelId());
 
         // Ansonsten selbes Spiel wie beim nicht existenten Raum
         long[][] einfacherRaumInhalt = new long[14][22];
@@ -214,6 +219,7 @@ public class LevelRestController {
             Arrays.fill(yAchse, 0L);
         }
 
+        lg.info("Versende einfachen Raum-Inhalt als POJO");
         return new RaumPOJO(
                 level.getLevelId(),
                 level.getErsteller().getBenutzername(),
@@ -249,7 +255,7 @@ public class LevelRestController {
                 // Wenn der RaumIndex zu hoch ist, wirft der LevelService eine NoSuchElementException, die wir fangen sollten.
 
                 Raum angefragterRaum = levelService.getRaum(angefragtesLevel.get(), raumindex);
-                lg.info("Raumindex gibt es auch, jetzt wird das Array befüllt");
+                lg.info("Raumindex gibt es auch, neuer Rauminhalt wird geschrieben...");
 
                 // Wir machen uns eine neue leere Liste...
                 List<RaumMobiliar> neuesRaumMobiliar = new ArrayList<>();
@@ -271,6 +277,7 @@ public class LevelRestController {
                 angefragtesLevel.get().setName(raumPOJO.getLevelName());
                 angefragtesLevel.get().setBeschreibung(raumPOJO.getLevelBeschreibung());
 
+                lg.info("Neuen Raum erfolgreich gespeichert");
 
             } catch (NoSuchElementException e) {
                 lg.warn("levelService.getRaum lieferte NoSuchElementException, breche mit Error 400 ab. " +
