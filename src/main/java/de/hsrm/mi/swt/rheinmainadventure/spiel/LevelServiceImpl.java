@@ -130,8 +130,9 @@ public class LevelServiceImpl implements LevelService {
 
             levelRepository.deleteById(levelId);
             lg.info("Level aus DB gelöscht, Anzeige ist raus.");
+        } else {
+            throw new NoSuchElementException();
         }
-        throw new NoSuchElementException();
     }
 
     /**
