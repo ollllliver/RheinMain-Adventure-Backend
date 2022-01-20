@@ -1,19 +1,17 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
+import de.hsrm.mi.swt.rheinmainadventure.model.Position;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
-import de.hsrm.mi.swt.rheinmainadventure.model.Position;
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class SpielServiceImpl implements SpielService {
@@ -21,9 +19,9 @@ public class SpielServiceImpl implements SpielService {
     @Autowired
     private LevelService levelService;
 
-    private Map<String, Spiel> spielListe = new HashMap<>();
+    private final Map<String, Spiel> spielListe = new HashMap<>();
 
-    private Logger logger = LoggerFactory.getLogger(SpielServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(SpielServiceImpl.class);
 
     /**
      * Methode welche beim Spielstart die Spiel-ID angibt und die Startpositionen der teilnehmenden Spieler festlegt
@@ -58,7 +56,7 @@ public class SpielServiceImpl implements SpielService {
 
     /**
      * Methode zum abrufen aller Spieler
-     * 
+     *
      * @return alle teilnehmenden Spieler
      */
     @Override
@@ -67,9 +65,20 @@ public class SpielServiceImpl implements SpielService {
     }
 
     /**
+     * Methode zum Abrufen des gesuchten Spiels, mittels LobbyId
+     *
+     * @param lobbyId die id der Lobby an welcher das Spiel geknüpft ist
+     * @return das an die passende Lobby geknüpfte Spiel
+     */
+    @Override
+    public Spiel getSpielByLobbyId(String lobbyId) {
+        return spielListe.get(lobbyId);
+    }
+
+    /**
      * Methode zum aktualisieren der Spielerposition
-     * 
-     * @param spieler übermittelter Spieler, dessen Position aktualisiert werden soll
+     *
+     * @param spieler  übermittelter Spieler, dessen Position aktualisiert werden soll
      * @param position neue Position die an den Spieler übermittelt werden soll
      * @return Spieler mit aktualisierten positionierungs Koordinaten
      */

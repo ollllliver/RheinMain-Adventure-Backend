@@ -2,15 +2,17 @@ package de.hsrm.mi.swt.rheinmainadventure.controller;
 
 import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.List;
 
 @RequestMapping(value="/api")
@@ -28,13 +30,13 @@ public class BenutzerController {
     //Session-Attribut wird gesetzt
     @ModelAttribute("loggedinBenutzername")
     public String merkeUser() {
-        return new String();
+        return "";
     }
 
     //Session-Attribut wird gesetzt
     @ModelAttribute("aktuelleLobby")
     public String merkeLobby() {
-        return new String();
+        return "";
     }
 
     /**
@@ -125,14 +127,25 @@ public class BenutzerController {
      * @return ausgeloggten Nutzer falls erfolgreich, sonst Fehler
      */
     @PostMapping("/benutzer/logout")
-    public  ResponseEntity<Benutzer>  logout(Model m, @RequestBody Benutzer benutzer) {
+    public ResponseEntity<Benutzer> logout(Model m, @RequestBody Benutzer benutzer) {
         if ((benutzerRepo.findByBenutzername(benutzer.getBenutzername())) != null) {
             m.addAttribute("loggedinBenutzername", "");
-            m.addAttribute("aktuelleLobby","");
+            m.addAttribute("aktuelleLobby", "");
             logger.info("Session attribut leer gesetzt -> Nutzer ausgeloggt");
             return new ResponseEntity<Benutzer>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
-        }else {
+        } else {
             return new ResponseEntity<Benutzer>(benutzer, HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    @GetMapping(value = "/benutzer/level/{benutzername}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Level> getLevelVonBenutzername(@PathVariable String benutzername) {
+        Benutzer angefragerNutzer = benutzerService.findeBenutzer(benutzername);
+        return angefragerNutzer.getErstellteLevel();
+        /*
+           TESTWEISE
+           TODO: Fehler fangen falls nutzer nicht existiert
+
+         */
     }
 }

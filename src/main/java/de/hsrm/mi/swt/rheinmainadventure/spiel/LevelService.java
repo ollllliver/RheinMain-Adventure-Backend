@@ -24,6 +24,8 @@ public interface LevelService {
 
     String getMobiliar3DModellURI(long mobiliarID);
 
+    Mobiliar getMobiliar(long mobiliarID);
+
     Map<Position, Mobiliar> getMobiliarImRaum(Raum raum);
 
     Position getStartPositionImRaum(Raum raum);

@@ -131,6 +131,7 @@ public class LevelServiceImpl implements LevelService {
             levelRepository.deleteById(levelId);
             lg.info("Level aus DB gelöscht, Anzeige ist raus.");
         }
+        throw new NoSuchElementException();
     }
 
     /**
@@ -184,6 +185,10 @@ public class LevelServiceImpl implements LevelService {
         return mobiliarRepository.getById(mobiliarID).getModellURI();
     }
 
+    @Override
+    public Mobiliar getMobiliar(long mobiliarID) {
+        return mobiliarRepository.getById(mobiliarID);
+    }
 
     /**
      * Findet sämtliches Mobiliar, das sich in einem Raum befindet.

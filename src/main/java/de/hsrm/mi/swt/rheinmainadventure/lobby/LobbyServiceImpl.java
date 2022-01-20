@@ -7,8 +7,8 @@ import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht;
 import de.hsrm.mi.swt.rheinmainadventure.model.ChatNachricht.NachrichtenTyp;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.*;
  * Lobby Service für das verwalten aller Lobbys.
  */
 @Service
-@SessionAttributes(names = { "loggedinBenutzername"})
+@SessionAttributes(names = {"loggedinBenutzername"})
 public class LobbyServiceImpl implements LobbyService {
     private final Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
     private final static String TOPICLOB = "/topic/lobby/";
@@ -44,7 +44,7 @@ public class LobbyServiceImpl implements LobbyService {
     /**
      * Liste aller Lobbyinstanzen.
      */
-    private ArrayList<Lobby> lobbys = new ArrayList<>();
+    private final ArrayList<Lobby> lobbys = new ArrayList<>();
 
     /**
      * Generiert eine einmalige Lobby-ID aus dem Namen des Spielers, kombiniert mit
@@ -82,7 +82,8 @@ public class LobbyServiceImpl implements LobbyService {
                     zaehler++;
                 }
             } else {
-                if (verschobenerName.length() > zaehler && Character.isLetterOrDigit(verschobenerName.charAt(zaehler))) {
+                if (verschobenerName.length() > zaehler
+                        && Character.isLetterOrDigit(verschobenerName.charAt(zaehler))) {
                     lobbyID += verschobenerName.charAt(zaehler);
                     zaehler++;
                 }
@@ -373,8 +374,10 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     /**
-     * Überprüft, ob anfragende Spiler einen anderen zum Host ernennen darf (wenn man Host ist,
-     * darf man den Host weitergeben) und macht das dann. Der Anfrager its danach kein Host mehr.
+     * Überprüft, ob anfragende Spiler einen anderen zum Host ernennen darf (wenn
+     * man Host ist,
+     * darf man den Host weitergeben) und macht das dann. Der Anfrager its danach
+     * kein Host mehr.
      *
      * @param id          der Lobby, um die es geht
      * @param host        der Spieler, der aktuell noch Host der Lobby ist
@@ -419,5 +422,23 @@ public class LobbyServiceImpl implements LobbyService {
         }
         LobbyMessage res = new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
         return res;
+    }
+
+    /**
+     * Wechselt nach beenden des Spiels zurück in die lobby Ansicht
+     *
+     * @param lobbyId Die id der Lobby zu der gewechselt werden soll
+     * @return LobbyMessage mit Information über den Ausgang der Anfrage
+     */
+    @Override
+    public LobbyMessage zurueckZurLobby(String lobbyId) {
+
+        Lobby lobby = getLobbyById(lobbyId);
+        Spiel spiel = spielService.getSpielByLobbyId(lobbyId);
+        spielService.alleSpiele().remove(spiel);
+        logger.info(String.format("Spiel beendent: ", spiel));
+        lobby.setIstGestartet(false);
+
+        return new LobbyMessage(NachrichtenCode.BEENDE_SPIEL, false, "Spiel beendet. Kehre zurück zur Lobby");
     }
 }
