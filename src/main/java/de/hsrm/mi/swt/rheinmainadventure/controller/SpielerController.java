@@ -4,6 +4,7 @@ import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
+import de.hsrm.mi.swt.rheinmainadventure.model.SchluesselUpdate;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 import org.slf4j.Logger;
@@ -47,27 +48,30 @@ public class SpielerController {
 
     @MessageMapping("/topic/spiel/{lobbyID}/key")
     @SendTo("/topic/spiel/{lobbyID}/schluessel")
-    public int schluesselEingesammelt(@Payload String interagierenNamen, @DestinationVariable String lobbyID) throws Exception {
-        logger.info("ES wurde interagiert mit: " + interagierenNamen);
+    public SchluesselUpdate schluesselEingesammelt(@Payload int objectID, @DestinationVariable String lobbyID) throws Exception {
+        logger.info("ES wurde interagiert mit: " + objectID);
         spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
         logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
             + spielService.findeSpiel(lobbyID).getAnzSchluessel());
-        return spielService.findeSpiel(lobbyID).getAnzSchluessel();
+        SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), objectID);
+        return update;
     }
 
     @MessageMapping("/topic/spiel/{lobbyID}/tuer")
     @SendTo("/topic/spiel/{lobbyID}/schluessel")
-    public int tuerOEffnen(@Payload String interagierenNamen, @DestinationVariable String lobbyID) throws Exception {
-
+    public SchluesselUpdate tuerOEffnen(@Payload String objectID, @DestinationVariable String lobbyID) throws Exception {
+        //TODO payload richtig abfangen
+        SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), 0);
         if(spielService.findeSpiel(lobbyID).getAnzSchluessel()==0){
             logger.info("Du brauchst erst einen Schlüssel");
-            return 0;
-        } else {
-            logger.info(interagierenNamen + " wird aufgeschlossen");
+            return update;
+        }else{
+            logger.info(objectID + " wird aufgeschlossen");
             spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
             logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
-                    + spielService.findeSpiel(lobbyID).getAnzSchluessel());
-            return spielService.findeSpiel(lobbyID).getAnzSchluessel();
+                + spielService.findeSpiel(lobbyID).getAnzSchluessel());
+
+            return update;
         }
 
     }
