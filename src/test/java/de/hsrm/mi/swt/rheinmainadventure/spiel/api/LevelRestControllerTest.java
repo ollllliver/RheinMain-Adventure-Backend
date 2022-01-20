@@ -1,5 +1,6 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel.api;
 
+import com.google.gson.Gson;
 import de.hsrm.mi.swt.rheinmainadventure.entities.*;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.*;
@@ -16,13 +17,14 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -135,11 +137,30 @@ class LevelRestControllerTest {
     }
 
     @Test
-    void deleteLevel() {
+    @DisplayName("#120 DELETE für Level funktioniert")
+    void deleteLevel() throws Exception {
+        List<Level> alleLevel = levelService.alleLevel();
+        int groesseVorher = alleLevel.size();
+
+        String DELETERequest = "/api/level/" + alleLevel.get(1).getLevelId();
+        mockmvc.perform(
+                        delete(DELETERequest)
+                                .contentType("application/json"))
+                .andExpect(status().isOk());
+
+        int groesseNachher = levelService.alleLevel().size();
+        assertEquals(groesseNachher, groesseVorher - 1);
     }
 
     @Test
-    void deleteLevelAberDasLevelGibtEsNicht() {
+    @DisplayName("#120 DELETE für Level funktioniert nicht bei falscher Level-ID")
+    void deleteLevelAberDasLevelGibtEsNicht() throws Exception {
+        String DELETERequest = "/api/level/5000";
+        mockmvc.perform(
+                        delete(DELETERequest)
+                                .contentType("application/json"))
+                .andExpect(status().isNotFound());
+
     }
 
     @Test
@@ -230,11 +251,162 @@ class LevelRestControllerTest {
     }
 
     @Test
-    void getEinfachenRauminhalt() {
+    @DisplayName("#120 Man kann für den Level-Editor eine einfache Version eines Raumes abfragen")
+    void getEinfachenRauminhalt() throws Exception {
+        List<Level> alleLevel = levelService.alleLevel();
+        Level dbLevel = alleLevel.get(1);
+
+        String GETRequest = String.format("/api/level/einfach/%s/%d/0",
+                dbLevel.getErsteller().getBenutzername(),
+                dbLevel.getLevelId());
+
+        mockmvc.perform(
+                        get(GETRequest)
+                                .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.levelID").value(dbLevel.getLevelId()))
+                .andExpect(jsonPath("$.benutzername").value(dbLevel.getErsteller().getBenutzername()))
+                .andExpect(jsonPath("$.levelName").value(dbLevel.getName()))
+                .andExpect(jsonPath("$.levelBeschreibung").value(dbLevel.getBeschreibung()))
+                .andExpect(jsonPath("$.levelInhalt").isArray())
+                .andExpect(jsonPath("$.levelInhalt").isNotEmpty());
     }
 
     @Test
-    void putEinfachenRauminhalt() {
+    @Transactional
+    @DisplayName("#120 Man erhält für den Level-Editor einen neuen Raum, wenn es den Raum-Index noch nicht gibt.")
+    void getEinfachenRauminhaltAberDerLevelIndexIstZuNiedrig() throws Exception {
+        List<Level> alleLevel = levelService.alleLevel();
+        Level dbLevel = alleLevel.get(0);
+        int anzahlRaeumeVorher = dbLevel.getRaeume().size();
+
+        String GETRequest = String.format("/api/level/einfach/%s/%d/1",
+                dbLevel.getErsteller().getBenutzername(),
+                dbLevel.getLevelId());
+
+        mockmvc.perform(
+                        get(GETRequest)
+                                .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.levelID").value(dbLevel.getLevelId()))
+                .andExpect(jsonPath("$.benutzername").value(dbLevel.getErsteller().getBenutzername()))
+                .andExpect(jsonPath("$.levelName").value(dbLevel.getName()))
+                .andExpect(jsonPath("$.levelBeschreibung").value(dbLevel.getBeschreibung()))
+                .andExpect(jsonPath("$.levelInhalt").isArray())
+                .andExpect(jsonPath("$.levelInhalt").isNotEmpty());
+
+        alleLevel = levelService.alleLevel();
+        dbLevel = alleLevel.get(0);
+        int anzahlRaeumeNachher = dbLevel.getRaeume().size();
+
+        assertEquals(anzahlRaeumeVorher, anzahlRaeumeNachher - 1);
+    }
+
+    @Test
+    @DisplayName("#120 Man erhält für den Level-Editor sogar ein neues Level, wenn die Level-ID unbekannt ist.")
+    void getEinfachenRauminhaltAberDasLevelGibtEsNicht() throws Exception {
+        int anzahlLevelVorher = levelService.alleLevel().size();
+
+        String GETRequest = "/api/level/einfach/Glogomir/-1/0";
+        mockmvc.perform(
+                        get(GETRequest)
+                                .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.levelID").isNotEmpty())
+                .andExpect(jsonPath("$.benutzername").value("Glogomir"))
+                .andExpect(jsonPath("$.levelName").value(""))
+                .andExpect(jsonPath("$.levelBeschreibung").value(""))
+                .andExpect(jsonPath("$.levelInhalt").isArray())
+                .andExpect(jsonPath("$.levelInhalt").isNotEmpty());
+
+        int anzahlLevelNachher = levelService.alleLevel().size();
+        assertEquals(anzahlLevelVorher, anzahlLevelNachher - 1);
+    }
+
+    @Test
+    @DisplayName("#120 Ein RaumPOJO-JSON wird ohne Murren gespeichert")
+    void putEinfachenRauminhalt() throws Exception {
+        Gson gson = new Gson();
+        Level levelFuerPUT = levelService.alleLevel().get(0);
+
+        long[][] einfacherRaumInhalt = new long[14][22];
+        for (long[] yAchse : einfacherRaumInhalt) {
+            Arrays.fill(yAchse, 0L);
+        }
+        RaumPOJO raumPOJO = new RaumPOJO(
+                levelFuerPUT.getLevelId(),
+                levelFuerPUT.getErsteller().getBenutzername(),
+                levelFuerPUT.getName(),
+                levelFuerPUT.getBeschreibung(),
+                einfacherRaumInhalt
+        );
+
+        String PUTRequest = String.format("/api/level/einfach/%s/%d/0",
+                levelFuerPUT.getErsteller().getBenutzername(),
+                levelFuerPUT.getLevelId());
+        mockmvc.perform(
+                        put(PUTRequest)
+                                .contentType("application/json")
+                                .content(gson.toJson(raumPOJO)))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    @DisplayName("#120 Ein RaumPOJO kann man nicht speichern, wenn der Raumindex falsch ist")
+    void putEinfachenRauminhaltGehtSchiefBeiFalschemRaumindex() throws Exception {
+        Gson gson = new Gson();
+        Level levelFuerPUT = levelService.alleLevel().get(0);
+
+        long[][] einfacherRaumInhalt = new long[14][22];
+        for (long[] yAchse : einfacherRaumInhalt) {
+            Arrays.fill(yAchse, 0L);
+        }
+        RaumPOJO raumPOJO = new RaumPOJO(
+                levelFuerPUT.getLevelId(),
+                levelFuerPUT.getErsteller().getBenutzername(),
+                levelFuerPUT.getName(),
+                levelFuerPUT.getBeschreibung(),
+                einfacherRaumInhalt
+        );
+
+        String PUTRequest = String.format("/api/level/einfach/%s/%d/5",
+                levelFuerPUT.getErsteller().getBenutzername(),
+                levelFuerPUT.getLevelId());
+        mockmvc.perform(
+                        put(PUTRequest)
+                                .contentType("application/json")
+                                .content(gson.toJson(raumPOJO)))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @DisplayName("#120 Ein RaumPOJO kann man nicht speichern, wenn die Level-ID nicht existiert")
+    void putEinfachenRauminhaltGehtSchiefBeiFalscherLevelID() throws Exception {
+        Gson gson = new Gson();
+        Level levelFuerPUT = levelService.alleLevel().get(0);
+
+        long[][] einfacherRaumInhalt = new long[14][22];
+        for (long[] yAchse : einfacherRaumInhalt) {
+            Arrays.fill(yAchse, 0L);
+        }
+        RaumPOJO raumPOJO = new RaumPOJO(
+                levelFuerPUT.getLevelId(),
+                levelFuerPUT.getErsteller().getBenutzername(),
+                levelFuerPUT.getName(),
+                levelFuerPUT.getBeschreibung(),
+                einfacherRaumInhalt
+        );
+
+        String PUTRequest = String.format("/api/level/einfach/%s/-1/0",
+                levelFuerPUT.getErsteller().getBenutzername());
+        mockmvc.perform(
+                        put(PUTRequest)
+                                .contentType("application/json")
+                                .content(gson.toJson(raumPOJO)))
+                .andExpect(status().isNotFound());
+
     }
 
 }

@@ -3,6 +3,12 @@ package de.hsrm.mi.swt.rheinmainadventure.spiel.api;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Wrapper-Objekt für ein Raum-Entity aus der Datenbank.
+ * Da es eine schlechte Idee ist direkt mit einer Datenbank verknüpfte Objekte in das Internet zu senden und ohne
+ * Prüfung wieder zu speichern, empfiehlt sich die Kapselung in Plain Old Java Objects (POJOs). Ein RaumPOJO wird
+ * aktuell für den Level-Editor bereitgestellt, aus diesem Grund ist auch die Darstellung des Rauminhalts vereinfacht.
+ */
 public class RaumPOJO {
     private long levelID;
 
@@ -12,6 +18,10 @@ public class RaumPOJO {
 
     private String levelBeschreibung;
 
+    /**
+     * Der Rauminhalt als 2D-Array.
+     * Das Format ist [x-Position im Raum][y-Position im Raum] = Mobiliar-ID
+     */
     private long[][] levelInhalt;
 
     public RaumPOJO(long levelID,

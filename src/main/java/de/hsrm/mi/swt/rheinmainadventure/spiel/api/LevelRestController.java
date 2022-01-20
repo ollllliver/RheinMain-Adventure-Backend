@@ -133,6 +133,9 @@ public class LevelRestController {
      * Liefert mit einem GET-Aufruf den Inhalt eines Levels in Form eines Raum-POJOs, das rudimentär einen Raum abbildet.
      * Wenn Raum-Index oder Level-ID nicht in der Datenbank existieren, wird jeweils passend entweder ein neuer Raum
      * oder ein neues Level angelegt und auf das Raum-POJO gemappt, sodass immer ein valider Output geliefert wird.
+     * Dabei ist jedoch wichtig zu beachten, dass Level-IDs von der Datenbank vergeben werden, man kann sich also keine
+     * Level-ID "wünschen". Daher ist es ratsam, bei einem neuen Level eine Level-ID anzufragen,
+     * die garantiert nicht existiert, beispielsweise '-1'.
      *
      * @param benutzername ist der Benutzername, unter dem ein eventuell nicht vorhandenes Level erstellt werden soll.
      * @param levelID      Die Level-Id, die in der DB angefragt werden soll.
@@ -174,7 +177,13 @@ public class LevelRestController {
                 );
 
             } catch (NoSuchElementException e) {
-                // Wenn es den Raum noch nicht gibt, geben wir einfach einen mit Wänden (ID 0) gefüllten zurück.
+                // Wenn es den Raum noch nicht gibt, erstellen wir einen neuen und
+                // geben einfach einen mit Wänden (ID 0) gefüllten zurück.
+
+                Raum raum = new Raum(raumindex, new ArrayList<>());
+                angefragtesLevel.get().getRaeume().add(raumindex, raum);
+                levelService.bearbeiteLevel(benutzername, angefragtesLevel.get());
+
 
                 long[][] einfacherRaumInhalt = new long[14][22];
                 for (long[] yAchse : einfacherRaumInhalt) {
@@ -191,7 +200,7 @@ public class LevelRestController {
                 );
             }
         }
-        // Wenn die Level-ID noch nicht in
+        // Wenn die Level-ID noch nicht in der DB ist, erstellen wir ein neues Level
         Raum raum = new Raum(raumindex, new ArrayList<>());
         List<Raum> raume = new ArrayList<>();
         raume.add(raum);
@@ -199,6 +208,7 @@ public class LevelRestController {
         Level level = new Level("", "", (byte) 0, raume);
         level = levelService.bearbeiteLevel(benutzername, level);
 
+        // Ansonsten selbes Spiel wie beim nicht existenten Raum
         long[][] einfacherRaumInhalt = new long[14][22];
         for (long[] yAchse : einfacherRaumInhalt) {
             Arrays.fill(yAchse, 0L);
@@ -214,7 +224,16 @@ public class LevelRestController {
 
     }
 
-
+    /**
+     * Speichert oder überschreibt mit einem PUT-Aufruf den Inhalt eines Levels.
+     * Dafür muss im RequestBody ein serialisiertes RaumPOJO existieren.
+     * Wenn Raum-Index oder Level-ID nicht in der Datenbank existieren, werden Fehler geworfen, neue Räume oder Level
+     * erhält man über GET.
+     *
+     * @param benutzername wird nicht benötigt, ist jedoch aus Gründen der Einheitlichkeit noch da.
+     * @param levelID      Die Level-Id, zu dem der neue Raum gespeichert werden soll.
+     * @param raumindex    Der Raum-Index aus dem gesuchten Level.
+     */
     @PutMapping(value = "/api/level/einfach/{benutzername}/{levelID}/{raumindex}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     public void putEinfachenRauminhalt(@PathVariable String benutzername,
