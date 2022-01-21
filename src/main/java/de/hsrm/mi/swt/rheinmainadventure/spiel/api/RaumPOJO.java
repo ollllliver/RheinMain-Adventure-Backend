@@ -18,6 +18,8 @@ public class RaumPOJO {
 
     private String levelBeschreibung;
 
+    private boolean istFreigegeben;
+
     /**
      * Der Rauminhalt als 2D-Array.
      * Das Format ist [x-Position im Raum][y-Position im Raum] = Mobiliar-ID
@@ -103,5 +105,13 @@ public class RaumPOJO {
 
     public void setLevelID(long levelID) {
         this.levelID = levelID;
+    }
+
+    public boolean isIstFreigegeben() {
+        return istFreigegeben;
+    }
+
+    public void setIstFreigegeben(boolean istFreigegeben) {
+        this.istFreigegeben = istFreigegeben;
     }
 }

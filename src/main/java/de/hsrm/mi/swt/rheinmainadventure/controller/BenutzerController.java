@@ -141,11 +141,14 @@ public class BenutzerController {
     @GetMapping(value = "/benutzer/level/{benutzername}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Level> getLevelVonBenutzername(@PathVariable String benutzername) {
         Benutzer angefragerNutzer = benutzerService.findeBenutzer(benutzername);
-        return angefragerNutzer.getErstellteLevel();
+        if (angefragerNutzer != null) {
+            return angefragerNutzer.getErstellteLevel();
+        } else {
+            return null;
+        }
         /*
            TESTWEISE
            TODO: Fehler fangen falls nutzer nicht existiert
-
          */
     }
 }
