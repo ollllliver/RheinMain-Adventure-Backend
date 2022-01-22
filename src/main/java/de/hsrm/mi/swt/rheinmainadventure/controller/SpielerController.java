@@ -14,9 +14,11 @@ import org.slf4j.LoggerFactory;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Controller
 
+@CrossOrigin("http://localhost:3000/")
 public class SpielerController {
 
     @Autowired

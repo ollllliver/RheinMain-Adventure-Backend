@@ -1,4 +1,4 @@
-package de.hsrm.mi.swt.rheinmainadventure.jwt;
+package de.hsrm.mi.swt.rheinmainadventure.oldJwt;
 
 import java.util.Date;
 import java.util.HashMap;

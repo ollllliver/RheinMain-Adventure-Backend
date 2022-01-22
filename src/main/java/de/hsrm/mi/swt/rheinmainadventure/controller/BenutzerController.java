@@ -1,24 +1,16 @@
 package de.hsrm.mi.swt.rheinmainadventure.controller;
 
-import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.oldBenutzer.BenutzerService;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
-import de.hsrm.mi.swt.rheinmainadventure.security.MyUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestBody;
-import java.util.List;
 
 @RequestMapping(value="/api")
 @SessionAttributes(names = {"loggedinBenutzername"})
 @RestController
-//@CrossOrigin("http://localhost:3000/")
+@CrossOrigin("http://localhost:3000/")
 public class BenutzerController {
 
     @Autowired
@@ -38,21 +30,21 @@ public class BenutzerController {
      * Get Anfrage auf die Benutzerroute
      * @return liefert eine Liste mit allen Nutzern aus der Datenbank falls erfolgreich, sonst Fehler
      */
-    @GetMapping("/benutzer")
-    public ResponseEntity<List<Benutzer>> alleBenutzer() {
-        try {
-            List<Benutzer> list = benutzerRepo.findAll();
-            if (list.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            logger.info("Nutzer gefunden");
-            return new ResponseEntity<List<Benutzer>>(list, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @GetMapping("/benutzer")
+//    public ResponseEntity<List<Benutzer>> alleBenutzer() {
+//        try {
+//            List<Benutzer> list = benutzerRepo.findAll();
+//            if (list.isEmpty()) {
+//                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//            }
+//
+//            logger.info("Nutzer gefunden");
+//            return new ResponseEntity<List<Benutzer>>(list, HttpStatus.OK);
+//
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     /**
      * Get Anfrage, die prüft ob ein Nutzer bereits eingeloggt ist

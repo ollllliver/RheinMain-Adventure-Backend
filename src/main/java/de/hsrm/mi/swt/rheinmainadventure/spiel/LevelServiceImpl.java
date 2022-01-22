@@ -1,6 +1,6 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
-import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
+import de.hsrm.mi.swt.rheinmainadventure.oldBenutzer.BenutzerService;
 import de.hsrm.mi.swt.rheinmainadventure.entities.*;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.LevelRepository;
