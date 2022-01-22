@@ -108,16 +108,16 @@ public class LobbyServiceImpl implements LobbyService {
         ArrayList<Spieler> players = new ArrayList<>();
         String lobbyID = generateLobbyID(spielerName);
 
-        Optional<Level> optLevel = levelService.getLevel(1);
-        if (optLevel.isPresent()) {
-            Lobby lobby = new Lobby(lobbyID, players, host, optLevel.get());
+        List<Level> alleLevel = levelService.alleLevel();
+        if (!levelService.alleLevel().isEmpty()) {
+            Lobby lobby = new Lobby(lobbyID, players, host, alleLevel.get(0));
             starteTimeout(lobby);
             lobbys.add(lobby);
 
             broker.convertAndSend(TOPICUEB, new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false, lobbyID));
             return lobby;
         } else {
-            throw new NoSuchElementException("es gibt kein level in der Datenbank mit ID == 1.");
+            throw new NoSuchElementException("es gibt kein level in der Datenbank.");
         }
     }
 
@@ -443,14 +443,16 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     @Override
-    public LobbyMessage setLevel(String lobbyId, Long levelId, String string) {
+    public LobbyMessage setLevel(String lobbyId, Long levelId, String spielerName) {
         // erst mal das Level durch die ID bekommen:
         Optional<Level> neuesLevelOpt = levelService.getLevel(levelId);
-        if (neuesLevelOpt.isPresent()){
-            getLobbyById(lobbyId).setGewaehlteKarte(neuesLevelOpt.get());
-            LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
-            broker.convertAndSend(TOPICLOB + lobbyId, res);
-            return res;
+        if (getLobbyById(lobbyId).getHost().getName().equals(spielerName)) {
+            if (neuesLevelOpt.isPresent()){
+                getLobbyById(lobbyId).setGewaehlteKarte(neuesLevelOpt.get());
+                LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+                broker.convertAndSend(TOPICLOB + lobbyId, res);
+                return res;
+            }
         }
         return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
     }
