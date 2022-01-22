@@ -5,15 +5,14 @@ import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Spiel {
 
     private final String spielID;
-    private List<Spieler> spielerListe;
     private final Timestamp startZeitpunkt;
     private final Level level;
+    private List<Spieler> spielerListe;
     private int anzSchluessel;
 
     public Spiel(Lobby lobby, List<Spieler> spielerListe) {
@@ -32,7 +31,7 @@ public class Spiel {
         return spielerListe;
     }
 
-    public void setSpielerListe(ArrayList<Spieler> teilnehmerliste) {
+    public void setSpielerListe(List<Spieler> teilnehmerliste) {
         this.spielerListe = teilnehmerliste;
     }
 

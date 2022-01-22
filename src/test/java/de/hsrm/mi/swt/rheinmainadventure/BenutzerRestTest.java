@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests für die Restschnittstelle BenutzerController
  */
 
-@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("test")
@@ -38,21 +38,12 @@ class BenutzerRestTest {
     private static final String TESTBENUTZERNAME = "hopsi";
     private static final String TESTPASSWORT = "abcxyz";
     private static String TESTLOGINJSON;
-
-    @Autowired
-    private MockMvc mockmvc;
-
-    @Autowired
-    private IntBenutzerRepo benutzerrepo;
-
     @Autowired
     BenutzerController benutzerController;
-
-    @Test
-    void vorabcheck() {
-        assertThat(benutzerController).isNotNull();
-        assertThat(mockmvc).isNotNull();
-    }
+    @Autowired
+    private MockMvc mockmvc;
+    @Autowired
+    private IntBenutzerRepo benutzerrepo;
 
     @BeforeAll
     public static void initAll() {
@@ -61,6 +52,13 @@ class BenutzerRestTest {
         json.put("passwort", TESTPASSWORT);
         TESTLOGINJSON = json.toString();
     }
+
+    @Test
+    void vorabcheck() {
+        assertThat(benutzerController).isNotNull();
+        assertThat(mockmvc).isNotNull();
+    }
+
     @BeforeEach
     public void init() {
         benutzerrepo.deleteAll();
@@ -82,7 +80,7 @@ class BenutzerRestTest {
         mockmvc.perform(
                         get("/api/benutzer")
                                 .contentType("application/json"))
-                                .andExpect(status().isOk());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -166,7 +164,7 @@ class BenutzerRestTest {
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME));
 
         HashMap<String, Object> sessionattr = new HashMap<String, Object>();
-        sessionattr.put("loggedinBenutzername", b.getBenutzername()) ;
+        sessionattr.put("loggedinBenutzername", b.getBenutzername());
 
         // ERFOLGREICH eingeloggt mit Sessionattribut gesetzt
         mockmvc.perform(

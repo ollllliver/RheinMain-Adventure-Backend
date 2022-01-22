@@ -30,8 +30,8 @@ class LobbyServiceImplTest {
     @Test
     void testJoinLobbybyId() {
         Lobby testLobby = lobbyService.lobbyErstellen("Test-User"); // Dieser User erstellt die Lobby ist aber noch
-                                                                    // nicht in der Lobby drinne. vllt beim Erstellen
-                                                                    // doch autoJoinen
+        // nicht in der Lobby drinne. vllt beim Erstellen
+        // doch autoJoinen
         testLobby.setSpielerlimit(3);
 
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Test-User");

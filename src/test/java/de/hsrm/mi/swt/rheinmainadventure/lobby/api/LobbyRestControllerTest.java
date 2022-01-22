@@ -3,12 +3,7 @@ package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliar;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliartyp;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
-import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
+import de.hsrm.mi.swt.rheinmainadventure.entities.*;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
@@ -17,8 +12,6 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
-import de.hsrm.mi.swt.rheinmainadventure.spiel.api.LevelRestController;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,11 +28,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.transaction.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -51,26 +43,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Vorabtests für alle api Domaenen.")
 @ActiveProfiles("test")
 class LobbyRestControllerTest {
-    Logger logger = LoggerFactory.getLogger(LobbyRestControllerTest.class);
-
-    @Autowired
-    LobbyService lobbyService;
-
-    @Autowired
-    private IntBenutzerRepo benutzerRepository;
-
-    @Autowired
-    private MobiliarRepository mobiliarRepository;
-
-    @Autowired
-    private LevelService levelService;
-
-    @Autowired
-    private MockMvc mockmvc;
-
     private final String ERSTER_SPIELER = "Olive";
     private final String ZWEITER_SPIELER = "Chand";
-
+    Logger logger = LoggerFactory.getLogger(LobbyRestControllerTest.class);
+    @Autowired
+    LobbyService lobbyService;
+    @Autowired
+    private IntBenutzerRepo benutzerRepository;
+    @Autowired
+    private MobiliarRepository mobiliarRepository;
+    @Autowired
+    private LevelService levelService;
+    @Autowired
+    private MockMvc mockmvc;
     @Autowired
     private IntBenutzerRepo benutzerrepo;
 
@@ -140,9 +125,9 @@ class LobbyRestControllerTest {
         String TESTLOGINJSON = json.toString();
 
         logger.info(mockmvc.perform(
-                post("/api/benutzer/login").session(session)
-                        .content(TESTLOGINJSON)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        post("/api/benutzer/login").session(session)
+                                .content(TESTLOGINJSON)
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful()).andReturn().toString());
         return session;
     }
@@ -155,8 +140,8 @@ class LobbyRestControllerTest {
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
-        assertTrue(lobby instanceof Lobby);
-        assertEquals(lobbyService.getLobbys().size(), 1);
+        assertNotNull(lobby);
+        assertEquals(1, lobbyService.getLobbys().size());
         assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()), lobby);
     }
 
@@ -174,10 +159,10 @@ class LobbyRestControllerTest {
                 .andReturn();
         jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
-        assertTrue(lobbymessage instanceof LobbyMessage);
-        assertEquals(lobbymessage.getIstFehler(), false);
-        assertSame(lobbymessage.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size(), 1);
+        assertNotNull(lobbymessage);
+        assertFalse(lobbymessage.getIstFehler());
+        assertSame(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, lobbymessage.getTyp());
+        assertEquals(1, lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size());
     }
 
     @Test
@@ -193,10 +178,10 @@ class LobbyRestControllerTest {
                 .andReturn();
         jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
-        assertTrue(lobbymessage instanceof LobbyMessage);
-        assertEquals(lobbymessage.getIstFehler(), false);
-        assertSame(lobbymessage.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size(), 1);
+        assertNotNull(lobbymessage);
+        assertFalse(lobbymessage.getIstFehler());
+        assertSame(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, lobbymessage.getTyp());
+        assertEquals(1, lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size());
     }
 
     @Test
@@ -217,18 +202,17 @@ class LobbyRestControllerTest {
                         post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
                 .andReturn();
         jsonString = result.getResponse().getContentAsString();
-        LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        new ObjectMapper().readValue(jsonString, LobbyMessage.class);
 
         result = mockmvc.perform(
-                delete("/api/lobby/leave/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
+                        delete("/api/lobby/leave/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
                 .andReturn();
         jsonString = result.getResponse().getContentAsString();
-        lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
-        assertTrue(lobbymessage instanceof LobbyMessage);
-        assertTrue(lobbymessage instanceof LobbyMessage);
-        assertEquals(lobbymessage.getIstFehler(), false);
-        assertSame(lobbymessage.getTyp(), NachrichtenCode.MITSPIELER_VERLAESST);
-        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size(), 1);
+        LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        assertNotNull(lobbymessage);
+        assertEquals(false, lobbymessage.getIstFehler());
+        assertSame(NachrichtenCode.MITSPIELER_VERLAESST, lobbymessage.getTyp());
+        assertEquals(1, lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size());
     }
 
     @Test
@@ -246,7 +230,7 @@ class LobbyRestControllerTest {
         jsonString = result.getResponse().getContentAsString();
         Lobby restLobby = new ObjectMapper().readValue(jsonString, Lobby.class);
 
-        assertTrue(restLobby instanceof Lobby);
+        assertNotNull(restLobby);
         assertEquals(restLobby, lobby);
     }
 
@@ -262,7 +246,7 @@ class LobbyRestControllerTest {
         result = mockmvc.perform(post("/api/lobby/neu").session(session2).contentType("application/json")).andReturn();
         jsonString = result.getResponse().getContentAsString();
         new ObjectMapper().readValue(jsonString, LobbyMessage.class);
-        assertEquals(lobbyService.getLobbys().size(), 2);
+        assertEquals(2, lobbyService.getLobbys().size());
 
         result = mockmvc.perform(get("/api/lobby/alle").session(session1).contentType("application/json")).andReturn();
         jsonString = result.getResponse().getContentAsString();
@@ -270,11 +254,6 @@ class LobbyRestControllerTest {
         ArrayList<Lobby> restLobbyList = new ArrayList<>(Arrays.asList(lobbyListArray));
 
         assertEquals(lobbyService.getLobbys(), restLobbyList);
-    }
-
-    @Test
-    void testStartGame() {
-
     }
 
     @Test
@@ -291,8 +270,7 @@ class LobbyRestControllerTest {
                 .andReturn();
 
         MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
-        result = mockmvc
-                .perform(
+        mockmvc.perform(
                         post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
                 .andReturn();
 
@@ -300,13 +278,13 @@ class LobbyRestControllerTest {
 
         mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/spielerlimit").session(session1).content("5")
                 .contentType("application/json")).andReturn();
-        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getSpielerlimit(), 5);
+        assertEquals(5, lobbyService.getLobbyById(lobby.getlobbyID()).getSpielerlimit());
         mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/spielerlimit").session(session1).content("2")
                 .contentType("application/json")).andReturn();
-        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getSpielerlimit(), 2);
+        assertEquals(2, lobbyService.getLobbyById(lobby.getlobbyID()).getSpielerlimit());
         mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/spielerlimit").session(session2).content("5")
                 .contentType("application/json")).andReturn();
-        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getSpielerlimit(), 2);
+        assertEquals(2, lobbyService.getLobbyById(lobby.getlobbyID()).getSpielerlimit());
     }
 
     @Test
@@ -323,20 +301,20 @@ class LobbyRestControllerTest {
                 .contentType("application/json")).andReturn();
 
         MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
-        result = mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).
+        mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).
                 contentType("application/json")).andReturn();
 
         // session1 ist host
 
         mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/privacy").session(session1).content("true")
                 .contentType("application/json")).andReturn();
-        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getIstPrivat(), true);
+        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getIstPrivat());
         mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/privacy").session(session1).content("false")
                 .contentType("application/json")).andReturn();
-        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getIstPrivat(), false);
+        assertFalse(lobbyService.getLobbyById(lobby.getlobbyID()).getIstPrivat());
         mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/privacy").session(session2).content("true")
                 .contentType("application/json")).andReturn();
-        assertEquals(lobbyService.getLobbyById(lobby.getlobbyID()).getIstPrivat(), false);
+        assertFalse(lobbyService.getLobbyById(lobby.getlobbyID()).getIstPrivat());
     }
 
     @Test
@@ -353,7 +331,7 @@ class LobbyRestControllerTest {
                 .andReturn();
 
         MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
-        result = mockmvc
+        mockmvc
                 .perform(
                         post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
                 .andReturn();
@@ -428,7 +406,7 @@ class LobbyRestControllerTest {
                 .andReturn();
 
         MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
-        result = mockmvc
+        mockmvc
                 .perform(
                         post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
                 .andReturn();
@@ -456,7 +434,7 @@ class LobbyRestControllerTest {
         // Spieler 2 ist nicht mehr in Lobby
         assertFalse(lobby.getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
 
-        result = mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session2)
+        mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session2)
                 .contentType("application/json")).andReturn();
 
         // Spieler 1 und 2 sind in Lobby
@@ -482,8 +460,8 @@ class LobbyRestControllerTest {
     @DisplayName("#102 Als Host LobbyEinstellungen ändern - Level ändern")
     void testPatchLevel() throws Exception {
         List<Level> alleLevel = levelService.alleLevel();
-        Long LOBBYDEMOID1 = (long) alleLevel.get(0).getLevelId();
-        Long LOBBYDEMOID2 = (long) alleLevel.get(1).getLevelId(); 
+        Long LOBBYDEMOID1 = alleLevel.get(0).getLevelId();
+        Long LOBBYDEMOID2 = alleLevel.get(1).getLevelId();
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
                 .andReturn();
@@ -495,11 +473,9 @@ class LobbyRestControllerTest {
                 .andReturn();
 
         MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
-        result = mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
+        mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
                 .andReturn();
         // session1 ist host
-
-        // TODO: Level mit ID 2 anlegen. Brauche Hilfe von Friedrich dafür. LG Olli
 
         // aktuelle Lobby holen
         lobby = lobbyService.getLobbyById(lobby.getlobbyID());
@@ -519,6 +495,6 @@ class LobbyRestControllerTest {
                 .content(Long.toString(LOBBYDEMOID1)).contentType("application/json")).andReturn();
         assertEquals(lobby.getGewaehlteKarte().getLevelId(), LOBBYDEMOID2);
 
-        
+
     }
 }

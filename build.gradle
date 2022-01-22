@@ -37,7 +37,6 @@ dependencies {
 test {
     useJUnitPlatform()
     finalizedBy jacocoTestReport
-    ignoreFailures = true // TODO: Für Commit auf Master rausnehmen
 }
 // https://docs.gradle.org/current/userguide/jacoco_plugin.html
 jacoco {

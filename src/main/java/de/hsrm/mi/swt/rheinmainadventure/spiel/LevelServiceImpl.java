@@ -21,6 +21,8 @@ public class LevelServiceImpl implements LevelService {
 
     private final Logger lg = LoggerFactory.getLogger(LevelServiceImpl.class);
     @Autowired
+    IntBenutzerRepo benutzerRepository;
+    @Autowired
     private LevelRepository levelRepository;
     @Autowired
     private RaumRepository raumRepository;
@@ -30,8 +32,6 @@ public class LevelServiceImpl implements LevelService {
     private RaumMobiliarRepository raumMobiliarRepository;
     @Autowired
     private BenutzerService benutzerService;
-    @Autowired
-    IntBenutzerRepo benutzerRepository;
 
     @Override
     public List<Level> alleLevel() {

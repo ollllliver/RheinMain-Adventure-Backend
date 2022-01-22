@@ -22,23 +22,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class BenutzerTests {
-    @Autowired
-    private BenutzerService benutzerService;
-
-    @Autowired
-    private IntBenutzerRepo benutzerrepo;
-
-
     final String TESTLOGINNAME = "jockel";
     final String TESTPASSWORT = "supergeheimesjockelpasswort";
+    @Autowired
+    private BenutzerService benutzerService;
+    @Autowired
+    private IntBenutzerRepo benutzerrepo;
 
     @Test
     void vorabcheck() {
         assertThat(BenutzerService.class).isInterface();
         assertThat(benutzerService).isNotNull();
         assertThat(BenutzerService.class).isInterface();
-        assertThat(benutzerService).isNotNull();
-        assertThat(benutzerService).isInstanceOf(BenutzerServiceImpl.class);
+        assertThat(benutzerService)
+                .isNotNull()
+                .isInstanceOf(BenutzerServiceImpl.class);
     }
 
     @Test

@@ -33,22 +33,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LobbyBeitretenTest {
-    Logger logger = LoggerFactory.getLogger(LobbyErstellenTest.class);
+    private final String ERSTER_SPIELER = "Olive";
 
     // orientiert an 7.3.1 Use Case Diagramm Lobby beitreten
     // https://taiga.mi.hs-rm.de/project/weitz-2021swtpro03/wiki/731-use-case-lobby-beitreten
-    
-    // UCD -> UseCaseDiagramm
 
+    // UCD -> UseCaseDiagramm
+    private final String ZWEITER_SPIELER = "Chand";
+    Logger logger = LoggerFactory.getLogger(LobbyErstellenTest.class);
     @Autowired
     LobbyService lobbyService;
-
     @Autowired
     private MockMvc mockmvc;
-
-    private final String ERSTER_SPIELER = "Olive";
-    private final String ZWEITER_SPIELER = "Chand";
-
     @Autowired
     private IntBenutzerRepo benutzerrepo;
 
@@ -74,7 +70,7 @@ class LobbyBeitretenTest {
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
-        assertTrue(lobby instanceof Lobby);
+        assertNotNull(lobby);
         return lobby;
     }
 
@@ -82,7 +78,7 @@ class LobbyBeitretenTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/join/" + lobbyID).session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
-        assertTrue(lobbymessage instanceof LobbyMessage);
+        assertNotNull(lobbymessage);
         return lobbymessage;
     }
 
@@ -92,11 +88,11 @@ class LobbyBeitretenTest {
         json.put("benutzername", name);
         json.put("passwort", password);
         String TESTLOGINJSON = json.toString();
-            
+
         logger.info(mockmvc.perform(
-                post("/api/benutzer/login").session(session)
-                        .content(TESTLOGINJSON)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        post("/api/benutzer/login").session(session)
+                                .content(TESTLOGINJSON)
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful()).andReturn().toString());
         return session;
     }
@@ -138,24 +134,12 @@ class LobbyBeitretenTest {
     }
 
     @Test
-    @DisplayName("Spieler bekommt Beitrittslink von einem Mitspieler gesendet.")
-    void UCD_Lobby_beitreten_1b() throws Exception {
-        //Das ist eher ein Frontendtest.
-    }
-
-    @Test
-    @DisplayName("Spieler wählt zufälliger Lobby beitreten aus.")
-    void UCD_Lobby_beitreten_1c() throws Exception {
-        // TODO: TEST: Spieler wählt zufälliger Lobby beitreten aus. @Chand?
-    }
-
-    @Test
     @DisplayName("Spieler befindet sich bereits in der selben Lobby.")
     void UCD_Lobby_beitreten_1d_1() throws Exception {
         // Mit zwei verschiedenen Benutzern einloggen
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MockHttpSession sessionChand = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
-        
+
         Lobby initLobby = lobbyErstellenREST(sessionOliver);
         // ein mal beitreten:
         LobbyMessage lm1 = lobbyBeitretenREST(sessionChand, initLobby.getlobbyID());
@@ -164,7 +148,7 @@ class LobbyBeitretenTest {
         LobbyMessage lm2 = lobbyBeitretenREST(sessionChand, initLobby.getlobbyID());
         Lobby lobbyNach2malBeitreten = lobbyService.getLobbyById(initLobby.getlobbyID());
 
-        
+
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertEquals(lobbyNach1malBeitreten, lobbyNach2malBeitreten);
         assertFalse(lm1.getIstFehler());
@@ -198,7 +182,7 @@ class LobbyBeitretenTest {
     void UCD_Lobby_beitreten_1d_3() throws Exception {
         // Mit zwei verschiedenen Benutzern einloggen
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
-        
+
         Lobby initLobby = lobbyErstellenREST(sessionOliver);
         // ein mal beitreten:
         LobbyMessage lm1 = lobbyBeitretenREST(sessionOliver, initLobby.getlobbyID());
@@ -207,7 +191,7 @@ class LobbyBeitretenTest {
         LobbyMessage lm2 = lobbyBeitretenREST(sessionOliver, initLobby.getlobbyID());
         Lobby lobbyNach2malBeitreten = lobbyService.getLobbyById(initLobby.getlobbyID());
 
-        
+
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertEquals(lobbyNach1malBeitreten, lobbyNach2malBeitreten);
         assertFalse(lm1.getIstFehler());

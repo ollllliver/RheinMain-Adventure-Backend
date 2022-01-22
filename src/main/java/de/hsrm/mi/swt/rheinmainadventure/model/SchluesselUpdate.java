@@ -5,7 +5,7 @@ public class SchluesselUpdate {
     private String koordinatenArray;
 
 
-    public SchluesselUpdate(int anzSchluessel, String koordinatenArray){
+    public SchluesselUpdate(int anzSchluessel, String koordinatenArray) {
         this.anzSchluessel = anzSchluessel;
         this.koordinatenArray = koordinatenArray;
     }

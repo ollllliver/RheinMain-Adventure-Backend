@@ -37,7 +37,8 @@ public class Mobiliar {
         this.mobiliartyp = mobiliartyp;
     }
 
-    public Mobiliar() {}
+    public Mobiliar() {
+    }
 
     @Override
     public boolean equals(Object o) {

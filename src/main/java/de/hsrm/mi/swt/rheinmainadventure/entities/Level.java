@@ -2,6 +2,7 @@ package de.hsrm.mi.swt.rheinmainadventure.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
@@ -13,27 +14,21 @@ import java.util.Objects;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Level {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long levelId;
-
-    @Column(nullable = false)
-    private String name;
-
-    @Column
-    private String beschreibung;
-
-    // Durchschnittliche Bewertung aller Nutzer oder so
-    @Column
-    private byte bewertung;
-
-    @Column
-    private boolean istFreigegeben;
-
     @JsonIgnore
     @OneToMany(mappedBy = "level", fetch = FetchType.EAGER)
     List<Raum> raeume;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long levelId;
+    @Column(nullable = false)
+    private String name;
+    @Column
+    private String beschreibung;
+    // Durchschnittliche Bewertung aller Nutzer oder so
+    @Column
+    private byte bewertung;
+    @Column
+    private boolean istFreigegeben;
     @ManyToOne
     @JoinColumn(name = "benutzer_id")
     private Benutzer ersteller;

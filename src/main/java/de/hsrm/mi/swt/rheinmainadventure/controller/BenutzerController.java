@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping(value="/api")
-@SessionAttributes(names = {"loggedinBenutzername","aktuelleLobby"})
+@RequestMapping(value = "/api")
+@SessionAttributes(names = {"loggedinBenutzername", "aktuelleLobby"})
 @RestController
 public class BenutzerController {
 
@@ -41,6 +41,7 @@ public class BenutzerController {
 
     /**
      * Get Anfrage auf die Benutzerroute
+     *
      * @return liefert eine Liste mit allen Nutzern aus der Datenbank falls erfolgreich, sonst Fehler
      */
     @GetMapping("/benutzer")
@@ -52,7 +53,7 @@ public class BenutzerController {
             }
 
             logger.info("Nutzer gefunden");
-            return new ResponseEntity<List<Benutzer>>(list, HttpStatus.OK);
+            return new ResponseEntity<>(list, HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -61,38 +62,39 @@ public class BenutzerController {
 
     /**
      * Get Anfrage, die prüft ob ein Nutzer bereits eingeloggt ist
+     *
      * @param m Model, in dem das Attribut mit eingeloggt Status gesetzt wird
      * @return gefunden Nutzer falls einer eingeloggt, sonst null
      */
     @GetMapping("/benutzer/check")
-    public ResponseEntity<Benutzer> testObEingeloggt(Model m){
+    public ResponseEntity<Benutzer> testObEingeloggt(Model m) {
         Benutzer check = benutzerService.findeBenutzer(m.getAttribute("loggedinBenutzername").toString());
         if (check != null) {
             logger.info("Nutzer mit gesetzten Sessionattribut gefunden");
-            return new ResponseEntity<Benutzer>(check, HttpStatus.OK);
-        }
-        else{
+            return new ResponseEntity<>(check, HttpStatus.OK);
+        } else {
             logger.info("Session attribut leer gesetzt");
             m.addAttribute("loggedinBenutzername", "");
 
-            return new ResponseEntity<Benutzer>(check, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(check, HttpStatus.NO_CONTENT);
         }
     }
 
     /**
      * Post Anfrage zum Registrieren des Benutzers
+     *
      * @param benutzer liefert die übermittelten Daten aus dem Formular
      * @return registrierte Benutzer falls erfolgreich, sonst null
      */
     @PostMapping("/benutzer/register")
     public ResponseEntity<Benutzer> registrieren(@RequestBody Benutzer benutzer) {
-        if (benutzerService.findeBenutzer(benutzer.getBenutzername()) ==null ) {
+        if (benutzerService.findeBenutzer(benutzer.getBenutzername()) == null) {
             try {
                 logger.info("Nutzer wird registriert");
                 benutzerService.registriereBenutzer(benutzer);
-                return new ResponseEntity<Benutzer>(benutzer, HttpStatus.OK);
+                return new ResponseEntity<>(benutzer, HttpStatus.OK);
             } catch (Exception e) {
-                return new ResponseEntity<Benutzer>(benutzer, HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(benutzer, HttpStatus.NO_CONTENT);
             }
         }
         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -100,7 +102,8 @@ public class BenutzerController {
 
     /**
      * Post Anfrage zum Einloggen eines Nutzers
-     * @param m Model in dem das Attribut eingeloggt gesetzt wird
+     *
+     * @param m        Model in dem das Attribut eingeloggt gesetzt wird
      * @param benutzer übermittelte Nutzerdaten
      * @return eingeloggten Nutzer falls erfolgreich, sonst Fehler
      */
@@ -109,11 +112,11 @@ public class BenutzerController {
         try {
             if (benutzerService.pruefeLogin(benutzer.getBenutzername(), benutzer.getPasswort())) {
                 m.addAttribute("loggedinBenutzername", benutzer.getBenutzername());
-                m.addAttribute("aktuelleLobby","");
+                m.addAttribute("aktuelleLobby", "");
                 logger.info("Session attribut gesetzt -> Nutzer eingeloggt");
-                return new ResponseEntity<Benutzer>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
-            }else{
-                return new ResponseEntity<Benutzer>(benutzer, HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
+            } else {
+                return new ResponseEntity<>(benutzer, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -122,7 +125,8 @@ public class BenutzerController {
 
     /**
      * Post Anfrage zum Ausloggen des Nutzers
-     * @param m Model in dem das Attribut mit eingeloggt Status entfernt wird
+     *
+     * @param m        Model in dem das Attribut mit eingeloggt Status entfernt wird
      * @param benutzer übermittelte Daten des Nutzers der ausgeloggt werden soll
      * @return ausgeloggten Nutzer falls erfolgreich, sonst Fehler
      */
@@ -132,9 +136,9 @@ public class BenutzerController {
             m.addAttribute("loggedinBenutzername", "");
             m.addAttribute("aktuelleLobby", "");
             logger.info("Session attribut leer gesetzt -> Nutzer ausgeloggt");
-            return new ResponseEntity<Benutzer>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<Benutzer>(benutzer, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(benutzer, HttpStatus.UNAUTHORIZED);
         }
     }
 
