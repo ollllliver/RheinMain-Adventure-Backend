@@ -1,86 +1,118 @@
 package de.hsrm.mi.swt.rheinmainadventure.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import javax.persistence.*;
-import java.util.StringJoiner;
-
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Dummy Code, um die Verwendung der Data.sql zu zeigen. Nicht Übernehmen!
+ * Benutzer-Entity für das Benutzer-Repository
  */
 @Entity
 public class Benutzer {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  private Long id;
+    //automatisch generierte ID
+    @Id
+    @GeneratedValue
+    private Long benutzerId;
 
-  @Column(unique = true, nullable = false)
-  private String benutzername;
+    //Spalte Loginname im Repository
+    @Column(nullable = false, unique = true)
+    private String benutzername;
 
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  @Column(nullable = false)
-  private String passwort;
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @Column(nullable = false)
+    private String passwort;
 
-  public Benutzer() {
-  }
+    @OneToMany(mappedBy = "ersteller")
+    @JsonIgnore
+    private List<Level> erstellteLevel;
 
-  public Benutzer(String benutzername, String passwort) {
-    this.benutzername = benutzername;
-    this.passwort = passwort;
-  }
+    //automatisch generierte Versionsnummer
+    @Version
+    @JsonIgnore
+    private Long version;
 
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Benutzer.class.getSimpleName() + "[", "]")
-        .add("benutzername='" + benutzername + "'")
-        .add("passwort='" + passwort + "'")
-        .toString();
-  }
+    public Benutzer(String benutzername, String passwort, List<Level> erstellteLevel) {
+        this.benutzername = benutzername;
+        this.passwort = passwort;
+        this.erstellteLevel = erstellteLevel;
+    }
 
-  /**
-   * Zwei Nutzer sind dann gleich, wenn Sie den gleichen Nutzernamen haben.
-   *
-   * @param o
-   * @return
-   */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    public Benutzer(String benutzername, String passwort) {
+        this.benutzername = benutzername;
+        this.passwort = passwort;
+        this.erstellteLevel = Collections.emptyList();
+    }
 
-    Benutzer benutzer = (Benutzer) o;
+    public Benutzer() {
+        this.erstellteLevel = Collections.emptyList();
+    }
 
-    return benutzername.equals(benutzer.benutzername);
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-  @Override
-  public int hashCode() {
-    return benutzername.hashCode();
-  }
+        Benutzer benutzer = (Benutzer) o;
 
-  public String getBenutzername() {
-    return benutzername;
-  }
+        return getBenutzername().equals(benutzer.getBenutzername());
+    }
 
-  public void setBenutzername(String benutzername) {
-    this.benutzername = benutzername;
-  }
+    @Override
+    public String toString() {
+        return "Benutzer{" +
+                "benutzerId=" + benutzerId +
+                ", benutzername='" + benutzername + '\'' +
+                ", passwort='" + passwort + '\'' +
+                '}';
+    }
 
-  public long getId() {
-    return id;
-  }
+    @Override
+    public int hashCode() {
+        return getBenutzername().hashCode();
+    }
 
-  public void setId(long id) {
-    this.id = id;
-  }
+    public Long getBenutzerId() {
+        return benutzerId;
+    }
 
-  public String getPasswort() {
-    return passwort;
-  }
+    public void setBenutzerId(Long benutzerId) {
+        this.benutzerId = benutzerId;
+    }
 
-  public void setPasswort(String passwort) {
-    this.passwort = passwort;
-  }
+    public String getBenutzername() {
+        return benutzername;
+    }
+
+    public void setBenutzername(String benutzername) {
+        this.benutzername = benutzername;
+    }
+
+    public String getPasswort() {
+        return passwort;
+    }
+
+    public void setPasswort(String passwort) {
+        this.passwort = passwort;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public List<Level> getErstellteLevel() {
+        return erstellteLevel;
+    }
+
+    public void setErstellteLevel(List<Level> erstellteLevel) {
+        this.erstellteLevel = erstellteLevel;
+    }
 }
