@@ -89,12 +89,7 @@ class LobbyServiceImplTest {
         lobbyService.starteCountdown(lobbyID);
         TimeUnit.SECONDS.sleep(11);
         assertTrue(chandsLobby.getIstGestartet());
-        /*
-         * TODO: TEST für später: Spielstart-übermittlung Test
-         * Nur Host kann spiel Starten. (Also als nicht host starten versuchen und soll
-         * nicht klappen) <- muss noch implementiert werden
-         * mit voller lobby starten
-         */
+
     }
 
     /*
@@ -108,7 +103,7 @@ class LobbyServiceImplTest {
 
         assertNotNull(chandsLobby);
         TimeUnit.SECONDS.sleep(16);
-        assertNotNull(lobbyService.getLobbyById(chandsLobby.getlobbyID()));
+        assertNull(lobbyService.getLobbyById(chandsLobby.getlobbyID()));
     }
 
 }

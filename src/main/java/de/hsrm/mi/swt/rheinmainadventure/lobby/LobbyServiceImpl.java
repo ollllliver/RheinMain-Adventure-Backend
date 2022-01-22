@@ -185,7 +185,7 @@ public class LobbyServiceImpl implements LobbyService {
                     // Subscribed sind eine Fehlermeldung per Publish senden und im Frontend
                     // abfangen.
                     // @Chand das wuerde jetzt so gehen:
-                    broker.convertAndSend(TOPICUEB + lobby.getlobbyID(),
+                    broker.convertAndSend(TOPICLOB + lobby.getlobbyID(),
                             new LobbyMessage(NachrichtenCode.LOBBYZEIT_ABGELAUFEN, true));
                     // Das sendet an alle, die in der Lobby eingeschrieben sind die message
                     // LOBBYZEIT_ABGELAUFEN
@@ -197,8 +197,8 @@ public class LobbyServiceImpl implements LobbyService {
             }
 
         };
-        // timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
-        timer.schedule(task, 10 * 60 * 1000);
+        //timer.schedule(task, 5 * 1000); // für Testing auf 5 Sekunden setzen.
+        timer.schedule(task, 10 * (long)60 * 1000);
     }
 
     /**
@@ -229,7 +229,7 @@ public class LobbyServiceImpl implements LobbyService {
             }
 
         };
-        timer.schedule(task, 10 * 1000);
+        timer.schedule(task, (long)10 * 1000);
         return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10");
     }
 
