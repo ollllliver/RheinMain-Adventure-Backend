@@ -65,7 +65,7 @@ public class LobbyServiceImpl implements LobbyService {
 
         // Hash-Wert aus aktueller Zeit
         String aktZeit = java.time.LocalTime.now().toString();
-        String zeitHashWert = String.valueOf(Math.abs(Integer.parseInt(aktZeit)));
+        String zeitHashWert = String.valueOf(aktZeit.hashCode());
 
         int zaehler = 0;
 
