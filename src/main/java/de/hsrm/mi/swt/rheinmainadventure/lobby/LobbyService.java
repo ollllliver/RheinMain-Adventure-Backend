@@ -33,4 +33,6 @@ public interface LobbyService {
     LobbyMessage setHost(String id, Spieler host, String spielerName);
 
     LobbyMessage removeSpieler(String id, Spieler zuEntfernendSpieler, String spielerName);
+
+    LobbyMessage setLevel(String lobbyId, Long levelID, String string);
 }

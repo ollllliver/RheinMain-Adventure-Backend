@@ -188,4 +188,17 @@ public class LobbyRestController {
         return lobbyservice.removeSpieler(lobbyId, zuEntfernendSpieler,
                 m.getAttribute("loggedinBenutzername").toString());
     }
+
+    /**
+     * Ändert bei richtiger Berechtigung den Host der Loby.
+     *
+     * @param lobbyId der zu ändernden Lobby
+     * @param levelID die ID des Levels, das eingestellt werrden soll.
+     * @param m
+     * @return LobbyMessage mit information über Erfolg/Misserfolg
+     */
+    @PatchMapping("/{lobbyId}/level")
+    public LobbyMessage patchLevel(@PathVariable String lobbyId, @RequestBody Long levelID, Model m) {
+        return lobbyservice.setLevel(lobbyId, levelID, m.getAttribute("loggedinBenutzername").toString());
+    }
 }
