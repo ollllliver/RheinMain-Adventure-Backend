@@ -7,6 +7,9 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.model.SchluesselUpdate;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
+
+import java.lang.reflect.Array;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,45 +43,83 @@ public class SpielerController {
     @SendTo("/topic/spiel/{lobbyID}")
     public Spieler updatePosition(@Payload Position pos, @DestinationVariable String lobbyID,
             @DestinationVariable String name) throws Exception {
-        //logger.info("SpielerController.updatePosition: Payload=" + pos + ", lobbyID=" + lobbyID + ", name: " + name);
+        // logger.info("SpielerController.updatePosition: Payload=" + pos + ", lobbyID="
+        // + lobbyID + ", name: " + name);
         // broker.convertAndSend("/topic/spiel/" + lobbyID, pos); //nur Test
         Spieler spieler = spielService.getSpieler(lobbyID, name);
         return spielService.positionsAktualisierung(spieler, pos);
     }
 
-    @MessageMapping("/topic/spiel/{lobbyID}/key")
+    /**
+     * Stomp Mapping für das interagieren mit Objecten (Tuer und Schluessel), senden
+     * ein Update Packet an alle im Frontend die auf die LobbyID subscribt haben
+     * 
+     * @param position
+     * @param lobbyID
+     * @param objectName
+     * @return SchluesselUpdater mit den Benötigten Daten zum verarbeiten im
+     *         Frontend (Interaktion, anzSchluess, Koordinaten des Objects)
+     * @throws Exception
+     */
+    @MessageMapping("/topic/spiel/{lobbyID}/{objectName}")
     @SendTo("/topic/spiel/{lobbyID}/schluessel")
-    public SchluesselUpdate schluesselEingesammelt(@Payload String position, @DestinationVariable String lobbyID) throws Exception {
-        logger.info("ES wurde interagiert mit Index: " + position);
-        spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
-        logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
-            + spielService.findeSpiel(lobbyID).getAnzSchluessel());
-        SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
-        return update;
-    }
+    public SchluesselUpdate schluesselEingesammelt(@Payload String stompPacket, @DestinationVariable String lobbyID,
+            @DestinationVariable String objectName) throws Exception {
+        // TODO enum erstellen für interagierNamen
 
-    @MessageMapping("/topic/spiel/{lobbyID}/tuer")
-    @SendTo("/topic/spiel/{lobbyID}/schluessel")
-    public SchluesselUpdate tuerOEffnen(@Payload String position, @DestinationVariable String lobbyID) throws Exception {
-        //TODO payload richtig abfangen
-        SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
-        if(spielService.findeSpiel(lobbyID).getAnzSchluessel()==0){
-            logger.info("Du brauchst erst einen Schlüssel");
-            return update;
-        }else{
-            logger.info(position + " wird aufgeschlossen");
-            spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
+        String[] splitStompPacket = stompPacket.split(";");
+        String posX = splitStompPacket[0];
+        String posZ = splitStompPacket[1];
+        String spielerName = splitStompPacket[2];
+        String position = posX + ";" + posZ;
+        logger.info("Spieler " + spielerName + " möchte mit Schlüssel auf Position" + position + "interagieren");
+
+        if (objectName.equals("Schlüssel")) {
+            // Wenn mit Schlüssel interagiert wird, wird der Counter hochgesetzt und das
+            spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
             logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
-                + spielService.findeSpiel(lobbyID).getAnzSchluessel());
-
+                    + spielService.findeSpiel(lobbyID).getAnzSchluessel() + "Spieler " + spielerName
+                    + "erhält 10 Punkte");
+            // Update Packet verschickt
+            SchluesselUpdate update = new SchluesselUpdate(objectName,
+                    spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
+            // Score von dem Spieler dessen name mitgegeben wurde erhoehen
+            spielService.scoreErhoehen(spielService.getSpieler(lobbyID, spielerName), 10);
+            logger.info("SpielerScore: " + spielService.getSpieler(lobbyID, spielerName).getScore());
             return update;
         }
+        if (objectName.equals("Tür")) {
+            // Wenn SchluesselAnzahl größer 0, wird der Counter verringert und darf die Tuer
+            // geöffnet werden...
+            if (spielService.findeSpiel(lobbyID).getAnzSchluessel() > 0) {
+                logger.info("ES wurde interagiert mit Object: " + objectName);
+                spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
+                logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
+                        + spielService.findeSpiel(lobbyID).getAnzSchluessel());
+                SchluesselUpdate update = new SchluesselUpdate(objectName,
+                        spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
+                return update;
+                // ... wenn nicht soll das Frontend den Warnungstext setzten
+            } else {
+                SchluesselUpdate update = new SchluesselUpdate("Warnung",
+                        spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
+                return update;
+
+            }
+
+        }
+
+        return null;
 
     }
 
+    // @MessageMapping("/topic/spiel/{lobbyID}/{objectName}")
+
     /**
-     * @param msg     ist die Nachricht, welche vom Frontend als reference vermittelt wird
-     * @param lobbyID ist die ID der Lobby, in welcher die Spieler nach beenden des Spiels umschalten
+     * @param msg     ist die Nachricht, welche vom Frontend als reference
+     *                vermittelt wird
+     * @param lobbyID ist die ID der Lobby, in welcher die Spieler nach beenden des
+     *                Spiels umschalten
      * @throws Exception
      */
     @MessageMapping("/topic/lobby/{lobbyID}")
