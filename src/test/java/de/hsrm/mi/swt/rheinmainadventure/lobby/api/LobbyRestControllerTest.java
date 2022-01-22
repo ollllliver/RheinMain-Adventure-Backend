@@ -410,4 +410,47 @@ class LobbyRestControllerTest {
         assertTrue(lobby.getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
 
     }
+
+    @Test
+    @DisplayName("#102 Als Host LobbyEinstellungen ändern - Level ändern")
+    void testPatchLevel() throws Exception {
+        Long LOBBYDEMOID1 = (long) 1; 
+        Long LOBBYDEMOID2 = (long) 2; 
+        MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
+                .andReturn();
+        String jsonString = result.getResponse().getContentAsString();
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
+
+        mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session1).contentType("application/json"))
+                .andReturn();
+
+        MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
+        result = mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
+                .andReturn();
+        // session1 ist host
+
+        // TODO: Level mit ID 2 anlegen. Brauche Hilfe von Friedrich dafür. LG Olli
+
+        // aktuelle Lobby holen
+        lobby = lobbyService.getLobbyById(lobby.getlobbyID());
+
+        // vorher lobbyLevel ID = LOBBYDEMOID
+        assertEquals(lobby.getGewaehlteKarte().getLevelId(), LOBBYDEMOID1);
+
+        mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/level").session(session1)
+                .content(Long.toString(LOBBYDEMOID2)).contentType("application/json")).andReturn();
+        assertEquals(lobby.getGewaehlteKarte().getLevelId(), LOBBYDEMOID2);
+
+        // Jetzt noch mal mit der anderen session versuchen, das Level zu wechslen
+        // Das sollte nicht gehen, also es soll sich nichts ändern, da das nur der Host
+        // machen darf
+
+        mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/level").session(session2)
+                .content(Long.toString(LOBBYDEMOID1)).contentType("application/json")).andReturn();
+        assertEquals(lobby.getGewaehlteKarte().getLevelId(), LOBBYDEMOID2);
+
+        
+    }
 }
