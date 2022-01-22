@@ -4,12 +4,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliar;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliartyp;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
+import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.api.LevelRestController;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,12 +31,15 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -37,11 +49,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayName("Vorabtests für alle api Domaenen.")
+@ActiveProfiles("test")
 class LobbyRestControllerTest {
     Logger logger = LoggerFactory.getLogger(LobbyRestControllerTest.class);
 
     @Autowired
     LobbyService lobbyService;
+
+    @Autowired
+    private IntBenutzerRepo benutzerRepository;
+
+    @Autowired
+    private MobiliarRepository mobiliarRepository;
+
+    @Autowired
+    private LevelService levelService;
 
     @Autowired
     private MockMvc mockmvc;
@@ -53,8 +75,8 @@ class LobbyRestControllerTest {
     private IntBenutzerRepo benutzerrepo;
 
     @BeforeEach
-    public void initUser() {
-        benutzerrepo.deleteAll();
+    @Transactional
+    void setUp() {
         final Benutzer u1 = new Benutzer();
         u1.setBenutzername(ERSTER_SPIELER);
         u1.setPasswort(ERSTER_SPIELER);
@@ -63,6 +85,51 @@ class LobbyRestControllerTest {
         u2.setBenutzername(ZWEITER_SPIELER);
         u2.setPasswort(ZWEITER_SPIELER);
         benutzerrepo.save(u2);
+
+        Benutzer ersteller = new Benutzer("Glogomir", "Strings");
+        benutzerRepository.save(ersteller);
+
+
+        Mobiliar rein = new Mobiliar("Box", "static/gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "static/gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar ente = new Mobiliar("Ente", "static/gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
+
+        mobiliarRepository.save(rein);
+        mobiliarRepository.save(raus);
+        mobiliarRepository.save(ente);
+
+        Raum raum = new Raum(0, new ArrayList<>());
+
+        RaumMobiliar raumMobiliar1 = new RaumMobiliar(rein, raum, 4, 5);
+        RaumMobiliar raumMobiliar2 = new RaumMobiliar(raus, raum, 4, 6);
+        raum.getRaumMobiliar().add(raumMobiliar1);
+        raum.getRaumMobiliar().add(raumMobiliar2);
+
+        List<Raum> raume = new ArrayList<>();
+        raume.add(raum);
+
+        Level level = new Level("Test-Level", "Test-Beschreibung", (byte) 5, raume);
+
+        levelService.bearbeiteLevel("Glogomir", level);
+
+
+        // Noch ein Level
+        Raum raum1 = new Raum(0, new ArrayList<>());
+
+        RaumMobiliar raumMobiliar3 = new RaumMobiliar(rein, raum1, 5, 5);
+        RaumMobiliar raumMobiliar4 = new RaumMobiliar(raus, raum1, 5, 6);
+        RaumMobiliar raumMobiliar5 = new RaumMobiliar(ente, raum1, 4, 4);
+        raum1.getRaumMobiliar().add(raumMobiliar3);
+        raum1.getRaumMobiliar().add(raumMobiliar4);
+        raum1.getRaumMobiliar().add(raumMobiliar5);
+
+
+        List<Raum> raume1 = new ArrayList<>();
+        raume1.add(raum1);
+
+        Level level1 = new Level("Test-Level2", "Test-Beschreibung", (byte) 5, raume1);
+
+        levelService.bearbeiteLevel("Glogomir", level1);
     }
 
     private MockHttpSession logIn(String name, String password) throws Exception {
@@ -409,5 +476,49 @@ class LobbyRestControllerTest {
         assertTrue(lobby.getTeilnehmerliste().contains(new Spieler(ERSTER_SPIELER)));
         assertTrue(lobby.getTeilnehmerliste().contains(new Spieler(ZWEITER_SPIELER)));
 
+    }
+
+    @Test
+    @DisplayName("#102 Als Host LobbyEinstellungen ändern - Level ändern")
+    void testPatchLevel() throws Exception {
+        List<Level> alleLevel = levelService.alleLevel();
+        Long LOBBYDEMOID1 = (long) alleLevel.get(0).getLevelId();
+        Long LOBBYDEMOID2 = (long) alleLevel.get(1).getLevelId(); 
+        MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
+        MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
+                .andReturn();
+        String jsonString = result.getResponse().getContentAsString();
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
+
+        mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session1).contentType("application/json"))
+                .andReturn();
+
+        MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
+        result = mockmvc.perform(post("/api/lobby/join/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
+                .andReturn();
+        // session1 ist host
+
+        // TODO: Level mit ID 2 anlegen. Brauche Hilfe von Friedrich dafür. LG Olli
+
+        // aktuelle Lobby holen
+        lobby = lobbyService.getLobbyById(lobby.getlobbyID());
+
+        // vorher lobbyLevel ID = LOBBYDEMOID
+        assertEquals(lobby.getGewaehlteKarte().getLevelId(), LOBBYDEMOID1);
+
+        mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/level").session(session1)
+                .content(Long.toString(LOBBYDEMOID2)).contentType("application/json")).andReturn();
+        assertEquals(lobby.getGewaehlteKarte().getLevelId(), LOBBYDEMOID2);
+
+        // Jetzt noch mal mit der anderen session versuchen, das Level zu wechslen
+        // Das sollte nicht gehen, also es soll sich nichts ändern, da das nur der Host
+        // machen darf
+
+        mockmvc.perform(patch("/api/lobby/" + lobby.getlobbyID() + "/level").session(session2)
+                .content(Long.toString(LOBBYDEMOID1)).contentType("application/json")).andReturn();
+        assertEquals(lobby.getGewaehlteKarte().getLevelId(), LOBBYDEMOID2);
+
+        
     }
 }

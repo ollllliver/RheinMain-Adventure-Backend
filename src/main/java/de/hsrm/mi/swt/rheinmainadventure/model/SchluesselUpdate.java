@@ -2,12 +2,12 @@ package de.hsrm.mi.swt.rheinmainadventure.model;
 
 public class SchluesselUpdate {
     private int anzSchluessel;
-    private int id;
+    private String koordinatenArray;
 
 
-    public SchluesselUpdate(int anzSchluessel, int id){
+    public SchluesselUpdate(int anzSchluessel, String koordinatenArray){
         this.anzSchluessel = anzSchluessel;
-        this.id = id;
+        this.koordinatenArray = koordinatenArray;
     }
 
 
@@ -21,13 +21,13 @@ public class SchluesselUpdate {
     }
 
 
-    public int getId() {
-        return id;
+    public String getKoordinatenArray() {
+        return koordinatenArray;
     }
 
 
-    public void setId(int id) {
-        this.id = id;
+    public void setKoordinatenArray(String koordinatenArray) {
+        this.koordinatenArray = koordinatenArray;
     }
 
 

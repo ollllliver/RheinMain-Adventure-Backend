@@ -48,25 +48,25 @@ public class SpielerController {
 
     @MessageMapping("/topic/spiel/{lobbyID}/key")
     @SendTo("/topic/spiel/{lobbyID}/schluessel")
-    public SchluesselUpdate schluesselEingesammelt(@Payload int objectID, @DestinationVariable String lobbyID) throws Exception {
-        logger.info("ES wurde interagiert mit: " + objectID);
+    public SchluesselUpdate schluesselEingesammelt(@Payload String position, @DestinationVariable String lobbyID) throws Exception {
+        logger.info("ES wurde interagiert mit Index: " + position);
         spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
         logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
             + spielService.findeSpiel(lobbyID).getAnzSchluessel());
-        SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), objectID);
+        SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
         return update;
     }
 
     @MessageMapping("/topic/spiel/{lobbyID}/tuer")
     @SendTo("/topic/spiel/{lobbyID}/schluessel")
-    public SchluesselUpdate tuerOEffnen(@Payload String objectID, @DestinationVariable String lobbyID) throws Exception {
+    public SchluesselUpdate tuerOEffnen(@Payload String position, @DestinationVariable String lobbyID) throws Exception {
         //TODO payload richtig abfangen
-        SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), 0);
+        SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
         if(spielService.findeSpiel(lobbyID).getAnzSchluessel()==0){
             logger.info("Du brauchst erst einen Schlüssel");
             return update;
         }else{
-            logger.info(objectID + " wird aufgeschlossen");
+            logger.info(position + " wird aufgeschlossen");
             spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
             logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
                 + spielService.findeSpiel(lobbyID).getAnzSchluessel());
