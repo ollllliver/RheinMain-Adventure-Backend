@@ -92,18 +92,4 @@ class LobbyServiceImplTest {
 
     }
 
-    /*
-     * Prueft ob eine Lobby nach dem Timeout noch Exsistiert. OHNE REST ANSTOSS
-     * Hierfuer muss im Backend der Timeout auf 15 Sekunden und nicht 10 Minuten
-     * gesetzt werden.
-     */
-    @Test
-    void testTimeout() throws Exception {
-        Lobby chandsLobby = lobbyService.lobbyErstellen("Chand");
-
-        assertNotNull(chandsLobby);
-        TimeUnit.SECONDS.sleep(16);
-        assertNull(lobbyService.getLobbyById(chandsLobby.getlobbyID()));
-    }
-
 }
