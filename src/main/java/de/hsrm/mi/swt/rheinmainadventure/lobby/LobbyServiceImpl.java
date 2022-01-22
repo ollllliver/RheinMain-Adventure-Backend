@@ -446,13 +446,11 @@ public class LobbyServiceImpl implements LobbyService {
     public LobbyMessage setLevel(String lobbyId, Long levelId, String spielerName) {
         // erst mal das Level durch die ID bekommen:
         Optional<Level> neuesLevelOpt = levelService.getLevel(levelId);
-        if (getLobbyById(lobbyId).getHost().getName().equals(spielerName)) {
-            if (neuesLevelOpt.isPresent()){
-                getLobbyById(lobbyId).setGewaehlteKarte(neuesLevelOpt.get());
-                LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
-                broker.convertAndSend(TOPICLOB + lobbyId, res);
-                return res;
-            }
+        if (neuesLevelOpt.isPresent() && getLobbyById(lobbyId).getHost().getName().equals(spielerName)) {
+            getLobbyById(lobbyId).setGewaehlteKarte(neuesLevelOpt.get());
+            LobbyMessage res = new LobbyMessage(NachrichtenCode.NEUE_EINSTELLUNGEN, false);
+            broker.convertAndSend(TOPICLOB + lobbyId, res);
+            return res;
         }
         return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
     }
