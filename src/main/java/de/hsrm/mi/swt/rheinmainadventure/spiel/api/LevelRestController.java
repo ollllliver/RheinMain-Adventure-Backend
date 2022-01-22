@@ -22,7 +22,6 @@ import java.util.*;
  * Der LevelRestController bietet die meissten Funktionen des LevelServices bequem per REST-API an, sodass das Frontend
  * komfortabel mit der Datenhaltung in der Datenbank interagieren kann.
  */
-@CrossOrigin
 @RestController
 public class LevelRestController {
 
