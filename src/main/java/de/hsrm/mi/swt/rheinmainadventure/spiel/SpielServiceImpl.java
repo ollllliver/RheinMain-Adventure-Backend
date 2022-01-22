@@ -16,16 +16,14 @@ import java.util.Map;
 @Service
 public class SpielServiceImpl implements SpielService {
 
+    private final Map<String, Spiel> spielListe = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(SpielServiceImpl.class);
     @Autowired
     private LevelService levelService;
 
-    private final Map<String, Spiel> spielListe = new HashMap<>();
-
-    private final Logger logger = LoggerFactory.getLogger(SpielServiceImpl.class);
-
     /**
      * Methode welche beim Spielstart die Spiel-ID angibt und die Startpositionen der teilnehmenden Spieler festlegt
-     * 
+     *
      * @param lobby die Lobby mit den teilnehmenden Spielern, zu welcher das Spiel gestartet werden soll
      */
     @Override
@@ -46,7 +44,7 @@ public class SpielServiceImpl implements SpielService {
 
     /**
      * Methode zum abrufen aller Spiele
-     * 
+     *
      * @return alle laufenden Spiele
      */
     @Override
@@ -90,9 +88,9 @@ public class SpielServiceImpl implements SpielService {
 
     /**
      * Methode welche den ausgwählten Spieler zurück gibt
-     * 
+     *
      * @param spielID die id des Spielers, welcher zurück gegeben werden soll
-     * @param name der Name des Spielers
+     * @param name    der Name des Spielers
      * @return den ausgewählten Spieler
      */
     @Override
@@ -110,7 +108,7 @@ public class SpielServiceImpl implements SpielService {
 
     /**
      * Methode zum erhöhen der Schlüsselanzahl im Spiel
-     * 
+     *
      * @param spiel aktuelles Spiel, in welchem der Zähler der gefundenen Schlüssel erhöht wird
      * @return gibt die aktuelle Anzahl an gefundenen Schlüsseln zurück
      */
@@ -122,7 +120,7 @@ public class SpielServiceImpl implements SpielService {
 
     /**
      * Methode zum verringern der Schlüsselanzahl im Spiel
-     * 
+     *
      * @param spiel aktuelles Spiel, in welchem der Zähler der gefundenen Schlüssel verringert wird
      * @return gibt die aktuelle Anzahl an gefundenen Schlüsseln zurück
      */
@@ -136,9 +134,8 @@ public class SpielServiceImpl implements SpielService {
 
     /**
      * Methode zum finden eines SPiels
-     * 
+     *
      * @param lobbyID , da lobbyID = spielID
-     * 
      * @return das gewünschte SPiel
      */
 

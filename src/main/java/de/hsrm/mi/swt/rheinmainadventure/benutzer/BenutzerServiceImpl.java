@@ -20,31 +20,29 @@ public class BenutzerServiceImpl implements BenutzerService {
 
     /**
      * Mehode zum Prüfen des Logins
+     *
      * @param loginname übermittelter loginname
-     * @param passwort übermitteltes passwort
+     * @param passwort  übermitteltes passwort
      * @return true falls login erfolgreich, sonst false
      */
     @Override
     public boolean pruefeLogin(String loginname, String passwort) {
         String pw = findeBenutzer(loginname).getPasswort();
-        if(passwort.equals(pw)) {
-            return true;
-        } else {
-            return false;
-        }
+        return passwort.equals(pw);
     }
 
 
     /**
      * Methode zum registrieren in der Datenbank
+     *
      * @param neubenutzer übermittelter Nutzer der registriert werden soll
      * @return registrierten Nutzer falls erfolgreich, sonst null
      */
     @Transactional
     @Override
     public Benutzer registriereBenutzer(Benutzer neubenutzer) {
-       logger.info(neubenutzer.toString());
-        if(benutzerrepository.findByBenutzername(neubenutzer.getBenutzername()) == null) {
+        logger.info(neubenutzer.toString());
+        if (benutzerrepository.findByBenutzername(neubenutzer.getBenutzername()) == null) {
             Benutzer gespeichert = benutzerrepository.save(neubenutzer);
             return gespeichert;
         } else {
@@ -54,6 +52,7 @@ public class BenutzerServiceImpl implements BenutzerService {
 
     /**
      * Methode zum prüfen ob Nutzer in der Datenbank
+     *
      * @param loginname übermittelter nutzername des gesucht wird
      * @return Nutzer falls erfolgreich gefunden, sonst null
      */

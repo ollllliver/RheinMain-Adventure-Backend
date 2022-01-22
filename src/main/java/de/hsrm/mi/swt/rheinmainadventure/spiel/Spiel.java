@@ -11,9 +11,9 @@ import java.util.List;
 public class Spiel {
 
     private final String spielID;
-    private List<Spieler> spielerListe;
     private final Timestamp startZeitpunkt;
     private final Level level;
+    private List<Spieler> spielerListe;
     private int anzSchluessel;
 
     public Spiel(Lobby lobby, List<Spieler> spielerListe) {

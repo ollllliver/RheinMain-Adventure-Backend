@@ -34,22 +34,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LobbyVerlassenTest {
-    Logger logger = LoggerFactory.getLogger(LobbyVerlassenTest.class);
+    private final String ERSTER_SPIELER = "Olive";
 
     // 7.3.1 Use Case Diagramm Lobby verlassen
     // https://taiga.mi.hs-rm.de/project/weitz-2021swtpro03/wiki/733-use-case-diagramm-lobby-verlassen
 
     // UCD -> UseCaseDiagramm
-
+    private final String ZWEITER_SPIELER = "Chand";
+    Logger logger = LoggerFactory.getLogger(LobbyVerlassenTest.class);
     @Autowired
     LobbyService lobbyService;
-
     @Autowired
     private MockMvc mockmvc;
-
-    private final String ERSTER_SPIELER = "Olive";
-    private final String ZWEITER_SPIELER = "Chand";
-
     @Autowired
     private IntBenutzerRepo benutzerrepo;
 

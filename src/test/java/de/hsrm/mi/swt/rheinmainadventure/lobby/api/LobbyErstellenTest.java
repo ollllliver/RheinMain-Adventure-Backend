@@ -26,7 +26,8 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,22 +36,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LobbyErstellenTest {
-    Logger logger = LoggerFactory.getLogger(LobbyErstellenTest.class);
+    private final String ERSTER_SPIELER = "Olive";
 
     // orientiert an 7.3.1 Use Case Diagramm Lobby hosten (und Spiel starten)
     // https://taiga.mi.hs-rm.de/project/weitz-2021swtpro03/wiki/732-use-case-diagramm-lobby-hosten-und-spiel-starten
 
     // UCD -> UseCaseDiagramm
-
+    private final String ZWEITER_SPIELER = "Chand";
+    Logger logger = LoggerFactory.getLogger(LobbyErstellenTest.class);
     @Autowired
     LobbyService lobbyService;
-
     @Autowired
     private MockMvc mockmvc;
-
-    private final String ERSTER_SPIELER = "Olive";
-    private final String ZWEITER_SPIELER = "Chand";
-
     @Autowired
     private IntBenutzerRepo benutzerrepo;
 
@@ -89,7 +86,7 @@ class LobbyErstellenTest {
     }
 
     private Lobby lobbyAbfragenREST(String lobbyID) throws Exception {
-        MvcResult  result = mockmvc.perform(get("/api/lobby/" + lobbyID).contentType("application/json")).andReturn();
+        MvcResult result = mockmvc.perform(get("/api/lobby/" + lobbyID).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
         Lobby restLobby = new ObjectMapper().readValue(jsonString, Lobby.class);
         assertTrue(restLobby instanceof Lobby);
@@ -97,9 +94,10 @@ class LobbyErstellenTest {
     }
 
     private ArrayList<Lobby> lobbysAbfragenREST() throws Exception {
-        MvcResult  result = mockmvc.perform(get("/api/lobby/alle").contentType("application/json")).andReturn();
+        MvcResult result = mockmvc.perform(get("/api/lobby/alle").contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        ArrayList<Lobby> restLobbys = new ObjectMapper().readValue(jsonString, new TypeReference<ArrayList<Lobby>>(){});
+        ArrayList<Lobby> restLobbys = new ObjectMapper().readValue(jsonString, new TypeReference<ArrayList<Lobby>>() {
+        });
         return restLobbys;
     }
 
@@ -109,11 +107,11 @@ class LobbyErstellenTest {
         json.put("benutzername", name);
         json.put("passwort", password);
         String TESTLOGINJSON = json.toString();
-            
+
         logger.info(mockmvc.perform(
-                post("/api/benutzer/login").session(session)
-                        .content(TESTLOGINJSON)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        post("/api/benutzer/login").session(session)
+                                .content(TESTLOGINJSON)
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful()).andReturn().toString());
         return session;
     }
@@ -128,8 +126,8 @@ class LobbyErstellenTest {
         assertEquals(lobbyService.getLobbys().size(), 0);
         assertEquals(lobbysAbfragenREST().size(), 0);
     }
-    
-    
+
+
     @Test
     @DisplayName("Eine Lobby ueber REST erstellen.")
     void UCD_Lobby_erstellen_1() throws Exception {

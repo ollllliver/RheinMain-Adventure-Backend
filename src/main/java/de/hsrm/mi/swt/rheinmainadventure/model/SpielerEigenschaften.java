@@ -7,12 +7,12 @@ package de.hsrm.mi.swt.rheinmainadventure.model;
 //Im Moment haben wir nur eine Eigenschaft (Position). Brauchen wir dafür eine extra Klasse?
 //  Sind die Attribute eines Spielers nicht seine Eigenschaften?
 public class SpielerEigenschaften {
-    
-    
+
+
     private Position position;
 
     public SpielerEigenschaften() {
-        this.position = new Position(0,0,0);
+        this.position = new Position(0, 0, 0);
     }
 
     public Position getPosition() {

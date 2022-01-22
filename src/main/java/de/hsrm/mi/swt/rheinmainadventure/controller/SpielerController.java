@@ -39,7 +39,7 @@ public class SpielerController {
     @MessageMapping("/topic/spiel/{lobbyID}/pos/{name}")
     @SendTo("/topic/spiel/{lobbyID}")
     public Spieler updatePosition(@Payload Position pos, @DestinationVariable String lobbyID,
-            @DestinationVariable String name) throws Exception {
+                                  @DestinationVariable String name) throws Exception {
         //logger.info("SpielerController.updatePosition: Payload=" + pos + ", lobbyID=" + lobbyID + ", name: " + name);
         // broker.convertAndSend("/topic/spiel/" + lobbyID, pos); //nur Test
         Spieler spieler = spielService.getSpieler(lobbyID, name);
@@ -52,7 +52,7 @@ public class SpielerController {
         logger.info("ES wurde interagiert mit Index: " + position);
         spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
         logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
-            + spielService.findeSpiel(lobbyID).getAnzSchluessel());
+                + spielService.findeSpiel(lobbyID).getAnzSchluessel());
         SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
         return update;
     }
@@ -62,14 +62,14 @@ public class SpielerController {
     public SchluesselUpdate tuerOEffnen(@Payload String position, @DestinationVariable String lobbyID) throws Exception {
         //TODO payload richtig abfangen
         SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
-        if(spielService.findeSpiel(lobbyID).getAnzSchluessel()==0){
+        if (spielService.findeSpiel(lobbyID).getAnzSchluessel() == 0) {
             logger.info("Du brauchst erst einen Schlüssel");
             return update;
-        }else{
+        } else {
             logger.info(position + " wird aufgeschlossen");
             spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
             logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
-                + spielService.findeSpiel(lobbyID).getAnzSchluessel());
+                    + spielService.findeSpiel(lobbyID).getAnzSchluessel());
 
             return update;
         }

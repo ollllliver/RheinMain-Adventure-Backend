@@ -2,7 +2,7 @@ package de.hsrm.mi.swt.rheinmainadventure.messaging;
 
 /**
  * Klasse zur Vereinheitlichung der Kommunikation zum Frontend.
- * 
+ * <p>
  * LobbyMessages werden sowohl über Rest als auch über Stomp zur Kommunikation
  * verwendet. Eine LobbyMessage beinhaltet einen Nachrichtencode und eine Fehler
  * Flag. Ein nachrichtencode ist ein Enum, um Schreibfehler zu vermeiden. Bei
@@ -80,9 +80,7 @@ public class LobbyMessage {
                 return false;
         } else if (!payload.equals(other.payload))
             return false;
-        if (typ != other.typ)
-            return false;
-        return true;
+        return typ == other.typ;
     }
 
     public String getPayload() {

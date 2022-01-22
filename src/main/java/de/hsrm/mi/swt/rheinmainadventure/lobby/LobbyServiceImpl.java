@@ -24,27 +24,23 @@ import java.util.*;
 @Service
 @SessionAttributes(names = {"loggedinBenutzername"})
 public class LobbyServiceImpl implements LobbyService {
-    private final Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
     private final static String TOPICLOB = "/topic/lobby/";
     private final static String TOPICUEB = "/topic/lobby/uebersicht";
-
+    private final Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
+    /**
+     * Liste aller Lobbyinstanzen.
+     */
+    private final ArrayList<Lobby> lobbys = new ArrayList<>();
     /**
      * Der Messagebroker wird hier durch dependencyInjection eingebunden. Über ihn
      * koennen Nachrichten ueber STOMP an die Subscriber gesendet werden
      */
     @Autowired
     private SimpMessagingTemplate broker;
-
     @Autowired
     private SpielService spielService;
-
     @Autowired
     private LevelService levelService;
-
-    /**
-     * Liste aller Lobbyinstanzen.
-     */
-    private final ArrayList<Lobby> lobbys = new ArrayList<>();
 
     /**
      * Generiert eine einmalige Lobby-ID aus dem Namen des Spielers, kombiniert mit
@@ -128,7 +124,6 @@ public class LobbyServiceImpl implements LobbyService {
      * @param id          lobby ID
      * @param spielerName spieler der die lobby verlassen will
      * @return LobbyMessage dass eine spieler die lobby verlassen hat
-     *
      */
     @Override
     public LobbyMessage spielerVerlaesstLobby(String id, String spielerName) {
@@ -140,21 +135,21 @@ public class LobbyServiceImpl implements LobbyService {
                 // ... und entfernt
                 // wenn lobby leer ist wird sie geschlossen
                 if (getLobbyById(id).getTeilnehmerliste().size() == 1) {
-                  
+
                     lobbys.remove(getLobbyById(id));
                     broker.convertAndSend(TOPICUEB, new LobbyMessage(NachrichtenCode.LOBBY_ENTFERNT, false));
                 } else {
-                    
+
                     getLobbyById(id).getTeilnehmerliste().remove(currSpieler);
-                    
+
                     // wenn der spieler der Host war wird der Status weitergegeben
                     if (spielerName.equals(getLobbyById(id).getHost().getName())) {
-                        
+
                         int size = getLobbyById(id).getTeilnehmerliste().size();
                         double index = Math.floor(Math.random() * size);
 
                         Spieler neuerHost = getLobbyById(id).getTeilnehmerliste().get((int) index);
-                        
+
                         neuerHost.setHost(true);
                         getLobbyById(id).setHost(neuerHost);
                     }
@@ -207,7 +202,7 @@ public class LobbyServiceImpl implements LobbyService {
      *
      * @param lobbyId ID der Lobby dessen Countdown gestartet wird.
      * @return gibt eine LobbyMessage zurueck die aussagt das der Countdown
-     *         gestartet worden ist.
+     * gestartet worden ist.
      */
     @Override
     public LobbyMessage starteCountdown(String lobbyId) {
@@ -235,7 +230,6 @@ public class LobbyServiceImpl implements LobbyService {
 
     /**
      * Gibt ALLE aktuellen Lobbs als Array zurueck.
-     *
      */
     public ArrayList<Lobby> getLobbys() {
         logger.info("Anzahl lobbys: " + this.lobbys.size());
@@ -270,7 +264,7 @@ public class LobbyServiceImpl implements LobbyService {
      * @param id          mitgegebene Lobby-ID
      * @param spielername Der mitgegebene Name des Spielers
      * @return Gibt eine LobbyMessage mit passendem NachrichtenCode, sowie
-     *         Erfolgsstatus zurueck
+     * Erfolgsstatus zurueck
      */
     @Override
     public LobbyMessage joinLobbybyId(String id, String spielername) {

@@ -16,10 +16,9 @@ import java.util.List;
 
 /**
  * Rest Controller für /abi/lobby/*
- * 
+ * <p>
  * Alle REST aufrufe zum Thema Lobby kommen hier an, werden zum verarbeiten an
  * den LobbyService weitergeleitet und hier wieder als Antwort zurück gesendet.
- * 
  */
 @RestController
 @RequestMapping(value = {"/api/lobby/*"})
@@ -49,11 +48,10 @@ public class LobbyRestController {
     /**
      * api/lobby/join/{id} stößt beim lobbyservice das hinzufügen des Sessionscope
      * Users (später des Prinzipal Users) in die Lobby mit der mitgegebene ID an.
-     * 
+     *
      * @param lobbyId, zu der der eingeloggte User hinzugefügt werden soll.
      * @param m        später Prinzipal prinz (eingeloggter User)
      * @return LobbyMessage mit Nachrichtencode
-     * 
      */
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage lobbyBeitretenByID(@PathVariable String lobbyId, Model m) {
@@ -71,9 +69,8 @@ public class LobbyRestController {
     }
 
     /**
-     * 
      * api/leave/{lobbyId} stoeßt beim lobbyservice das Verlassen an
-     * 
+     *
      * @param lobbyId, die der SPieler verlassen will
      * @param m        eingeloggter User
      * @return LobbyMessage mit Nachrichtencode
@@ -91,7 +88,7 @@ public class LobbyRestController {
     /**
      * api/lobby/neu stößt beim lobbyservice das erstellen einer neuen Lobby an und
      * gibt diese zurück.
-     * 
+     *
      * @param m später Prinzipal prinz (eingeloggter User)
      * @return neu erstellte Lobby
      */
@@ -112,7 +109,7 @@ public class LobbyRestController {
 
     /**
      * Anfrage nach der Lobby mit mitgegebener ID.
-     * 
+     *
      * @param id der gesuchten Lobby
      * @return angefragte Lobby
      */
@@ -184,7 +181,7 @@ public class LobbyRestController {
      */
     @DeleteMapping("/{lobbyId}/teilnehmer")
     public LobbyMessage deleteTeilnehmer(@PathVariable String lobbyId, @RequestBody Spieler zuEntfernendSpieler,
-            Model m) {
+                                         Model m) {
         return lobbyservice.removeSpieler(lobbyId, zuEntfernendSpieler,
                 m.getAttribute("loggedinBenutzername").toString());
     }

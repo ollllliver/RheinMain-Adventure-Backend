@@ -26,7 +26,7 @@ class SpielTest {
         lobbyService.joinLobbybyId(lobby.getlobbyID(), "spielername2");
 
         // TODO @Oliver
-        
+
         // Spiel spiel = new Spiel(lobby);
 
         // assertEquals(spiel.getSpielerListe(), lobby.getTeilnehmerliste());

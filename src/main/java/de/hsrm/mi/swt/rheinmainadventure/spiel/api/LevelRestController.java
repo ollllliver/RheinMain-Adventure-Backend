@@ -29,12 +29,10 @@ public class LevelRestController {
     public static final String LEVEL_NICHT_IN_DB_404_LOG_MESSAGE = "Level nicht in DB gefunden, externer Aufrufer erhält 404";
     public static final EntityNichtInDatenbankException LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION = new EntityNichtInDatenbankException("Das Level gibt es nicht in der Datenbank");
     private final Logger lg = LoggerFactory.getLogger(LevelRestController.class);
-
-    @Autowired
-    private LevelService levelService;
-
     @Autowired
     RaumMobiliarRepository raumMobiliarRepository;
+    @Autowired
+    private LevelService levelService;
 
     /**
      * @return Eine Liste aller in der DB gespeicherten Level
@@ -271,7 +269,7 @@ public class LevelRestController {
             lg.warn(LEVEL_NICHT_IN_DB_404_LOG_MESSAGE);
             throw LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION;
         }
-        
+
     }
 
 }

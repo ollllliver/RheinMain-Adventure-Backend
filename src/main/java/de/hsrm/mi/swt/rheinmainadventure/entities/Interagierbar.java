@@ -6,11 +6,11 @@ public enum Interagierbar {
 
     private final String name;
 
-    Interagierbar(String name){
+    Interagierbar(String name) {
         this.name = name;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 }  

@@ -3,12 +3,7 @@ package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliar;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliartyp;
-import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
-import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
+import de.hsrm.mi.swt.rheinmainadventure.entities.*;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
@@ -17,8 +12,6 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
-import de.hsrm.mi.swt.rheinmainadventure.spiel.api.LevelRestController;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,11 +28,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.transaction.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -51,26 +43,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Vorabtests für alle api Domaenen.")
 @ActiveProfiles("test")
 class LobbyRestControllerTest {
-    Logger logger = LoggerFactory.getLogger(LobbyRestControllerTest.class);
-
-    @Autowired
-    LobbyService lobbyService;
-
-    @Autowired
-    private IntBenutzerRepo benutzerRepository;
-
-    @Autowired
-    private MobiliarRepository mobiliarRepository;
-
-    @Autowired
-    private LevelService levelService;
-
-    @Autowired
-    private MockMvc mockmvc;
-
     private final String ERSTER_SPIELER = "Olive";
     private final String ZWEITER_SPIELER = "Chand";
-
+    Logger logger = LoggerFactory.getLogger(LobbyRestControllerTest.class);
+    @Autowired
+    LobbyService lobbyService;
+    @Autowired
+    private IntBenutzerRepo benutzerRepository;
+    @Autowired
+    private MobiliarRepository mobiliarRepository;
+    @Autowired
+    private LevelService levelService;
+    @Autowired
+    private MockMvc mockmvc;
     @Autowired
     private IntBenutzerRepo benutzerrepo;
 
@@ -140,9 +125,9 @@ class LobbyRestControllerTest {
         String TESTLOGINJSON = json.toString();
 
         logger.info(mockmvc.perform(
-                post("/api/benutzer/login").session(session)
-                        .content(TESTLOGINJSON)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        post("/api/benutzer/login").session(session)
+                                .content(TESTLOGINJSON)
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful()).andReturn().toString());
         return session;
     }
@@ -220,7 +205,7 @@ class LobbyRestControllerTest {
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
 
         result = mockmvc.perform(
-                delete("/api/lobby/leave/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
+                        delete("/api/lobby/leave/" + lobby.getlobbyID()).session(session2).contentType("application/json"))
                 .andReturn();
         jsonString = result.getResponse().getContentAsString();
         lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
@@ -482,8 +467,8 @@ class LobbyRestControllerTest {
     @DisplayName("#102 Als Host LobbyEinstellungen ändern - Level ändern")
     void testPatchLevel() throws Exception {
         List<Level> alleLevel = levelService.alleLevel();
-        Long LOBBYDEMOID1 = (long) alleLevel.get(0).getLevelId();
-        Long LOBBYDEMOID2 = (long) alleLevel.get(1).getLevelId(); 
+        Long LOBBYDEMOID1 = alleLevel.get(0).getLevelId();
+        Long LOBBYDEMOID2 = alleLevel.get(1).getLevelId();
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session1).contentType("application/json"))
                 .andReturn();
@@ -519,6 +504,6 @@ class LobbyRestControllerTest {
                 .content(Long.toString(LOBBYDEMOID1)).contentType("application/json")).andReturn();
         assertEquals(lobby.getGewaehlteKarte().getLevelId(), LOBBYDEMOID2);
 
-        
+
     }
 }
