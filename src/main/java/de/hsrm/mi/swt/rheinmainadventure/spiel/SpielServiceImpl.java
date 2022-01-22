@@ -29,7 +29,7 @@ public class SpielServiceImpl implements SpielService {
     @Override
     public void starteSpiel(Lobby lobby) {
 
-        List<Spieler> spielerListe = new ArrayList<Spieler>();
+        List<Spieler> spielerListe = new ArrayList<>();
         Position startposition = levelService
                 .getStartPositionImRaum(levelService.getRaum(lobby.getGewaehlteKarte(), 0));
 
@@ -39,7 +39,7 @@ public class SpielServiceImpl implements SpielService {
         }
 
         spielListe.put(lobby.getlobbyID(), new Spiel(lobby, spielerListe));
-        logger.info(spielListe.toString());
+        logger.info("{}", spielListe);
     }
 
     /**
@@ -49,7 +49,7 @@ public class SpielServiceImpl implements SpielService {
      */
     @Override
     public List<Spiel> alleSpiele() {
-        return new ArrayList<Spiel>(this.spielListe.values());
+        return new ArrayList<>(this.spielListe.values());
     }
 
     /**
@@ -98,7 +98,6 @@ public class SpielServiceImpl implements SpielService {
         Spiel spiel = spielListe.get(spielID);
 
         for (Spieler spieler : getSpielerListeBySpiel(spiel)) {
-            // logger.info("SpielerServiceImpl.setSpielerPosition wird aufgerufen");
             if (spieler.getName().equals(name)) {
                 return spieler;
             }

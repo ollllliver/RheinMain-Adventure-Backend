@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,7 +73,7 @@ class LobbyErstellenTest {
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
-        assertTrue(lobby instanceof Lobby);
+        assertNotNull(lobby);
         return lobby;
     }
 
@@ -81,7 +81,7 @@ class LobbyErstellenTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/join/" + lobbyID).session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
-        assertTrue(lobbymessage instanceof LobbyMessage);
+        assertNotNull(lobbymessage);
         return lobbymessage;
     }
 
@@ -89,16 +89,15 @@ class LobbyErstellenTest {
         MvcResult result = mockmvc.perform(get("/api/lobby/" + lobbyID).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
         Lobby restLobby = new ObjectMapper().readValue(jsonString, Lobby.class);
-        assertTrue(restLobby instanceof Lobby);
+        assertNotNull(restLobby);
         return restLobby;
     }
 
     private ArrayList<Lobby> lobbysAbfragenREST() throws Exception {
         MvcResult result = mockmvc.perform(get("/api/lobby/alle").contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        ArrayList<Lobby> restLobbys = new ObjectMapper().readValue(jsonString, new TypeReference<ArrayList<Lobby>>() {
+        return new ObjectMapper().readValue(jsonString, new TypeReference<>() {
         });
-        return restLobbys;
     }
 
     private MockHttpSession logIn(String name, String password) throws Exception {
@@ -123,8 +122,8 @@ class LobbyErstellenTest {
     @Test
     @DisplayName("Am Anfang sollte keine Lobby vorhanden sein.")
     void vorabtest() throws Exception {
-        assertEquals(lobbyService.getLobbys().size(), 0);
-        assertEquals(lobbysAbfragenREST().size(), 0);
+        assertEquals(0, lobbyService.getLobbys().size());
+        assertEquals(0, lobbysAbfragenREST().size());
     }
 
 
@@ -134,7 +133,7 @@ class LobbyErstellenTest {
         // einloggen:
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         lobbyErstellenREST(session);
-        assertEquals(lobbyService.getLobbys().size(), 1);
+        assertEquals(1, lobbyService.getLobbys().size());
         assertEquals(lobbyService.getLobbys().get(0).getClass(), Lobby.class);
     }
 
@@ -145,7 +144,7 @@ class LobbyErstellenTest {
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         lobbyErstellenREST(session);
         ArrayList<Lobby> lobbys = lobbysAbfragenREST();
-        assertEquals(lobbys.size(), 1);
+        assertEquals(1, lobbys.size());
     }
 
     // ####################################################
@@ -171,7 +170,7 @@ class LobbyErstellenTest {
 
         // also Lobby zwei sollte nicht erstellt worden sein.
         assertEquals(ersteLobby, zweitelobby);
-        assertEquals(lobbyService.getLobbys().size(), 1);
+        assertEquals(1, lobbyService.getLobbys().size());
     }
 
     @Test
@@ -182,7 +181,7 @@ class LobbyErstellenTest {
         Lobby test = lobbyErstellenREST(session);
         lobbyBeitretenREST(session, test.getlobbyID());
         lobbyErstellenREST(session);
-        assertEquals(lobbyService.getLobbys().size(), 1);
+        assertEquals(1, lobbyService.getLobbys().size());
     }
 
     @Test
@@ -196,7 +195,7 @@ class LobbyErstellenTest {
         lobbyErstellenREST(session2);
 
         ArrayList<Lobby> lobbys = lobbysAbfragenREST();
-        assertEquals(lobbys.size(), 2);
+        assertEquals(2, lobbys.size());
     }
 
     @Test

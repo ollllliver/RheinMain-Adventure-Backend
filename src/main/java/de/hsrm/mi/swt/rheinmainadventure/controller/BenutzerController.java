@@ -53,7 +53,7 @@ public class BenutzerController {
             }
 
             logger.info("Nutzer gefunden");
-            return new ResponseEntity<List<Benutzer>>(list, HttpStatus.OK);
+            return new ResponseEntity<>(list, HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -71,12 +71,12 @@ public class BenutzerController {
         Benutzer check = benutzerService.findeBenutzer(m.getAttribute("loggedinBenutzername").toString());
         if (check != null) {
             logger.info("Nutzer mit gesetzten Sessionattribut gefunden");
-            return new ResponseEntity<Benutzer>(check, HttpStatus.OK);
+            return new ResponseEntity<>(check, HttpStatus.OK);
         } else {
             logger.info("Session attribut leer gesetzt");
             m.addAttribute("loggedinBenutzername", "");
 
-            return new ResponseEntity<Benutzer>(check, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(check, HttpStatus.NO_CONTENT);
         }
     }
 
@@ -92,9 +92,9 @@ public class BenutzerController {
             try {
                 logger.info("Nutzer wird registriert");
                 benutzerService.registriereBenutzer(benutzer);
-                return new ResponseEntity<Benutzer>(benutzer, HttpStatus.OK);
+                return new ResponseEntity<>(benutzer, HttpStatus.OK);
             } catch (Exception e) {
-                return new ResponseEntity<Benutzer>(benutzer, HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(benutzer, HttpStatus.NO_CONTENT);
             }
         }
         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -114,9 +114,9 @@ public class BenutzerController {
                 m.addAttribute("loggedinBenutzername", benutzer.getBenutzername());
                 m.addAttribute("aktuelleLobby", "");
                 logger.info("Session attribut gesetzt -> Nutzer eingeloggt");
-                return new ResponseEntity<Benutzer>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
+                return new ResponseEntity<>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
             } else {
-                return new ResponseEntity<Benutzer>(benutzer, HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(benutzer, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -136,9 +136,9 @@ public class BenutzerController {
             m.addAttribute("loggedinBenutzername", "");
             m.addAttribute("aktuelleLobby", "");
             logger.info("Session attribut leer gesetzt -> Nutzer ausgeloggt");
-            return new ResponseEntity<Benutzer>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<Benutzer>(benutzer, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(benutzer, HttpStatus.UNAUTHORIZED);
         }
     }
 

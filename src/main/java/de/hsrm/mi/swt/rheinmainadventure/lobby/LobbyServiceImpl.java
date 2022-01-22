@@ -24,8 +24,8 @@ import java.util.*;
 @Service
 @SessionAttributes(names = {"loggedinBenutzername"})
 public class LobbyServiceImpl implements LobbyService {
-    private final static String TOPICLOB = "/topic/lobby/";
-    private final static String TOPICUEB = "/topic/lobby/uebersicht";
+    private static final String TOPICLOB = "/topic/lobby/";
+    private static final String TOPICUEB = "/topic/lobby/uebersicht";
     private final Logger logger = LoggerFactory.getLogger(LobbyServiceImpl.class);
     /**
      * Liste aller Lobbyinstanzen.
@@ -50,7 +50,7 @@ public class LobbyServiceImpl implements LobbyService {
      * @return Gibt die generierte Lobby-ID als String zurueck
      */
     private String generateLobbyID(String benutzerName) {
-        String lobbyID = "";
+        StringBuilder lobbyID = new StringBuilder();
 
         // Codesmell war da! Besser mit Stringbinder:
         StringBuilder bld = new StringBuilder();
@@ -65,28 +65,27 @@ public class LobbyServiceImpl implements LobbyService {
 
         // Hash-Wert aus aktueller Zeit
         String aktZeit = java.time.LocalTime.now().toString();
-        String zeitHashWert = String.valueOf(Math.abs(aktZeit.hashCode()));
+        String zeitHashWert = String.valueOf(Math.abs(Integer.parseInt(aktZeit)));
 
         int zaehler = 0;
 
-        // TODO: lobbyID schmeißt einen Codesmell in SonarCube
         // Kombination von Name und Zeit-Hashwert fuer Lobby-ID
         for (int i = 0; i < 10; i++) {
             if (i % 2 == 0) {
                 if (zeitHashWert.length() > zaehler) {
-                    lobbyID += zeitHashWert.charAt(zaehler);
+                    lobbyID.append(zeitHashWert.charAt(zaehler));
                     zaehler++;
                 }
             } else {
                 if (verschobenerName.length() > zaehler
                         && Character.isLetterOrDigit(verschobenerName.charAt(zaehler))) {
-                    lobbyID += verschobenerName.charAt(zaehler);
+                    lobbyID.append(verschobenerName.charAt(zaehler));
                     zaehler++;
                 }
             }
         }
 
-        return lobbyID;
+        return lobbyID.toString();
     }
 
     /**
@@ -193,7 +192,7 @@ public class LobbyServiceImpl implements LobbyService {
 
         };
         // timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
-        timer.schedule(task, 10 * 60 * 1000);
+        timer.schedule(task, 10 * 60 * 1000L);
     }
 
     /**
@@ -206,8 +205,6 @@ public class LobbyServiceImpl implements LobbyService {
      */
     @Override
     public LobbyMessage starteCountdown(String lobbyId) {
-        Timer timer = new Timer();
-
         broker.convertAndSend(TOPICLOB + lobbyId,
                 new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10"));
 
@@ -217,14 +214,6 @@ public class LobbyServiceImpl implements LobbyService {
             spielService.starteSpiel(lobby);
         }
 
-        // TODO: FRAGE: für was brauchen wir den Timer jetzt?
-        TimerTask task = new TimerTask() {
-
-            public void run() {
-            }
-
-        };
-        timer.schedule(task, 10 * 1000);
         return new LobbyMessage(NachrichtenCode.COUNTDOWN_GESTARTET, false, "Sekunden=10");
     }
 
@@ -232,7 +221,7 @@ public class LobbyServiceImpl implements LobbyService {
      * Gibt ALLE aktuellen Lobbs als Array zurueck.
      */
     public ArrayList<Lobby> getLobbys() {
-        logger.info("Anzahl lobbys: " + this.lobbys.size());
+        logger.info("Anzahl lobbys: {}", this.lobbys.size());
         return this.lobbys;
         // Bsp.:
         // [{"lobbyID":"4l1a7y16","playerList":[{"id":0,"name":"Player1"}],"host":{"id":0,"name":"Player1"},"istVoll":false,"istGestartet":false,"spielerlimit":0},
@@ -414,8 +403,7 @@ public class LobbyServiceImpl implements LobbyService {
                 return res;
             }
         }
-        LobbyMessage res = new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
-        return res;
+        return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
     }
 
     /**
@@ -430,7 +418,7 @@ public class LobbyServiceImpl implements LobbyService {
         Lobby lobby = getLobbyById(lobbyId);
         Spiel spiel = spielService.getSpielByLobbyId(lobbyId);
         spielService.alleSpiele().remove(spiel);
-        logger.info(String.format("Spiel beendent: ", spiel));
+        logger.info("Spiel beendent: {}", spiel);
         lobby.setIstGestartet(false);
 
         return new LobbyMessage(NachrichtenCode.BEENDE_SPIEL, false, "Spiel beendet. Kehre zurück zur Lobby");

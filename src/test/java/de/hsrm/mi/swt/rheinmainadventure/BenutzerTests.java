@@ -34,8 +34,9 @@ class BenutzerTests {
         assertThat(BenutzerService.class).isInterface();
         assertThat(benutzerService).isNotNull();
         assertThat(BenutzerService.class).isInterface();
-        assertThat(benutzerService).isNotNull();
-        assertThat(benutzerService).isInstanceOf(BenutzerServiceImpl.class);
+        assertThat(benutzerService)
+                .isNotNull()
+                .isInstanceOf(BenutzerServiceImpl.class);
     }
 
     @Test

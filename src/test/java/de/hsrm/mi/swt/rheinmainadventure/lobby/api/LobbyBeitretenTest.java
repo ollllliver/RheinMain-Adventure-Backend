@@ -70,7 +70,7 @@ class LobbyBeitretenTest {
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
-        assertTrue(lobby instanceof Lobby);
+        assertNotNull(lobby);
         return lobby;
     }
 
@@ -78,7 +78,7 @@ class LobbyBeitretenTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/join/" + lobbyID).session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
-        assertTrue(lobbymessage instanceof LobbyMessage);
+        assertNotNull(lobbymessage);
         return lobbymessage;
     }
 
@@ -131,18 +131,6 @@ class LobbyBeitretenTest {
         MockHttpSession session = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         LobbyMessage lm = lobbyBeitretenREST(session, "lobbyIDgibtEsNicht123");
         assertEquals(lm, new LobbyMessage(NachrichtenCode.LOBBY_NICHT_GEFUNDEN, true));
-    }
-
-    @Test
-    @DisplayName("Spieler bekommt Beitrittslink von einem Mitspieler gesendet.")
-    void UCD_Lobby_beitreten_1b() throws Exception {
-        //Das ist eher ein Frontendtest.
-    }
-
-    @Test
-    @DisplayName("Spieler wählt zufälliger Lobby beitreten aus.")
-    void UCD_Lobby_beitreten_1c() throws Exception {
-        // TODO: TEST: Spieler wählt zufälliger Lobby beitreten aus. @Chand?
     }
 
     @Test

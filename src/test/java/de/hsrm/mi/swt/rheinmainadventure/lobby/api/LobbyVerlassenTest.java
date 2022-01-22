@@ -24,8 +24,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -72,28 +71,26 @@ class LobbyVerlassenTest {
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
         Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
-        assertTrue(lobby instanceof Lobby);
+        assertNotNull(lobby);
         return lobby;
     }
 
-    private LobbyMessage lobbyBeitretenREST(MockHttpSession session, String lobbyID) throws Exception {
+    private void lobbyBeitretenREST(MockHttpSession session, String lobbyID) throws Exception {
         MvcResult result = mockmvc
                 .perform(post("/api/lobby/join/" + lobbyID).session(session).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
-        assertTrue(lobbymessage instanceof LobbyMessage);
-        return lobbymessage;
+        assertNotNull(lobbymessage);
     }
 
-    private LobbyMessage lobbyVerlassenREST(MockHttpSession session, String lobbyID) throws Exception {
+    private void lobbyVerlassenREST(MockHttpSession session, String lobbyID) throws Exception {
         MvcResult result = mockmvc
                 .perform(delete("/api/lobby/leave/" + lobbyID).session(session).contentType("application/json"))
                 .andReturn();
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lm = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
-        assertTrue(lm instanceof LobbyMessage);
-        return lm;
+        assertNotNull(lm);
     }
 
     private MockHttpSession logIn(String name, String password) throws Exception {
@@ -143,7 +140,7 @@ class LobbyVerlassenTest {
 
     @Test
     @DisplayName("#98 Host weitergeben beim Verlassen - Als Lobbyhost Lobby verlassen.")
-    public void UCD_Lobby_verlassen_1c() throws Exception {
+    void UCD_Lobby_verlassen_1c() throws Exception {
         // einloggen, lobby erstellen und beitreten:
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         Lobby lobby = lobbyErstellenREST(session1);
@@ -154,21 +151,21 @@ class LobbyVerlassenTest {
         MockHttpSession session2 = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
         lobbyBeitretenREST(session2, lobby.getlobbyID());
 
-        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size() == 2);
+        assertEquals(2, lobbyService.getLobbyById(lobby.getlobbyID()).getTeilnehmerliste().size());
         // Host ist ERSTER_SPIELER
-        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getHost().getName().equals(ERSTER_SPIELER));
+        assertEquals(ERSTER_SPIELER, lobbyService.getLobbyById(lobby.getlobbyID()).getHost().getName());
 
         // Host verlaesst
         lobbyVerlassenREST(session1, lobby.getlobbyID());
 
         // Host wird veitergegeben zu ZWEITER_SPIELER
-        assertTrue(lobbyService.getLobbyById(lobby.getlobbyID()).getHost().getName().equals(ZWEITER_SPIELER));
+        assertEquals(ZWEITER_SPIELER, lobbyService.getLobbyById(lobby.getlobbyID()).getHost().getName());
 
     }
 
     @Test
     @DisplayName("#100 Lobbyinstanz löschen bei 0 Teilnehmern - Als Lobbyhost UND letzter Teilnehmer Lobby verlassen.")
-    public void UCD_Lobby_verlassen_1e() throws Exception {
+    void UCD_Lobby_verlassen_1e() throws Exception {
 
         // einloggen, lobby erstellen und beitreten:
         MockHttpSession session1 = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
@@ -176,12 +173,12 @@ class LobbyVerlassenTest {
         lobbyBeitretenREST(session1, lobby.getlobbyID());
         lobby = lobbyService.getLobbyById(lobby.getlobbyID());
 
-        assertTrue(lobbyService.getLobbys().size() == 1);
+        assertEquals(1, lobbyService.getLobbys().size());
 
         // Host verlaesst
         lobbyVerlassenREST(session1, lobby.getlobbyID());
 
-        assertTrue(lobbyService.getLobbys().size() == 0);
+        assertEquals(0, lobbyService.getLobbys().size());
 
     }
 

@@ -28,6 +28,7 @@ public class LevelRestController {
     public static final String LEVEL_EXISTIERT_IN_DB_JETZT_RAUM_ABFRAGE = "Das Level existiert in der DB, jetzt wird der Raum geholt";
     public static final String LEVEL_NICHT_IN_DB_404_LOG_MESSAGE = "Level nicht in DB gefunden, externer Aufrufer erhält 404";
     public static final EntityNichtInDatenbankException LEVEL_ENTITY_NICHT_IN_DATENBANK_EXCEPTION = new EntityNichtInDatenbankException("Das Level gibt es nicht in der Datenbank");
+    public static final String VERSENDE_EINFACHEN_RAUM_INHALT_ALS_POJO = "Versende einfachen Raum-Inhalt als POJO";
     private final Logger lg = LoggerFactory.getLogger(LevelRestController.class);
     @Autowired
     RaumMobiliarRepository raumMobiliarRepository;
@@ -168,7 +169,7 @@ public class LevelRestController {
                 // Da das versenden und Empfangen von @Entities gefährlich ist, geben wir dem Frontend nur ein
                 // rudimentäres Raum-POJO mit, das es befüllen soll
 
-                lg.info("Versende einfachen Raum-Inhalt als POJO");
+                lg.info(VERSENDE_EINFACHEN_RAUM_INHALT_ALS_POJO);
                 return new RaumPOJO(
                         angefragtesLevel.get().getLevelId(),
                         angefragtesLevel.get().getErsteller().getBenutzername(),
@@ -192,7 +193,7 @@ public class LevelRestController {
                     Arrays.fill(yAchse, 0L);
                 }
 
-                lg.info("Versende einfachen Raum-Inhalt als POJO");
+                lg.info(VERSENDE_EINFACHEN_RAUM_INHALT_ALS_POJO);
                 // Wieder nur ein Raum-POJO
                 return new RaumPOJO(
                         angefragtesLevel.get().getLevelId(),
@@ -219,7 +220,7 @@ public class LevelRestController {
             Arrays.fill(yAchse, 0L);
         }
 
-        lg.info("Versende einfachen Raum-Inhalt als POJO");
+        lg.info(VERSENDE_EINFACHEN_RAUM_INHALT_ALS_POJO);
         return new RaumPOJO(
                 level.getLevelId(),
                 level.getErsteller().getBenutzername(),

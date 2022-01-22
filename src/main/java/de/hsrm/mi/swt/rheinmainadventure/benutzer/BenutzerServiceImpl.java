@@ -1,6 +1,5 @@
 package de.hsrm.mi.swt.rheinmainadventure.benutzer;
 
-import de.hsrm.mi.swt.rheinmainadventure.controller.BenutzerController;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.slf4j.Logger;
@@ -16,7 +15,7 @@ public class BenutzerServiceImpl implements BenutzerService {
     @Autowired
     IntBenutzerRepo benutzerrepository;
 
-    Logger logger = LoggerFactory.getLogger(BenutzerController.class);
+    Logger logger = LoggerFactory.getLogger(BenutzerServiceImpl.class);
 
     /**
      * Mehode zum Prüfen des Logins
@@ -41,10 +40,9 @@ public class BenutzerServiceImpl implements BenutzerService {
     @Transactional
     @Override
     public Benutzer registriereBenutzer(Benutzer neubenutzer) {
-        logger.info(neubenutzer.toString());
+        logger.info("{}", neubenutzer);
         if (benutzerrepository.findByBenutzername(neubenutzer.getBenutzername()) == null) {
-            Benutzer gespeichert = benutzerrepository.save(neubenutzer);
-            return gespeichert;
+            return benutzerrepository.save(neubenutzer);
         } else {
             return null;
         }
@@ -58,8 +56,7 @@ public class BenutzerServiceImpl implements BenutzerService {
      */
     @Override
     public Benutzer findeBenutzer(String loginname) {
-        Benutzer gefunden = benutzerrepository.findByBenutzername(loginname);
-        return gefunden;
+        return benutzerrepository.findByBenutzername(loginname);
     }
 
 }

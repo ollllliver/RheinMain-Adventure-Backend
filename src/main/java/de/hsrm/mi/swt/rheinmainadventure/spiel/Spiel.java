@@ -5,7 +5,6 @@ import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Spiel {
@@ -32,7 +31,7 @@ public class Spiel {
         return spielerListe;
     }
 
-    public void setSpielerListe(ArrayList<Spieler> teilnehmerliste) {
+    public void setSpielerListe(List<Spieler> teilnehmerliste) {
         this.spielerListe = teilnehmerliste;
     }
 

@@ -55,7 +55,7 @@ public class LobbyRestController {
      */
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage lobbyBeitretenByID(@PathVariable String lobbyId, Model m) {
-        logger.info("POST /api/lobby/join/" + lobbyId);
+        logger.info("POST /api/lobby/join/{}", lobbyId);
         if (m.getAttribute("aktuelleLobby").equals("") || m.getAttribute("aktuelleLobby").equals(lobbyId)) {
             LobbyMessage tempLobbyMessage = lobbyservice.joinLobbybyId(lobbyId,
                     m.getAttribute("loggedinBenutzername").toString());
@@ -77,8 +77,8 @@ public class LobbyRestController {
      */
     @DeleteMapping(value = "/leave/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m) {
-        logger.info("DELETE /api/lobby/leave/" + lobbyId);
-        logger.info("USER " + m.getAttribute("loggedinBenutzername").toString() + " will die Lobby verlassen");
+        logger.info("DELETE /api/lobby/leave/{}", lobbyId);
+        logger.info("USER {} will die Lobby verlassen", m.getAttribute("loggedinBenutzername"));
         if (!m.getAttribute("aktuelleLobby").equals("")) {
             m.addAttribute("aktuelleLobby", "");
         }
@@ -97,7 +97,7 @@ public class LobbyRestController {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
         // zurueckgesendet wird die neu erstellte Lobbyinstanz, damit das Frontend auf
         // die Lobbyseite mit der im Backend erstellten LobbyID weiterleidten kann.
-        logger.info("POST /api/lobby/neu  Von : " + m.getAttribute("loggedinBenutzername").toString());
+        logger.info("POST /api/lobby/neu  Von : {}", m.getAttribute("loggedinBenutzername"));
         if (m.getAttribute("aktuelleLobby").equals("")) {
             String lobbyID = lobbyservice.lobbyErstellen(m.getAttribute("loggedinBenutzername").toString())
                     .getlobbyID();
@@ -116,7 +116,7 @@ public class LobbyRestController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Lobby getLobbyById(@PathVariable String id) {
         // GET /api/lobby/{id} - gibt die Lobby ueber die ID zurueck
-        logger.info("GET /api/lobby/" + id);
+        logger.info("GET /api/lobby/{}", id);
         return lobbyservice.getLobbyById(id);
     }
 
