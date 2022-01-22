@@ -328,11 +328,13 @@ class LevelRestControllerTest {
     void putEinfachenRauminhalt() throws Exception {
         Gson gson = new Gson();
         Level levelFuerPUT = levelService.alleLevel().get(0);
+        Mobiliar demoMobiliar = mobiliarRepository.findAll().get(0);
 
         long[][] einfacherRaumInhalt = new long[14][22];
         for (long[] yAchse : einfacherRaumInhalt) {
-            Arrays.fill(yAchse, 0L);
+            Arrays.fill(yAchse, demoMobiliar.getMobiliarId());
         }
+
         RaumPOJO raumPOJO = new RaumPOJO(
                 levelFuerPUT.getLevelId(),
                 levelFuerPUT.getErsteller().getBenutzername(),
@@ -357,10 +359,11 @@ class LevelRestControllerTest {
     void putEinfachenRauminhaltGehtSchiefBeiFalschemRaumindex() throws Exception {
         Gson gson = new Gson();
         Level levelFuerPUT = levelService.alleLevel().get(0);
+        Mobiliar demoMobiliar = mobiliarRepository.findAll().get(0);
 
         long[][] einfacherRaumInhalt = new long[14][22];
         for (long[] yAchse : einfacherRaumInhalt) {
-            Arrays.fill(yAchse, 0L);
+            Arrays.fill(yAchse, demoMobiliar.getMobiliarId());
         }
         RaumPOJO raumPOJO = new RaumPOJO(
                 levelFuerPUT.getLevelId(),
@@ -387,9 +390,11 @@ class LevelRestControllerTest {
         Gson gson = new Gson();
         Level levelFuerPUT = levelService.alleLevel().get(0);
 
+        Mobiliar demoMobiliar = mobiliarRepository.findAll().get(0);
+
         long[][] einfacherRaumInhalt = new long[14][22];
         for (long[] yAchse : einfacherRaumInhalt) {
-            Arrays.fill(yAchse, 0L);
+            Arrays.fill(yAchse, demoMobiliar.getMobiliarId());
         }
         RaumPOJO raumPOJO = new RaumPOJO(
                 levelFuerPUT.getLevelId(),

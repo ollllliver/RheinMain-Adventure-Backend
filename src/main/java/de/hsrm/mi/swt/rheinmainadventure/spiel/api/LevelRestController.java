@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.util.*;
 
 /**
@@ -22,7 +22,6 @@ import java.util.*;
  * Der LevelRestController bietet die meissten Funktionen des LevelServices bequem per REST-API an, sodass das Frontend
  * komfortabel mit der Datenhaltung in der Datenbank interagieren kann.
  */
-@CrossOrigin
 @RestController
 public class LevelRestController {
 
@@ -242,10 +241,8 @@ public class LevelRestController {
      * @param benutzername wird nicht benötigt, ist jedoch aus Gründen der Einheitlichkeit noch da.
      * @param levelID      Die Level-Id, zu dem der neue Raum gespeichert werden soll.
      * @param raumindex    Der Raum-Index aus dem gesuchten Level.
-     * @return 
      */
     @PutMapping(value = "/api/level/einfach/{benutzername}/{levelID}/{raumindex}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public void putEinfachenRauminhalt(@PathVariable String benutzername,
                                        @PathVariable long levelID,
                                        @PathVariable int raumindex,
@@ -261,29 +258,9 @@ public class LevelRestController {
                 Raum angefragterRaum = levelService.getRaum(angefragtesLevel.get(), raumindex);
                 lg.info("Raumindex gibt es auch, neuer Rauminhalt wird geschrieben...");
 
-                // Wir machen uns eine neue leere Liste...
-                List<RaumMobiliar> neuesRaumMobiliar = new ArrayList<>();
-                for (int x = 0; x < raumPOJO.getLevelInhalt().length; x++) {
-                    for (int y = 0; y < raumPOJO.getLevelInhalt()[x].length; y++) {
-                        // iterieren über den externen Rauminhalt und mappen ihn auf RaumMobiliar-Objekte der DB
-                        RaumMobiliar neu = new RaumMobiliar(
-                            levelService.getMobiliar(raumPOJO.getLevelInhalt()[x][y]),
-                            angefragterRaum,
-                            x,
-                            y);
-                        raumMobiliarRepository.save(neu);
-                        neuesRaumMobiliar.add(neu);
-                    }
-                }
-                // Jetzt haben wir einen korrekt befüllten Raum, den werfen wir jetzt noch in das Level rein
-                angefragterRaum.setRaumMobiliar(neuesRaumMobiliar);
-                // Jetzt setzen wir noch alle anderen Eigenschaften aus dem POJO neu auf das Level
-                angefragtesLevel.get().setName(raumPOJO.getLevelName());
-                angefragtesLevel.get().setBeschreibung(raumPOJO.getLevelBeschreibung());
-                angefragtesLevel.get().setIstFreigegeben(raumPOJO.isIstFreigegeben());
-                    
+                levelService.speichereRauminhaltueberRaumPOJO(raumPOJO, angefragtesLevel.get(), angefragterRaum);
+
                 lg.info("Neuen Raum erfolgreich gespeichert");
-                return;
 
             } catch (NoSuchElementException e) {
                 lg.warn("levelService.getRaum lieferte NoSuchElementException, breche mit Error 400 ab. " +
@@ -296,6 +273,5 @@ public class LevelRestController {
         }
         
     }
-
 
 }
