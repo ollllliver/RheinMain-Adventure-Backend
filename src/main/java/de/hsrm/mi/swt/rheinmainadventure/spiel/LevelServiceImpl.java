@@ -4,6 +4,8 @@ import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
 import de.hsrm.mi.swt.rheinmainadventure.entities.*;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.*;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.api.LevelAttributZugriffsException;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.api.RaumPOJO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -187,8 +186,8 @@ public class LevelServiceImpl implements LevelService {
     }
 
     @Override
-    public Mobiliar getMobiliar(long mobiliarID) {
-        return mobiliarRepository.getById(mobiliarID);
+    public Optional<Mobiliar> getMobiliar(long mobiliarID) {
+        return mobiliarRepository.findById(mobiliarID);
     }
 
     /**
@@ -252,5 +251,47 @@ public class LevelServiceImpl implements LevelService {
         lg.warn("Der gesuchte Raum hat keine Startposition!");
         throw new NoSuchElementException();
 
+    }
+
+
+    /**
+     * Speichert den Raum-Inhalt eines RaumPOJOs in die Datenbank und kümmert sich um
+     * das richtige Anlegen von RaumMobiliar Objekten.
+     *
+     * @param raumPOJO         enthält den neuen Rauminhalt und die neuen Level-Informationen
+     * @param angefragtesLevel ist das Level, in das gespeichert werden soll
+     * @param angefragterRaum  ist der Raum, in den der neue Inhalt gespeichert wird
+     */
+    @Override
+    @Transactional
+    public void speichereRauminhaltueberRaumPOJO(RaumPOJO raumPOJO, Level angefragtesLevel, Raum angefragterRaum) {
+        // Wir machen uns eine neue leere Liste...
+        List<RaumMobiliar> neuesRaumMobiliar = new ArrayList<>();
+        for (int x = 0; x < raumPOJO.getLevelInhalt().length; x++) {
+            for (int y = 0; y < raumPOJO.getLevelInhalt()[x].length; y++) {
+
+                // iterieren über den externen Rauminhalt und mappen ihn auf RaumMobiliar-Objekte der DB
+                Optional<Mobiliar> eventuellesMobiliar = getMobiliar(raumPOJO.getLevelInhalt()[x][y]);
+                if (eventuellesMobiliar.isPresent()) {
+                    RaumMobiliar neu = new RaumMobiliar(
+                            eventuellesMobiliar.get(),
+                            angefragterRaum,
+                            x,
+                            y);
+                    raumMobiliarRepository.save(neu);
+                    neuesRaumMobiliar.add(neu);
+                } else {
+                    String errorMessage = "Eine im RaumPOJO angegebene Mobiliar-ID existiert nicht in der DB";
+                    lg.error(errorMessage);
+                    throw new LevelAttributZugriffsException(errorMessage);
+                }
+            }
+        }
+        // Jetzt haben wir einen korrekt befüllten Raum, den werfen wir jetzt noch in das Level rein
+        angefragterRaum.setRaumMobiliar(neuesRaumMobiliar);
+        // Jetzt setzen wir noch alle anderen Eigenschaften aus dem POJO neu auf das Level
+        angefragtesLevel.setName(raumPOJO.getLevelName());
+        angefragtesLevel.setBeschreibung(raumPOJO.getLevelBeschreibung());
+        angefragtesLevel.setIstFreigegeben(raumPOJO.isIstFreigegeben());
     }
 }
