@@ -24,9 +24,11 @@ public class SpielServiceImpl implements SpielService {
     private final Logger logger = LoggerFactory.getLogger(SpielServiceImpl.class);
 
     /**
-     * Methode welche beim Spielstart die Spiel-ID angibt und die Startpositionen der teilnehmenden Spieler festlegt
+     * Methode welche beim Spielstart die Spiel-ID angibt und die Startpositionen
+     * der teilnehmenden Spieler festlegt
      * 
-     * @param lobby die Lobby mit den teilnehmenden Spielern, zu welcher das Spiel gestartet werden soll
+     * @param lobby die Lobby mit den teilnehmenden Spielern, zu welcher das Spiel
+     *              gestartet werden soll
      */
     @Override
     public void starteSpiel(Lobby lobby) {
@@ -78,7 +80,8 @@ public class SpielServiceImpl implements SpielService {
     /**
      * Methode zum aktualisieren der Spielerposition
      *
-     * @param spieler  übermittelter Spieler, dessen Position aktualisiert werden soll
+     * @param spieler  übermittelter Spieler, dessen Position aktualisiert werden
+     *                 soll
      * @param position neue Position die an den Spieler übermittelt werden soll
      * @return Spieler mit aktualisierten positionierungs Koordinaten
      */
@@ -92,7 +95,7 @@ public class SpielServiceImpl implements SpielService {
      * Methode welche den ausgwählten Spieler zurück gibt
      * 
      * @param spielID die id des Spielers, welcher zurück gegeben werden soll
-     * @param name der Name des Spielers
+     * @param name    der Name des Spielers
      * @return den ausgewählten Spieler
      */
     @Override
@@ -111,7 +114,8 @@ public class SpielServiceImpl implements SpielService {
     /**
      * Methode zum erhöhen der Schlüsselanzahl im Spiel
      * 
-     * @param spiel aktuelles Spiel, in welchem der Zähler der gefundenen Schlüssel erhöht wird
+     * @param spiel aktuelles Spiel, in welchem der Zähler der gefundenen Schlüssel
+     *              erhöht wird
      * @return gibt die aktuelle Anzahl an gefundenen Schlüsseln zurück
      */
     @Override
@@ -123,7 +127,8 @@ public class SpielServiceImpl implements SpielService {
     /**
      * Methode zum verringern der Schlüsselanzahl im Spiel
      * 
-     * @param spiel aktuelles Spiel, in welchem der Zähler der gefundenen Schlüssel verringert wird
+     * @param spiel aktuelles Spiel, in welchem der Zähler der gefundenen Schlüssel
+     *              verringert wird
      * @return gibt die aktuelle Anzahl an gefundenen Schlüsseln zurück
      */
     @Override
@@ -150,6 +155,26 @@ public class SpielServiceImpl implements SpielService {
             }
         }
         return null;
+    }
+
+    /**
+     * Methode um den Score eines bestimmten Spielers zu erhoehen
+     * 
+     */
+
+    @Override
+    public int scoreErhoehen(Spieler spieler, int score) {
+        spieler.setScore(score);
+        return spieler.getScore();
+    }
+
+    /**
+     * Methode um den Score eines Spielers zu bekommen
+     * 
+     */
+    @Override
+    public int spielerScore(Spieler spieler) {
+        return spieler.getScore();
     }
 
 }

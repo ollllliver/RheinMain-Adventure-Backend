@@ -18,7 +18,14 @@ public interface SpielService {
     Spiel getSpielByLobbyId(String lobbyId);
 
     Spieler positionsAktualisierung(Spieler spieler, Position position);
+
     Spieler getSpieler(String lobbyID, String name);
+
     int anzahlSchluesselErhoehen(Spiel spiel);
+
     int anzahlSchluesselVerringern(Spiel spiel);
+
+    int scoreErhoehen(Spieler spieler, int score);
+
+    int spielerScore(Spieler spieler);
 }
