@@ -35,4 +35,6 @@ public interface LobbyService {
     LobbyMessage removeSpieler(String id, Spieler zuEntfernendSpieler, String spielerName);
 
     LobbyMessage setLevel(String lobbyId, Long levelID, String string);
+
+    LobbyMessage getScoreByLobbyId(String lobbyId);
 }

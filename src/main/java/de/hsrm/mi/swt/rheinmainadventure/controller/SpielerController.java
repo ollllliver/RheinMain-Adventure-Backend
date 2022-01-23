@@ -89,6 +89,9 @@ public class SpielerController {
                 spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
                 logger.info("Anzahl Schluessel in Spiel {} betraegt {}",
                             lobbyID, spielService.findeSpiel(lobbyID).getAnzSchluessel());
+                // Score von dem Spieler dessen name mitgegeben wurde erhoehen
+                spielService.scoreErhoehen(spielService.getSpieler(lobbyID, spielerName), 5);
+                logger.info("SpielerScore: {}",spielService.getSpieler(lobbyID, spielerName).getScore());
                 return new SchluesselUpdate(objectName, spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
                 // ... wenn nicht soll das Frontend den Warnungstext setzten
             } else {
