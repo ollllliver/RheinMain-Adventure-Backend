@@ -18,6 +18,7 @@ public class Lobby {
     private int spielerlimit;
     private Level gewaehlteKarte;
     private Spiel spiel;
+    private String htmlScoreString;
 
     // Aktuellen LobbyService reinreichen lassen da ich nicht weiß wie man bei einer
     // nicht Component Klasse Autowired.
@@ -141,12 +142,16 @@ public class Lobby {
     }
 
     public String getScoreString() {
-        String scoreString = "";
+        return htmlScoreString;
+    }
+
+    public void setScoreString(long minutes, long sekundes) {
+        String punkteTabelle = "";
         for (int i=0; i<teilnehmerliste.size();i++){
             Spieler iterSpieler = teilnehmerliste.get(i);
-            scoreString = String.format("%s%s: %s%n",scoreString, iterSpieler.getName(),iterSpieler.getScore());
+            punkteTabelle = String.format("%s%s: %s</br>",punkteTabelle, iterSpieler.getName(),iterSpieler.getScore());
         }
-        return scoreString;
+        htmlScoreString = String.format("</br>%sDu hast %s:%s Minuten gebraucht.", punkteTabelle, minutes, sekundes);
     }
 
 }

@@ -16,6 +16,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -419,7 +421,10 @@ public class LobbyServiceImpl implements LobbyService {
         Spiel spiel = spielService.getSpielByLobbyId(lobbyId);
         spielService.alleSpiele().remove(spiel);
         logger.info("Spiel beendent: {}", spiel);
-        logger.info("\nDER SCORE LAUTET:\n{}",lobby.getScoreString());
+
+        Duration dauer = Duration.between(spiel.getStartZeitpunkt(), LocalTime.now());        
+        lobby.setScoreString(dauer.toMinutes(), dauer.toSeconds()%60);
+
         lobby.setIstGestartet(false);
 
         return new LobbyMessage(NachrichtenCode.BEENDE_SPIEL, false, "Spiel beendet. Kehre zurück zur Lobby");
@@ -436,5 +441,11 @@ public class LobbyServiceImpl implements LobbyService {
             return res;
         }
         return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
+    }
+
+    @Override
+    public LobbyMessage getScoreByLobbyId(String lobbyId) {
+        Lobby lobby = getLobbyById(lobbyId);
+        return new LobbyMessage(NachrichtenCode.SCORE, false, lobby.getScoreString());
     }
 }
