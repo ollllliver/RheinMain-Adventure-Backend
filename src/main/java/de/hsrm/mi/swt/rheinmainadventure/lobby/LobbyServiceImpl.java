@@ -423,7 +423,7 @@ public class LobbyServiceImpl implements LobbyService {
         logger.info("Spiel beendent: {}", spiel);
 
         Duration dauer = Duration.between(spiel.getStartZeitpunkt(), LocalTime.now());        
-        lobby.setScoreString(dauer.toMinutes(), dauer.toSeconds()%60);
+        lobby.setHtmlScoreString(dauer.toMinutes(), dauer.toSeconds()%60);
 
         lobby.setIstGestartet(false);
 
@@ -446,6 +446,6 @@ public class LobbyServiceImpl implements LobbyService {
     @Override
     public LobbyMessage getScoreByLobbyId(String lobbyId) {
         Lobby lobby = getLobbyById(lobbyId);
-        return new LobbyMessage(NachrichtenCode.SCORE, false, lobby.getScoreString());
+        return new LobbyMessage(NachrichtenCode.SCORE, false, lobby.getHtmlScoreString());
     }
 }

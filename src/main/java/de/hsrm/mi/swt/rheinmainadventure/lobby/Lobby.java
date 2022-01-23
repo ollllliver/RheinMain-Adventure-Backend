@@ -141,11 +141,11 @@ public class Lobby {
         this.gewaehlteKarte = gewaehlteKarte;
     }
 
-    public String getScoreString() {
+    public String getHtmlScoreString() {
         return htmlScoreString;
     }
 
-    public void setScoreString(long minutes, long sekundes) {
+    public void setHtmlScoreString(long minutes, long sekundes) {
         String punkteTabelle = "";
         for (int i=0; i<teilnehmerliste.size();i++){
             Spieler iterSpieler = teilnehmerliste.get(i);
