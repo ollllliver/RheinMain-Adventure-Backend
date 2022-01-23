@@ -140,4 +140,13 @@ public class Lobby {
         this.gewaehlteKarte = gewaehlteKarte;
     }
 
+    public String getScoreString() {
+        String scoreString = "";
+        for (int i=0; i<teilnehmerliste.size();i++){
+            Spieler iterSpieler = teilnehmerliste.get(i);
+            scoreString = String.format("%s%s: %s%n",scoreString, iterSpieler.getName(),iterSpieler.getScore());
+        }
+        return scoreString;
+    }
+
 }

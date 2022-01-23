@@ -419,6 +419,7 @@ public class LobbyServiceImpl implements LobbyService {
         Spiel spiel = spielService.getSpielByLobbyId(lobbyId);
         spielService.alleSpiele().remove(spiel);
         logger.info("Spiel beendent: {}", spiel);
+        logger.info("\nDER SCORE LAUTET:\n{}",lobby.getScoreString());
         lobby.setIstGestartet(false);
 
         return new LobbyMessage(NachrichtenCode.BEENDE_SPIEL, false, "Spiel beendet. Kehre zurück zur Lobby");
