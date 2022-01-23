@@ -76,7 +76,8 @@ public class SpielServiceImpl implements SpielService {
     /**
      * Methode zum aktualisieren der Spielerposition
      *
-     * @param spieler  übermittelter Spieler, dessen Position aktualisiert werden soll
+     * @param spieler  übermittelter Spieler, dessen Position aktualisiert werden
+     *                 soll
      * @param position neue Position die an den Spieler übermittelt werden soll
      * @return Spieler mit aktualisierten positionierungs Koordinaten
      */
@@ -146,6 +147,26 @@ public class SpielServiceImpl implements SpielService {
             }
         }
         return null;
+    }
+
+    /**
+     * Methode um den Score eines bestimmten Spielers zu erhoehen
+     * 
+     */
+
+    @Override
+    public int scoreErhoehen(Spieler spieler, int score) {
+        spieler.setScore(score);
+        return spieler.getScore();
+    }
+
+    /**
+     * Methode um den Score eines Spielers zu bekommen
+     * 
+     */
+    @Override
+    public int spielerScore(Spieler spieler) {
+        return spieler.getScore();
     }
 
 }

@@ -24,4 +24,8 @@ public interface SpielService {
     int anzahlSchluesselErhoehen(Spiel spiel);
 
     int anzahlSchluesselVerringern(Spiel spiel);
+
+    int scoreErhoehen(Spieler spieler, int score);
+
+    int spielerScore(Spieler spieler);
 }
