@@ -8,8 +8,6 @@ import de.hsrm.mi.swt.rheinmainadventure.model.SchluesselUpdate;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
 
-import java.lang.reflect.Array;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +58,7 @@ public class SpielerController {
     @MessageMapping("/topic/spiel/{lobbyID}/{objectName}")
     @SendTo("/topic/spiel/{lobbyID}/schluessel")
     public SchluesselUpdate schluesselEingesammelt(@Payload String stompPacket, @DestinationVariable String lobbyID,
-            @DestinationVariable String objectName) throws Exception {
+            @DestinationVariable String objectName) {
         // TODO enum erstellen für interagierNamen
 
         String[] splitStompPacket = stompPacket.split(";");
@@ -68,38 +66,33 @@ public class SpielerController {
         String posZ = splitStompPacket[1];
         String spielerName = splitStompPacket[2];
         String position = posX + ";" + posZ;
-        logger.info("Spieler " + spielerName + " möchte mit Schlüssel auf Position" + position + "interagieren");
+        logger.info("Spieler {} möchte mit Schlüssel auf Position {} interagieren", spielerName, position);
 
         if (objectName.equals("Schlüssel")) {
             // Wenn mit Schlüssel interagiert wird, wird der Counter hochgesetzt und das
             spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
-            logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
-                    + spielService.findeSpiel(lobbyID).getAnzSchluessel() + "Spieler " + spielerName
-                    + "erhält 10 Punkte");
+            logger.info("Anzahl Schluessel in Spiel {} betraegt {} Spieler {} erhält 10 Punkte",
+                        lobbyID, spielService.findeSpiel(lobbyID).getAnzSchluessel(), spielerName);
             // Update Packet verschickt
             SchluesselUpdate update = new SchluesselUpdate(objectName,
                     spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
             // Score von dem Spieler dessen name mitgegeben wurde erhoehen
             spielService.scoreErhoehen(spielService.getSpieler(lobbyID, spielerName), 10);
-            logger.info("SpielerScore: " + spielService.getSpieler(lobbyID, spielerName).getScore());
+            logger.info("SpielerScore: {}",spielService.getSpieler(lobbyID, spielerName).getScore());
             return update;
         }
         if (objectName.equals("Tür")) {
             // Wenn SchluesselAnzahl größer 0, wird der Counter verringert und darf die Tuer
             // geöffnet werden...
             if (spielService.findeSpiel(lobbyID).getAnzSchluessel() > 0) {
-                logger.info("ES wurde interagiert mit Object: " + objectName);
+                logger.info("ES wurde interagiert mit Object: {}", objectName);
                 spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
-                logger.info("Anzahl Schluessel in Spiel" + lobbyID + " betraegt"
-                        + spielService.findeSpiel(lobbyID).getAnzSchluessel());
-                SchluesselUpdate update = new SchluesselUpdate(objectName,
-                        spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
-                return update;
+                logger.info("Anzahl Schluessel in Spiel {} betraegt {}",
+                            lobbyID, spielService.findeSpiel(lobbyID).getAnzSchluessel());
+                return new SchluesselUpdate(objectName, spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
                 // ... wenn nicht soll das Frontend den Warnungstext setzten
             } else {
-                SchluesselUpdate update = new SchluesselUpdate("Warnung",
-                        spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
-                return update;
+                return new SchluesselUpdate("Warnung", spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
 
             }
 
