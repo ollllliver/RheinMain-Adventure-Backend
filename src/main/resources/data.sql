@@ -11,7 +11,7 @@ INSERT INTO benutzer (benutzer_id, benutzername, passwort)
 VALUES (17, 'Oliver', 'Oliver');
 
 INSERT INTO level (level_id, name, beschreibung, bewertung, benutzer_id, ist_freigegeben)
-VALUES (1, 'Wubbos wahnwitzige Wunderwelt', 'Abenteuer in den Niederlanden', 17, 10, false);
+VALUES (1, 'Wubbos wahnwitzige Wunderwelt', 'Abenteuer in den Niederlanden', 17, 10, true);
 
 INSERT INTO raum (raum_id, raum_index, level_level_id)
 VALUES (20, 0, 1);
