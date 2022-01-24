@@ -142,17 +142,18 @@ public class BenutzerController {
         }
     }
 
-    @GetMapping(value = "/benutzer/level/{benutzername}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Level> getLevelVonBenutzername(@PathVariable String benutzername) {
-        Benutzer angefragerNutzer = benutzerService.findeBenutzer(benutzername);
-        if (angefragerNutzer != null) {
-            return angefragerNutzer.getErstellteLevel();
-        } else {
-            return null;
-        }
-        /*
-           TESTWEISE
-           TODO: Fehler fangen falls nutzer nicht existiert
-         */
-    }
+     /**
+    *
+    * @param benutzername  benutzername von dem die Level angefragt werden
+    * @return  alle vom Nutzer erstellten Level in einer List
+    */
+   @GetMapping(value = "/benutzer/level/{benutzername}", produces = MediaType.APPLICATION_JSON_VALUE)
+   public List<Level> getLevelVonBenutzername(@PathVariable String benutzername) {
+       Benutzer angefragerNutzer = benutzerService.findeBenutzer(benutzername);
+       if (angefragerNutzer != null) {
+           return angefragerNutzer.getErstellteLevel();
+       } else {
+           throw new BenutzerNichtGefundenException(benutzername +" nicht gefunden");
+       }
+   }
 }
