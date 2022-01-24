@@ -23,7 +23,7 @@ INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (1, '', 'Weg', null);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (2, 'gltf/models_embedded/Weg.gltf', 'Start', 0);
+VALUES (2, '', 'Start', 0);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (3, 'gltf/duck_embedded/Duck.gltf', 'Ziel', 1);
