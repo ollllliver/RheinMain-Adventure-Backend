@@ -120,18 +120,29 @@ public class LobbyRestController {
         return lobbyservice.getLobbyById(id);
     }
 
-    // @Chand work in progress
+    /**
+     * Laesst einen Spieler einer Zufaelligen Lobby joinen.
+     * @param m Model aus dem der Nutzername ausgelesen wird.
+     * @return
+     */
 
     @PostMapping(value = "/joinRandom", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage lobbyBeitretenZufaellig(Model m) {
         return lobbyservice.lobbyBeitretenZufaellig(m.getAttribute("loggedinBenutzername").toString());
     }
-
+    /**
+     * Initialisiert den Spielstart einer Lobby
+     * @param lobbyId ID der Lobby die gestartet werden soll
+     * @return
+     */
     @PostMapping("/{lobbyId}/start")
     public LobbyMessage startGame(@PathVariable String lobbyId) {
         return lobbyservice.starteCountdown(lobbyId);
     }
-
+    /**
+     * Setzt das SessionAttribut "aktuelleLobby" auf leer.
+     * @param m Model dessen Sessionattribut "aktuelleLobby" genutzt wird
+     */
     @PostMapping("/reset")
     public void resetID(Model m) {
         m.addAttribute("aktuelleLobby", "");
