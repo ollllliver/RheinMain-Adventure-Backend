@@ -6,6 +6,7 @@ import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliar;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliartyp;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
 import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
@@ -147,6 +148,26 @@ class LobbyServiceImplTest {
         TimeUnit.SECONDS.sleep(11);
         assertTrue(chandsLobby.getIstGestartet());
 
+    }
+
+    /**
+     * Prueft ob nach beenden des Spiels ob die Ansicht zur Lobby geswitched wurde
+     * @throws InterruptedException
+     * @throws Exception
+     */
+    @Test
+    void testZurueckZurLobby() throws InterruptedException{
+        Lobby testLobby = lobbyService.lobbyErstellen("Hanzo");
+
+        lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Hanzo");
+        lobbyService.starteCountdown(testLobby.getlobbyID());
+        TimeUnit.SECONDS.sleep(11);
+        assertTrue(testLobby.getIstGestartet());
+
+        String response = lobbyService.zurueckZurLobby(testLobby.getlobbyID()).getPayload();
+
+        assertEquals("Spiel beendet. Kehre zurück zur Lobby", response);
+        assertFalse(testLobby.getIstGestartet());
     }
 
 }
