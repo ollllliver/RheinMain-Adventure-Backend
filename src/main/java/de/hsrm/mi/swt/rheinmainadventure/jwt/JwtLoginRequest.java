@@ -1,4 +1,4 @@
-package de.hsrm.mi.swt.rheinmainadventure.oldJwt;
+package de.hsrm.mi.swt.rheinmainadventure.jwt;
 
 /**
  * JwtLoginRequest - einfache Java-Datenklasse, um vom

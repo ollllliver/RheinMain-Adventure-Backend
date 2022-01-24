@@ -1,7 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure;
 
-import de.hsrm.mi.swt.rheinmainadventure.oldBenutzer.BenutzerService;
-import de.hsrm.mi.swt.rheinmainadventure.oldBenutzer.BenutzerServiceImpl;
+import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
+import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerServiceImpl;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.junit.jupiter.api.Assertions;

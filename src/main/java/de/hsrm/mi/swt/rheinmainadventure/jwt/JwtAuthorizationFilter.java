@@ -1,4 +1,4 @@
-package de.hsrm.mi.swt.rheinmainadventure.oldJwt;
+package de.hsrm.mi.swt.rheinmainadventure.jwt;
 
 import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
@@ -80,8 +80,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
-        }else{
-            logger.info("Kein authorization header gefunden");
         }
 
         /*

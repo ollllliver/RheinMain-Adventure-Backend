@@ -1,4 +1,4 @@
-package de.hsrm.mi.swt.rheinmainadventure.oldBenutzer;
+package de.hsrm.mi.swt.rheinmainadventure.security;
 
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +22,6 @@ public class MyUserDetails implements UserDetails {
 
     public MyUserDetails(Benutzer userName){
         this.benutzer = userName;
-
         this.authorities = Arrays.stream(userName.getRoles().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());

@@ -25,23 +25,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
     implementation 'org.springframework.boot:spring-boot-starter-json'
     
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
     
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    // SECURITY
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.security:spring-security-messaging'
-    implementation 'org.springframework:spring-messaging'
-    implementation 'com.google.guava:guava:28.1-jre'
-    implementation 'org.springframework.boot:spring-boot-configuration-processor'
-
     //implementation 'org.springframework.boot:spring-boot-starter-security-web'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'

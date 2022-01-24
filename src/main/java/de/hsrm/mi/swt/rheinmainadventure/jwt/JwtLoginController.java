@@ -1,9 +1,9 @@
-package de.hsrm.mi.swt.rheinmainadventure.oldJwt;
+package de.hsrm.mi.swt.rheinmainadventure.jwt;
 
-import de.hsrm.mi.swt.rheinmainadventure.oldBenutzer.BenutzerService;
+import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
-import de.hsrm.mi.swt.rheinmainadventure.oldBenutzer.MyUserDetails;
+import de.hsrm.mi.swt.rheinmainadventure.security.MyUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.server.ResponseStatusException;
 
 @SessionAttributes(names = {"loggedinBenutzername"})
 @RestController
@@ -80,7 +82,7 @@ public class JwtLoginController {
      * @return registrierte Benutzer falls erfolgreich, sonst null
      */
     @PostMapping("/api/logout")
-    public ResponseEntity<Benutzer> abmelden(Model m,@RequestBody JwtLoginRequest benutzer) {
+    public ResponseEntity<Benutzer> abmelden(Model m,@RequestBody de.hsrm.mi.swt.rheinmainadventure.jwt.JwtLoginRequest benutzer) {
 
         if ((benutzerRepo.findByBenutzername(benutzer.getBenutzername())) != null) {
             m.addAttribute("loggedinBenutzername", "");
@@ -111,7 +113,7 @@ public class JwtLoginController {
      * @return registrierte Benutzer falls erfolgreich, sonst null
      */
     @PostMapping("/api/register")
-    public ResponseEntity<Benutzer> registrieren(@RequestBody JwtLoginRequest benutzer) {
+    public ResponseEntity<Benutzer> registrieren(@RequestBody de.hsrm.mi.swt.rheinmainadventure.jwt.JwtLoginRequest benutzer) {
         if (benutzerService.findeBenutzer(benutzer.getBenutzername()) ==null ) {
             try {
                 logger.info("Nutzer wird registriert");
@@ -131,7 +133,7 @@ public class JwtLoginController {
      * curl -v -X POST -H "Content-Type: application/json" -d '{ "username":"joghurta", "password":"geheim123" }' http://localhost:8080/api/login
      */
     @PostMapping("/api/login")
-    public ResponseEntity<String> get_jwt_token(Model m, @RequestBody JwtLoginRequest logindata) {
+    public ResponseEntity<String> get_jwt_token(Model m, @RequestBody de.hsrm.mi.swt.rheinmainadventure.jwt.JwtLoginRequest logindata) {
         String token=null;
         Authentication auth = null;
         try {
@@ -152,8 +154,6 @@ public class JwtLoginController {
             // Modelattribute setzen
             m.addAttribute("loggedinBenutzername", logindata.getBenutzername());
 
-            //logger.info("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX erstelltes token: " + token);
-            //logger.info(jwtUtil.extrahiereClaim(token,"benutzername"));
             return new ResponseEntity<String>(token, HttpStatus.OK);
 
         } catch (AuthenticationException e) {
