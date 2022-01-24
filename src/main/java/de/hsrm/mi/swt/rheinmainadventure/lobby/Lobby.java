@@ -6,6 +6,7 @@ import de.hsrm.mi.swt.rheinmainadventure.spiel.Spiel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Lobby {
     private String lobbyID;
@@ -17,6 +18,7 @@ public class Lobby {
     private int spielerlimit;
     private Level gewaehlteKarte;
     private Spiel spiel;
+    private String htmlScoreString;
 
     // Aktuellen LobbyService reinreichen lassen da ich nicht weiß wie man bei einer
     // nicht Component Klasse Autowired.
@@ -30,7 +32,7 @@ public class Lobby {
      */
     public Lobby(String lobbyID, List<Spieler> teilnehmerliste, Spieler host, Level defaultlevel) {
         this.lobbyID = lobbyID;
-        this.teilnehmerliste = new ArrayList<Spieler>();
+        this.teilnehmerliste = new ArrayList<>();
         this.host = host;
         this.istVoll = false;
         this.istGestartet = false;
@@ -42,50 +44,20 @@ public class Lobby {
     public Lobby() {
     }
 
+
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((host == null) ? 0 : host.hashCode());
-        result = prime * result + (istGestartet ? 1231 : 1237);
-        result = prime * result + (istPrivat ? 1231 : 1237);
-        result = prime * result + (istVoll ? 1231 : 1237);
-        result = prime * result + ((lobbyID == null) ? 0 : lobbyID.hashCode());
-        result = prime * result + spielerlimit;
-        result = prime * result + ((teilnehmerliste == null) ? 0 : teilnehmerliste.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Lobby lobby = (Lobby) o;
+
+        return Objects.equals(lobbyID, lobby.lobbyID);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Lobby other = (Lobby) obj;
-        if (host == null) {
-            if (other.host != null)
-                return false;
-        } else if (!host.equals(other.host))
-            return false;
-        if (istGestartet != other.istGestartet)
-            return false;
-        if (istPrivat != other.istPrivat)
-            return false;
-        if (istVoll != other.istVoll)
-            return false;
-        if (lobbyID == null) {
-            if (other.lobbyID != null)
-                return false;
-        } else if (!lobbyID.equals(other.lobbyID))
-            return false;
-        if (spielerlimit != other.spielerlimit)
-            return false;
-        if (teilnehmerliste == null) {
-            return other.teilnehmerliste == null;
-        } else return teilnehmerliste.equals(other.teilnehmerliste);
+    public int hashCode() {
+        return lobbyID != null ? lobbyID.hashCode() : 0;
     }
 
     /**
@@ -167,6 +139,19 @@ public class Lobby {
 
     public void setGewaehlteKarte(Level gewaehlteKarte) {
         this.gewaehlteKarte = gewaehlteKarte;
+    }
+
+    public String getHtmlScoreString() {
+        return htmlScoreString;
+    }
+
+    public void setHtmlScoreString(long minutes, long sekundes) {
+        String punkteTabelle = "";
+        for (int i=0; i<teilnehmerliste.size();i++){
+            Spieler iterSpieler = teilnehmerliste.get(i);
+            punkteTabelle = String.format("%s%s: %s</br>",punkteTabelle, iterSpieler.getName(),iterSpieler.getScore());
+        }
+        htmlScoreString = String.format("</br>%sDu hast %s:%s Minuten gebraucht.", punkteTabelle, minutes, sekundes);
     }
 
 }

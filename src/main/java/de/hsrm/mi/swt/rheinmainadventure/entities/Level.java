@@ -14,24 +14,21 @@ import java.util.Objects;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Level {
+    @JsonIgnore
+    @OneToMany(mappedBy = "level", fetch = FetchType.EAGER)
+    List<Raum> raeume;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long levelId;
-
     @Column(nullable = false)
     private String name;
-
     @Column
     private String beschreibung;
-
     // Durchschnittliche Bewertung aller Nutzer oder so
     @Column
     private byte bewertung;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "level")
-    List<Raum> raeume;
-
+    @Column
+    private boolean istFreigegeben;
     @ManyToOne
     @JoinColumn(name = "benutzer_id")
     private Benutzer ersteller;
@@ -40,12 +37,20 @@ public class Level {
     @Version
     private Long version;
 
-    public Level(String name, String beschreibung, byte bewertung, List<Raum> raeume, Benutzer ersteller) {
+    public Level(String name, String beschreibung, byte bewertung, List<Raum> raeume, boolean istFreigegeben) {
         this.name = name;
         this.beschreibung = beschreibung;
         this.bewertung = bewertung;
         this.raeume = raeume;
-        this.ersteller = ersteller;
+        this.istFreigegeben = istFreigegeben;
+    }
+
+    public Level(String name, String beschreibung, byte bewertung, List<Raum> raeume) {
+        this.name = name;
+        this.beschreibung = beschreibung;
+        this.bewertung = bewertung;
+        this.raeume = raeume;
+        this.istFreigegeben = false;
     }
 
     public Level() {
@@ -58,19 +63,12 @@ public class Level {
 
         Level level = (Level) o;
 
-        if (!Objects.equals(name, level.name)) return false;
-        if (!Objects.equals(beschreibung, level.beschreibung)) return false;
-        if (!Objects.equals(raeume, level.raeume)) return false;
-        return Objects.equals(ersteller, level.ersteller);
+        return Objects.equals(levelId, level.levelId);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (beschreibung != null ? beschreibung.hashCode() : 0);
-        result = 31 * result + (raeume != null ? raeume.hashCode() : 0);
-        result = 31 * result + (ersteller != null ? ersteller.hashCode() : 0);
-        return result;
+        return levelId != null ? levelId.hashCode() : 0;
     }
 
     public Long getLevelId() {
@@ -119,6 +117,14 @@ public class Level {
 
     public void setErsteller(Benutzer ersteller) {
         this.ersteller = ersteller;
+    }
+
+    public boolean isIstFreigegeben() {
+        return istFreigegeben;
+    }
+
+    public void setIstFreigegeben(boolean istFreigegeben) {
+        this.istFreigegeben = istFreigegeben;
     }
 
     public Long getVersion() {

@@ -1,10 +1,5 @@
 package de.hsrm.mi.swt.rheinmainadventure;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.hsrm.mi.swt.rheinmainadventure.controller.BenutzerController;
@@ -20,37 +15,37 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.HashMap;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests für die Restschnittstelle BenutzerController
  */
 
-@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class BenutzerRestTest {
     private static final String TESTBENUTZERNAME = "hopsi";
     private static final String TESTPASSWORT = "abcxyz";
     private static final boolean TESTACTIVE = false;
     private static final String TESTROLES = "BENUTZER";
     private static String TESTLOGINJSON;
-
-    @Autowired
-    private MockMvc mockmvc;
-
-    @Autowired
-    private IntBenutzerRepo benutzerrepo;
-
     @Autowired
     BenutzerController benutzerController;
-
-    @Test
-    void vorabcheck() {
-        assertThat(benutzerController).isNotNull();
-        assertThat(mockmvc).isNotNull();
-    }
+    @Autowired
+    private MockMvc mockmvc;
+    @Autowired
+    private IntBenutzerRepo benutzerrepo;
 
     @BeforeAll
     public static void initAll() {
@@ -61,6 +56,13 @@ class BenutzerRestTest {
         json.put("roles", TESTROLES);
         TESTLOGINJSON = json.toString();
     }
+
+    @Test
+    void vorabcheck() {
+        assertThat(benutzerController).isNotNull();
+        assertThat(mockmvc).isNotNull();
+    }
+
     @BeforeEach
     public void init() {
         benutzerrepo.deleteAll();
@@ -85,7 +87,7 @@ class BenutzerRestTest {
         mockmvc.perform(
                         get("/api/benutzer")
                                 .contentType("application/json"))
-                                .andExpect(status().isOk());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -95,7 +97,7 @@ class BenutzerRestTest {
                         post("/api/benutzer/register")
                                 .content(TESTLOGINJSON)
                                 .contentType(MediaType.APPLICATION_JSON)
-        )
+                )
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.benutzername").value(TESTBENUTZERNAME))
                 .andExpect(jsonPath("$.passwort").value(TESTPASSWORT))
@@ -142,7 +144,7 @@ class BenutzerRestTest {
                 .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
-        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME).get();
+        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME);
         assertThat(b).isNotNull();
 
         mockmvc.perform(
@@ -172,7 +174,7 @@ class BenutzerRestTest {
                 .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
-        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME).get();
+        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME);
         assertThat(b).isNotNull();
 
         mockmvc.perform(
@@ -187,7 +189,7 @@ class BenutzerRestTest {
                 .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         HashMap<String, Object> sessionattr = new HashMap<String, Object>();
-        sessionattr.put("loggedinBenutzername", b.getBenutzername()) ;
+        sessionattr.put("loggedinBenutzername", b.getBenutzername());
 
         // ERFOLGREICH eingeloggt mit Sessionattribut gesetzt
         mockmvc.perform(
@@ -223,7 +225,7 @@ class BenutzerRestTest {
                 .andExpect(jsonPath("$.roles").value(TESTROLES));
 
         assertThat(benutzerrepo.count()).isEqualTo(1);
-        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME).get();
+        Benutzer b = benutzerrepo.findByBenutzername(TESTBENUTZERNAME);
         assertThat(b).isNotNull();
 
         mockmvc.perform(

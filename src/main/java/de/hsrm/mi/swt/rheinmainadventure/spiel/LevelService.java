@@ -4,6 +4,7 @@ import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliar;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.api.RaumPOJO;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,11 @@ public interface LevelService {
 
     String getMobiliar3DModellURI(long mobiliarID);
 
+    Optional<Mobiliar> getMobiliar(long mobiliarID);
+
     Map<Position, Mobiliar> getMobiliarImRaum(Raum raum);
 
     Position getStartPositionImRaum(Raum raum);
+
+    void speichereRauminhaltueberRaumPOJO(RaumPOJO raumPOJO, Level angefragtesLevel, Raum angefragterRaum);
 }

@@ -1,16 +1,15 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
+import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
+import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,34 +25,26 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
-import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
-import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
-import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
-import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LobbyBeitretenTest {
-    Logger logger = LoggerFactory.getLogger(LobbyErstellenTest.class);
+    private final String ERSTER_SPIELER = "Olive";
 
     // orientiert an 7.3.1 Use Case Diagramm Lobby beitreten
     // https://taiga.mi.hs-rm.de/project/weitz-2021swtpro03/wiki/731-use-case-lobby-beitreten
-    
-    // UCD -> UseCaseDiagramm
 
+    // UCD -> UseCaseDiagramm
+    private final String ZWEITER_SPIELER = "Chand";
+    Logger logger = LoggerFactory.getLogger(LobbyErstellenTest.class);
     @Autowired
     LobbyService lobbyService;
-
     @Autowired
     private MockMvc mockmvc;
-
-    private final String ERSTER_SPIELER = "Oliver";
-    private final String ZWEITER_SPIELER = "Chand";
-
     @Autowired
     private IntBenutzerRepo benutzerrepo;
 
@@ -77,8 +68,9 @@ class LobbyBeitretenTest {
     private Lobby lobbyErstellenREST(MockHttpSession session) throws Exception {
         MvcResult result = mockmvc.perform(post("/api/lobby/neu").session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
-        Lobby lobby = new ObjectMapper().readValue(jsonString, Lobby.class);
-        assertTrue(lobby instanceof Lobby);
+        LobbyMessage lobbyMessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
+        Lobby lobby = lobbyService.getLobbyById(lobbyMessage.getPayload());
+        assertNotNull(lobby);
         return lobby;
     }
 
@@ -86,7 +78,7 @@ class LobbyBeitretenTest {
         MvcResult result = mockmvc.perform(post("/api/lobby/join/" + lobbyID).session(session).contentType("application/json")).andReturn();
         String jsonString = result.getResponse().getContentAsString();
         LobbyMessage lobbymessage = new ObjectMapper().readValue(jsonString, LobbyMessage.class);
-        assertTrue(lobbymessage instanceof LobbyMessage);
+        assertNotNull(lobbymessage);
         return lobbymessage;
     }
 
@@ -96,11 +88,11 @@ class LobbyBeitretenTest {
         json.put("benutzername", name);
         json.put("passwort", password);
         String TESTLOGINJSON = json.toString();
-            
+
         logger.info(mockmvc.perform(
-                post("/api/benutzer/login").session(session)
-                        .content(TESTLOGINJSON)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        post("/api/benutzer/login").session(session)
+                                .content(TESTLOGINJSON)
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful()).andReturn().toString());
         return session;
     }
@@ -142,24 +134,12 @@ class LobbyBeitretenTest {
     }
 
     @Test
-    @DisplayName("Spieler bekommt Beitrittslink von einem Mitspieler gesendet.")
-    void UCD_Lobby_beitreten_1b() throws Exception {
-        //Das ist eher ein Frontendtest.
-    }
-
-    @Test
-    @DisplayName("Spieler wählt zufälliger Lobby beitreten aus.")
-    void UCD_Lobby_beitreten_1c() throws Exception {
-        // TODO: TEST: Spieler wählt zufälliger Lobby beitreten aus. @Chand?
-    }
-
-    @Test
     @DisplayName("Spieler befindet sich bereits in der selben Lobby.")
     void UCD_Lobby_beitreten_1d_1() throws Exception {
         // Mit zwei verschiedenen Benutzern einloggen
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MockHttpSession sessionChand = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
-        
+
         Lobby initLobby = lobbyErstellenREST(sessionOliver);
         // ein mal beitreten:
         LobbyMessage lm1 = lobbyBeitretenREST(sessionChand, initLobby.getlobbyID());
@@ -168,17 +148,17 @@ class LobbyBeitretenTest {
         LobbyMessage lm2 = lobbyBeitretenREST(sessionChand, initLobby.getlobbyID());
         Lobby lobbyNach2malBeitreten = lobbyService.getLobbyById(initLobby.getlobbyID());
 
-        
+
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertEquals(lobbyNach1malBeitreten, lobbyNach2malBeitreten);
-        assertEquals(lm1.getIstFehler(), false);
-        assertSame(lm1.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertEquals(lm2.getIstFehler(), false);
-        assertSame(lm2.getTyp(), NachrichtenCode.SCHON_BEIGETRETEN);
+        assertFalse(lm1.getIstFehler());
+        assertSame(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, lm1.getTyp());
+        assertFalse(lm2.getIstFehler());
+        assertSame(NachrichtenCode.SCHON_BEIGETRETEN, lm2.getTyp());
     }
 
     @Test
-    @DisplayName("Spieler befindet sich bereits in einer anderen Lobby.")
+    @DisplayName("#101 Ein Spieler darf nur in max. einer Lobby zeitgleich sein - Spieler befindet sich bereits in einer anderen Lobby.")
     void UCD_Lobby_beitreten_1d_2() throws Exception {
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
         MockHttpSession sessionChand = logIn(ZWEITER_SPIELER, ZWEITER_SPIELER);
@@ -202,7 +182,7 @@ class LobbyBeitretenTest {
     void UCD_Lobby_beitreten_1d_3() throws Exception {
         // Mit zwei verschiedenen Benutzern einloggen
         MockHttpSession sessionOliver = logIn(ERSTER_SPIELER, ERSTER_SPIELER);
-        
+
         Lobby initLobby = lobbyErstellenREST(sessionOliver);
         // ein mal beitreten:
         LobbyMessage lm1 = lobbyBeitretenREST(sessionOliver, initLobby.getlobbyID());
@@ -211,13 +191,13 @@ class LobbyBeitretenTest {
         LobbyMessage lm2 = lobbyBeitretenREST(sessionOliver, initLobby.getlobbyID());
         Lobby lobbyNach2malBeitreten = lobbyService.getLobbyById(initLobby.getlobbyID());
 
-        
+
         // Alt soll nach ein mal beitreten wie nach zwei mal beitreten sein.
         assertEquals(lobbyNach1malBeitreten, lobbyNach2malBeitreten);
-        assertEquals(lm1.getIstFehler(), false);
-        assertSame(lm1.getTyp(), NachrichtenCode.ERFOLGREICH_BEIGETRETEN);
-        assertEquals(lm2.getIstFehler(), false);
-        assertSame(lm2.getTyp(), NachrichtenCode.SCHON_BEIGETRETEN);
+        assertFalse(lm1.getIstFehler());
+        assertSame(NachrichtenCode.ERFOLGREICH_BEIGETRETEN, lm1.getTyp());
+        assertFalse(lm2.getIstFehler());
+        assertSame(NachrichtenCode.SCHON_BEIGETRETEN, lm2.getTyp());
     }
 
 }

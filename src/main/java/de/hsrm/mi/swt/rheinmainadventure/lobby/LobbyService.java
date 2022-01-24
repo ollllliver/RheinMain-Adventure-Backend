@@ -1,34 +1,40 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
-import java.util.List;
-
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+
+import java.util.List;
 
 /**
  * Interface für die Lobby Service Klasse Implementation ist in
  * {@link de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyServiceImpl}.
  */
 public interface LobbyService {
-    // Das hier ist das Interface fuer aktionen auf die Lobbyinstanzen.
-    // Alles, was an einer Lobby gemacht wird, soll hierueber passieren.
-    public Lobby lobbyErstellen(String spielername);
+    Lobby lobbyErstellen(String spielername);
 
-    public Lobby getLobbyById(String id);
+    Lobby getLobbyById(String id);
 
-    public List<Lobby> getLobbys();
+    List<Lobby> getLobbys();
 
-    public LobbyMessage joinLobbybyId(String id, String benutzername);
+    LobbyMessage joinLobbybyId(String id, String benutzername);
 
-    public LobbyMessage starteCountdown(String lobbyId);
+    LobbyMessage starteCountdown(String lobbyId);
 
-    public LobbyMessage lobbyBeitretenZufaellig(String username);
+    LobbyMessage zurueckZurLobby(String lobbyId);
 
-    public LobbyMessage spielerVerlaesstLobby(String id, String spielerName);
+    LobbyMessage lobbyBeitretenZufaellig(String username);
 
-    public LobbyMessage setSpielerlimit(String id, int spielerlimit, String spielerName);
+    LobbyMessage spielerVerlaesstLobby(String id, String spielerName);
 
-    public LobbyMessage setPrivacy(String id, Boolean istPrivat, String spielerName);
+    LobbyMessage setSpielerlimit(String id, int spielerlimit, String spielerName);
 
-    public LobbyMessage setHost(String id, Spieler host, String spielerName);
+    LobbyMessage setPrivacy(String id, Boolean istPrivat, String spielerName);
+
+    LobbyMessage setHost(String id, Spieler host, String spielerName);
+
+    LobbyMessage removeSpieler(String id, Spieler zuEntfernendSpieler, String spielerName);
+
+    LobbyMessage setLevel(String lobbyId, Long levelID, String string);
+
+    LobbyMessage getScoreByLobbyId(String lobbyId);
 }

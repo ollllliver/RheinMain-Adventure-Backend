@@ -1,13 +1,17 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliar;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliartyp;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
+import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
+import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,26 +19,76 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
-import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.transaction.Transactional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class LobbyServiceImplTest {
     Logger logger = LoggerFactory.getLogger(LobbyServiceImplTest.class);
 
     @Autowired
     LobbyService lobbyService;
+    @Autowired
+    private IntBenutzerRepo benutzerRepository;
+    @Autowired
+    private MobiliarRepository mobiliarRepository;
+    @Autowired
+    private LevelService levelService;
 
-    public boolean containsName(final List<Spieler> list, final String name){
+    public boolean containsName(final List<Spieler> list, final String name) {
         return list.stream().filter(o -> o.getName().equals(name)).findFirst().isPresent();
     }
+    
+    /**
+     * Vorher ein von JPA verwaltetes Demolevel erstellen.
+     */
+    @BeforeEach
+    @Transactional
+    void setUp() {
+        Benutzer ersteller = new Benutzer("Glogomir", "Strings");
+        benutzerRepository.save(ersteller);
 
 
-    /*Test für joinen bei bereits voller lobby*/
+        Mobiliar rein = new Mobiliar("Box", "static/gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "static/gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar ente = new Mobiliar("Ente", "static/gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
+
+        mobiliarRepository.save(rein);
+        mobiliarRepository.save(raus);
+        mobiliarRepository.save(ente);
+
+        Raum raum = new Raum(0, new ArrayList<>());
+
+        RaumMobiliar raumMobiliar1 = new RaumMobiliar(rein, raum, 4, 5);
+        RaumMobiliar raumMobiliar2 = new RaumMobiliar(raus, raum, 4, 6);
+        raum.getRaumMobiliar().add(raumMobiliar1);
+        raum.getRaumMobiliar().add(raumMobiliar2);
+
+        List<Raum> raume = new ArrayList<>();
+        raume.add(raum);
+
+        Level level = new Level("Test-Level", "Test-Beschreibung", (byte) 5, raume);
+
+        levelService.bearbeiteLevel("Glogomir", level);
+    }
+
+    /* Test für joinen bei bereits voller lobby */
     @Test
     void testJoinLobbybyId() {
-        Lobby testLobby = lobbyService.lobbyErstellen("Test-User"); //Dieser User erstellt die Lobby ist aber noch nicht in der Lobby drinne. vllt beim Erstellen doch autoJoinen
+        Lobby testLobby = lobbyService.lobbyErstellen("Test-User"); // Dieser User erstellt die Lobby ist aber noch
+        // nicht in der Lobby drinne. vllt beim Erstellen
+        // doch autoJoinen
         testLobby.setSpielerlimit(3);
 
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Test-User");
@@ -43,10 +97,10 @@ class LobbyServiceImplTest {
     }
 
     @Test
-    void testJoinFullLobby(){
+    void testJoinFullLobby() {
         Lobby testLobby = lobbyService.lobbyErstellen("Test-User2");
         testLobby.setSpielerlimit(3);
-        //4 Mal Joinen
+        // 4 Mal Joinen
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Spieler 2");
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Spieler 3");
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Spieler 4");
@@ -55,12 +109,12 @@ class LobbyServiceImplTest {
         assertTrue(containsName(testLobby.getTeilnehmerliste(), "Spieler 2"));
         assertTrue(containsName(testLobby.getTeilnehmerliste(), "Spieler 3"));
         assertTrue(containsName(testLobby.getTeilnehmerliste(), "Spieler 4"));
-        //Sollte der Lobby nicht gejoint sein
+        // Sollte der Lobby nicht gejoint sein
         assertFalse(containsName(testLobby.getTeilnehmerliste(), "Spieler 5"));
     }
 
     @Test
-    void testJoinGestarteteLobby(){
+    void testJoinGestarteteLobby() {
         Lobby testLobby = lobbyService.lobbyErstellen("Test-User3");
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Test-User3");
 
@@ -70,12 +124,12 @@ class LobbyServiceImplTest {
     }
 
     @Test
-    void testJoinPrivateLobbyOhneLink(){
+    void testJoinPrivateLobbyOhneLink() {
         Lobby testLobby = lobbyService.lobbyErstellen("Test-User4");
         lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Test-User4");
         testLobby.setIstPrivat(true);
 
-        //Sollte zufaellig einer lobby Joinen jedoch ist die einzige freie Privat
+        // Sollte zufaellig einer lobby Joinen jedoch ist die einzige freie Privat
         lobbyService.lobbyBeitretenZufaellig("Bingo");
         assertFalse(containsName(testLobby.getTeilnehmerliste(), "Bingo"));
     }
@@ -86,31 +140,13 @@ class LobbyServiceImplTest {
 
         Lobby chandsLobby = lobbyService.lobbyErstellen("Chand");
 
-        assertEquals(chandsLobby.getIstGestartet(),false);
+        assertFalse(chandsLobby.getIstGestartet());
         String lobbyID = chandsLobby.getlobbyID();
 
         lobbyService.starteCountdown(lobbyID);
         TimeUnit.SECONDS.sleep(11);
-        assertEquals(chandsLobby.getIstGestartet(),true);
-        /* 
-        TODO: TEST für später: Spielstart-übermittlung Test
-        Nur Host kann spiel Starten. (Also als nicht host starten versuchen und soll nicht klappen) <- muss noch implementiert werden
-        mit voller lobby starten
-        */
+        assertTrue(chandsLobby.getIstGestartet());
+
     }
-
-
-    /* Prueft ob eine Lobby nach dem Timeout noch Exsistiert. OHNE REST ANSTOSS 
-    *  Hierfuer muss im Backend der Timeout auf 15 Sekunden und nicht 10 Minuten gesetzt werden.
-    */
-    @Test
-    void testTimeout() throws Exception {
-        Lobby chandsLobby = lobbyService.lobbyErstellen("Chand");
-
-        assertNotNull(chandsLobby);
-        TimeUnit.SECONDS.sleep(16);
-        assertNotNull(lobbyService.getLobbyById(chandsLobby.getlobbyID()));
-    }
-
 
 }

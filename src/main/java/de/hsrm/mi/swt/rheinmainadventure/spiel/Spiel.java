@@ -4,24 +4,23 @@ import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.time.LocalTime;
 import java.util.List;
 
 public class Spiel {
 
     private final String spielID;
-    private List<Spieler> spielerListe;
-    private final Timestamp startZeitpunkt;
+    private final LocalTime startZeitpunkt;
     private final Level level;
-    private int anzSchlüssel;
+    private List<Spieler> spielerListe;
+    private int anzSchluessel;
 
     public Spiel(Lobby lobby, List<Spieler> spielerListe) {
         this.spielID = lobby.getlobbyID();
         this.level = lobby.getGewaehlteKarte();
         this.spielerListe = spielerListe;
-        this.startZeitpunkt = new Timestamp(System.currentTimeMillis());
-        this.anzSchlüssel = 0;
+        this.startZeitpunkt = LocalTime.now();
+        this.anzSchluessel = 0;
     }
 
     public String getSpielID() {
@@ -32,11 +31,11 @@ public class Spiel {
         return spielerListe;
     }
 
-    public void setSpielerListe(ArrayList<Spieler> teilnehmerliste) {
+    public void setSpielerListe(List<Spieler> teilnehmerliste) {
         this.spielerListe = teilnehmerliste;
     }
 
-    public Timestamp getStartZeitpunkt() {
+    public LocalTime getStartZeitpunkt() {
         return startZeitpunkt;
     }
 
@@ -44,12 +43,12 @@ public class Spiel {
         return level;
     }
 
-    public int getAnzSchlüssel() {
-        return anzSchlüssel;
+    public int getAnzSchluessel() {
+        return anzSchluessel;
     }
 
-    public void setAnzSchlüssel(int anzSchlüssel) {
-        this.anzSchlüssel = anzSchlüssel;
+    public void setAnzSchluessel(int anzSchluessel) {
+        this.anzSchluessel = anzSchluessel;
     }
 
 }

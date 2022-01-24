@@ -1,6 +1,5 @@
 package de.hsrm.mi.swt.rheinmainadventure.benutzer;
 
-import de.hsrm.mi.swt.rheinmainadventure.controller.BenutzerController;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import org.slf4j.Logger;
@@ -27,12 +26,13 @@ public class BenutzerServiceImpl implements BenutzerService {
     @Autowired
             private EntityManager entityManager;
 
-    Logger logger = LoggerFactory.getLogger(BenutzerController.class);
+    Logger logger = LoggerFactory.getLogger(BenutzerServiceImpl.class);
 
     /**
      * Mehode zum Prüfen des Logins
+     *
      * @param loginname übermittelter loginname
-     * @param passwort übermitteltes passwort
+     * @param passwort  übermitteltes passwort
      * @return true falls login erfolgreich, sonst false
      */
     @Override
@@ -48,6 +48,7 @@ public class BenutzerServiceImpl implements BenutzerService {
 
     /**
      * Methode zum registrieren in der Datenbank
+     *
      * @param neubenutzer übermittelter Nutzer der registriert werden soll
      * @return registrierten Nutzer falls erfolgreich, sonst null
      */
@@ -75,13 +76,13 @@ public class BenutzerServiceImpl implements BenutzerService {
 
     /**
      * Methode zum prüfen ob Nutzer in der Datenbank
+     *
      * @param loginname übermittelter nutzername des gesucht wird
      * @return Nutzer falls erfolgreich gefunden, sonst null
      */
     @Override
     public Benutzer findeBenutzer(String loginname) {
-        Benutzer gefunden = benutzerrepository.findByBenutzername(loginname);
-        return gefunden;
+        return benutzerrepository.findByBenutzername(loginname);
     }
 
 }

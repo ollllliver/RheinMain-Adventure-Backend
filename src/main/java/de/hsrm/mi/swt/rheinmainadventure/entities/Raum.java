@@ -1,6 +1,7 @@
 package de.hsrm.mi.swt.rheinmainadventure.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.List;
@@ -87,6 +88,7 @@ public class Raum {
         return raumMobiliar;
     }
 
+    @Transactional
     public void setRaumMobiliar(List<RaumMobiliar> raumMobiliar) {
         this.raumMobiliar = raumMobiliar;
     }

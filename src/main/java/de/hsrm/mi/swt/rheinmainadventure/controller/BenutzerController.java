@@ -2,21 +2,23 @@ package de.hsrm.mi.swt.rheinmainadventure.controller;
 
 import de.hsrm.mi.swt.rheinmainadventure.benutzer.BenutzerService;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import de.hsrm.mi.swt.rheinmainadventure.security.MyUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.List;
 
-@RequestMapping(value="/api")
-@SessionAttributes(names = {"loggedinBenutzername"})
+@RequestMapping(value = "/api")
+@SessionAttributes(names = {"loggedinBenutzername", "aktuelleLobby"})
 @RestController
 //@CrossOrigin("http://localhost:3000/")
 public class BenutzerController {
@@ -31,11 +33,18 @@ public class BenutzerController {
     //Session-Attribut wird gesetzt
     @ModelAttribute("loggedinBenutzername")
     public String merkeUser() {
-        return new String();
+        return "";
+    }
+
+    //Session-Attribut wird gesetzt
+    @ModelAttribute("aktuelleLobby")
+    public String merkeLobby() {
+        return "";
     }
 
     /**
      * Get Anfrage auf die Benutzerroute
+     *
      * @return liefert eine Liste mit allen Nutzern aus der Datenbank falls erfolgreich, sonst Fehler
      */
     @GetMapping("/benutzer")
@@ -47,7 +56,7 @@ public class BenutzerController {
             }
 
             logger.info("Nutzer gefunden");
-            return new ResponseEntity<List<Benutzer>>(list, HttpStatus.OK);
+            return new ResponseEntity<>(list, HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,6 +65,7 @@ public class BenutzerController {
 
     /**
      * Get Anfrage, die prüft ob ein Nutzer bereits eingeloggt ist
+     *
      * @param m Model, in dem das Attribut mit eingeloggt Status gesetzt wird
      * @return gefunden Nutzer falls einer eingeloggt, sonst null
      */
@@ -77,6 +87,7 @@ public class BenutzerController {
 
     /**
      * Post Anfrage zum Registrieren des Benutzers
+     *
      * @param benutzer liefert die übermittelten Daten aus dem Formular
      * @return registrierte Benutzer falls erfolgreich, sonst null
      */
@@ -96,7 +107,8 @@ public class BenutzerController {
 
     /**
      * Post Anfrage zum Einloggen eines Nutzers
-     * @param m Model in dem das Attribut eingeloggt gesetzt wird
+     *
+     * @param m        Model in dem das Attribut eingeloggt gesetzt wird
      * @param benutzer übermittelte Nutzerdaten
      * @return eingeloggten Nutzer falls erfolgreich, sonst Fehler
      */
@@ -120,7 +132,8 @@ public class BenutzerController {
 
     /**
      * Post Anfrage zum Ausloggen des Nutzers
-     * @param m Model in dem das Attribut mit eingeloggt Status entfernt wird
+     *
+     * @param m        Model in dem das Attribut mit eingeloggt Status entfernt wird
      * @param benutzer übermittelte Daten des Nutzers der ausgeloggt werden soll
      * @return ausgeloggten Nutzer falls erfolgreich, sonst Fehler
      */
