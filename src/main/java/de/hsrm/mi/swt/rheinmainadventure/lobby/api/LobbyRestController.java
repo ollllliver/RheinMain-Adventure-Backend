@@ -214,4 +214,14 @@ public class LobbyRestController {
     public LobbyMessage patchLevel(@PathVariable String lobbyId, @RequestBody Long levelID, Model m) {
         return lobbyservice.setLevel(lobbyId, levelID, m.getAttribute("loggedinBenutzername").toString());
     }
+
+    /**
+     * Bekommen des Lobby Scores seit letzter Spielbeendung.
+     * 
+     * @param lobbyId der Lobby
+     */
+    @GetMapping("/{lobbyId}/score")
+    public LobbyMessage getScore(@PathVariable String lobbyId){
+        return lobbyservice.getScoreByLobbyId(lobbyId);
+    }
 }

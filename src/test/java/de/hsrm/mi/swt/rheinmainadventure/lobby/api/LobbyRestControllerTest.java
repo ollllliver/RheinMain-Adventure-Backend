@@ -56,8 +56,6 @@ class LobbyRestControllerTest {
     private LevelService levelService;
     @Autowired
     private MockMvc mockmvc;
-    @Autowired
-    private IntBenutzerRepo benutzerrepo;
 
     @BeforeEach
     @Transactional
@@ -65,11 +63,11 @@ class LobbyRestControllerTest {
         final Benutzer u1 = new Benutzer();
         u1.setBenutzername(ERSTER_SPIELER);
         u1.setPasswort(ERSTER_SPIELER);
-        benutzerrepo.save(u1);
+        benutzerRepository.save(u1);
         final Benutzer u2 = new Benutzer();
         u2.setBenutzername(ZWEITER_SPIELER);
         u2.setPasswort(ZWEITER_SPIELER);
-        benutzerrepo.save(u2);
+        benutzerRepository.save(u2);
 
         Benutzer ersteller = new Benutzer("Glogomir", "Strings");
         benutzerRepository.save(ersteller);
