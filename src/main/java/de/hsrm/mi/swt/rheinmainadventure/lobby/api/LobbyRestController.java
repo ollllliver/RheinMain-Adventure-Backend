@@ -55,8 +55,9 @@ public class LobbyRestController {
      * api/lobby/join/{id} stößt beim lobbyservice das hinzufügen des Sessionscope
      * Users (später des Prinzipal Users) in die Lobby mit der mitgegebene ID an.
      *
-     * @param lobbyId, zu der der eingeloggte User hinzugefügt werden soll.
+     * @param lobbyId zu der der eingeloggte User hinzugefügt werden soll.
      * @param m        später Prinzipal prinz (eingeloggter User)
+     * @param aktuelleLobby lobbyId aus Modelattribute
      * @return LobbyMessage mit Nachrichtencode
      */
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -87,10 +88,12 @@ public class LobbyRestController {
     /**
      * api/leave/{lobbyId} stoeßt beim lobbyservice das Verlassen an
      *
-     * @param lobbyId, die der SPieler verlassen will
+     * @param lobbyId die der SPieler verlassen will
      * @param m        eingeloggter User
+     * * @param aktuelleLobby lobbyId aus Modelattribute
      * @return LobbyMessage mit Nachrichtencode
      */
+
     @DeleteMapping(value = "/leave/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m, @ModelAttribute(AKTUELLELOBBY) String aktuelleLobby) {
         logger.info("DELETE /api/lobby/leave/{}", attributeObject);
@@ -113,13 +116,12 @@ public class LobbyRestController {
         return nichtEingeloggtLobbyFehlerMessage;
     }
 
-    /**
-     * api/lobby/neu stößt beim lobbyservice das erstellen einer neuen Lobby an und
-     * gibt diese zurück.
-     *
-     * @param m später Prinzipal prinz (eingeloggter User)
-     * @return neu erstellte Lobby
-     */
+     /**
+      * 
+      * @param m später Prinzipal prinz (eingeloggter User)
+      * @param aktuelleLobby Modelattribute der aktuellen Lobby id
+      * @return
+      */
     @PostMapping(value = "neu", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage neueLobbyErstellen(Model m, @ModelAttribute(AKTUELLELOBBY) String aktuelleLobby) {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
