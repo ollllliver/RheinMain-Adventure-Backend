@@ -3,6 +3,7 @@ package de.hsrm.mi.swt.rheinmainadventure.controller;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.LobbyService;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.messaging.NachrichtenCode;
+import de.hsrm.mi.swt.rheinmainadventure.model.InteragierNamen;
 import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.model.SchluesselUpdate;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
@@ -47,8 +48,8 @@ public class SpielerController {
      * Stomp Mapping für das interagieren mit Objecten (Tuer und Schluessel), senden
      * ein Update Packet an alle im Frontend die auf die LobbyID subscribt haben
      *
-     * @param position
-     * @param lobbyID
+     * @param stompPacket , nachricht bestehend aus Koordinaten des Schluessels und SpielerNamen der den Schluessel aufgehoben hat
+     * @param lobbyID, Lobby ID zum suchen des richtigen Spiels, da (LobbbyID = SpielID)
      * @param objectName
      * @return SchluesselUpdater mit den Benötigten Daten zum verarbeiten im
      * Frontend (Interaktion, anzSchluess, Koordinaten des Objects)
@@ -67,7 +68,7 @@ public class SpielerController {
         String position = posX + ";" + posZ;
         logger.info("Spieler {} möchte mit Schlüssel auf Position {} interagieren", spielerName, position);
 
-        if (objectName.equals("Schlüssel")) {
+        if (objectName.equals(InteragierNamen.SCHLUESSSEL.getName())) {
             // Wenn mit Schlüssel interagiert wird, wird der Counter hochgesetzt und das
             spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
             logger.info("Anzahl Schluessel in Spiel {} betraegt {} Spieler {} erhält 10 Punkte",
@@ -80,7 +81,7 @@ public class SpielerController {
             logger.info("SpielerScore: {}", spielService.getSpieler(lobbyID, spielerName).getScore());
             return update;
         }
-        if (objectName.equals("Tür")) {
+        if (objectName.equals(InteragierNamen.TUER.getName())) {
             // Wenn SchluesselAnzahl größer 0, wird der Counter verringert und darf die Tuer
             // geöffnet werden...
             if (spielService.findeSpiel(lobbyID).getAnzSchluessel() > 0) {
