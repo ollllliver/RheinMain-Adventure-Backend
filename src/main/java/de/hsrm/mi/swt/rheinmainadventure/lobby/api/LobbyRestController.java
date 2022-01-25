@@ -31,7 +31,7 @@ public class LobbyRestController {
     Logger logger = LoggerFactory.getLogger(LobbyRestController.class);
     private final static String LOGGEDINBENUTZERNAME = "loggedinBenutzername";
     private final static String AKTUELLELOBBY = "aktuelleLobby";
-    private final static LobbyMessage nichtEingeloggtLobbyFehlerMessage = new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
+    private final static LobbyMessage nichtEingeloggtLobbyFehlerMessage = new LobbyMessage(NachrichtenCode.NICHT_EINGELOGGT, true);
     private boolean modelAttributeGefunden = false;
     private LobbyMessage tempLobbyMessage = new LobbyMessage();
     private Object attributeObject = null;
@@ -73,7 +73,7 @@ public class LobbyRestController {
                         String joa = String.format("POST /api/lobby/join/%n", attributeObject.toString());
                         logger.info(joa);
                         tempLobbyMessage = lobbyservice.joinLobbybyId(lobbyId, attributeObject.toString());
-                        if (Boolean.FALSE.equals(tempLobbyMessage.getIstFehler())) {
+                        if (!tempLobbyMessage.getIstFehler()) {
                             m.addAttribute(AKTUELLELOBBY, tempLobbyMessage.getPayload());
                         }
                         return tempLobbyMessage;
@@ -150,7 +150,7 @@ public class LobbyRestController {
                 } 
             }
         }
-        return nichtEingeloggtLobbyFehlerMessage;
+        return new LobbyMessage(NachrichtenCode.BEREITS_IN_ANDERER_LOBBY, true, aktuelleLobby);
     }
 
     /**
