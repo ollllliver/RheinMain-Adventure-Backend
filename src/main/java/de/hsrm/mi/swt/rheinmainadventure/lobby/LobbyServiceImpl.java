@@ -429,6 +429,15 @@ public class LobbyServiceImpl implements LobbyService {
         return new LobbyMessage(NachrichtenCode.BEENDE_SPIEL, false, "Spiel beendet. Kehre zurück zur Lobby");
     }
 
+    /**
+     * Überprüft, ob anfragender Spiler Änderungen an der Lobby vornehmen darf
+     * (wenn man Host ist) und setzt dann das gewählte Level neu.
+     * 
+     * @param lobbyId Die id der Lobby deren gewähltes Level gewechselt werden soll
+     * @param levelId ist die zu wählende level ID des neue gewählten levels
+     * @param spielerName ist der name des Spielers, der die aktion ausführen möchte
+     * @return LobbyMessage mit Information über den Ausgang der Anfrage
+     */
     @Override
     public LobbyMessage setLevel(String lobbyId, Long levelId, String spielerName) {
         // erst mal das Level durch die ID bekommen:
@@ -442,6 +451,12 @@ public class LobbyServiceImpl implements LobbyService {
         return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
     }
 
+    /**
+     * Liefert den aktuellen stand der Punkte und Zeit eines Spiels als HTML string
+     * 
+     * @param lobbyId die ID von der Lobby dessen score man haben  will.
+     * @return einen HTML String für das anzeigen des Spielergebnisses
+     */
     @Override
     public LobbyMessage getScoreByLobbyId(String lobbyId) {
         Lobby lobby = getLobbyById(lobbyId);
