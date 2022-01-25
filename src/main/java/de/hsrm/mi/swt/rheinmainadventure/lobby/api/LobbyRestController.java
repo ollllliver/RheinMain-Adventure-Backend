@@ -69,8 +69,7 @@ public class LobbyRestController {
                 try {
                     attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
                     if (attributeObject != null) {
-                        String joa = String.format("POST /api/lobby/join/%n", attributeObject);
-                        logger.info(joa);
+                        logger.info("POST /api/lobby/join/{}", attributeObject);
                         LobbyMessage tempLobbyMessage = lobbyservice.joinLobbybyId(lobbyId, attributeObject.toString());
                         if (!tempLobbyMessage.getIstFehler()) {
                             m.addAttribute(AKTUELLELOBBY, tempLobbyMessage.getPayload());
@@ -78,7 +77,7 @@ public class LobbyRestController {
                         return tempLobbyMessage;
                     }
                 } catch (NullPointerException e) {
-                    e.printStackTrace();
+                    logger.error(String.valueOf(e));
                 }
             }
         }
@@ -94,23 +93,21 @@ public class LobbyRestController {
      */
     @DeleteMapping(value = "/leave/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m, @ModelAttribute(AKTUELLELOBBY) String aktuelleLobby) {
-        String nice = String.format("DELETE /api/lobby/leave/%n", attributeObject.toString());
-        logger.info(nice);
+        logger.info("DELETE /api/lobby/leave/{}", attributeObject);
         modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);
         attributeObject = null;
         if (modelAttributeGefunden) {
             try {
                 attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
                 if (attributeObject != null) {
-                    String joa = String.format("USER %n will die Lobby verlassen", attributeObject);
-                    logger.info(joa);
+                    logger.info("USER {} will die Lobby verlassen", attributeObject);
                     if (!aktuelleLobby.equals("")) {
                         m.addAttribute(AKTUELLELOBBY, "");
                     }
                     return lobbyservice.spielerVerlaesstLobby(lobbyId, attributeObject.toString());
                 }
             } catch (NullPointerException e) {
-                e.printStackTrace();
+                logger.error(String.valueOf(e));
             }
         }
         return nichtEingeloggtLobbyFehlerMessage;
@@ -135,14 +132,13 @@ public class LobbyRestController {
                 try {
                     attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
                     if (attributeObject != null) {
-                        String joa = String.format("POST /api/lobby/neu  Von : %n", attributeObject);
-                        logger.info(joa);
+                        logger.info("POST /api/lobby/neu  Von : {}", attributeObject);
                         String lobbyID = lobbyservice.lobbyErstellen(attributeObject.toString())
                                 .getlobbyID();
                         return new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false, lobbyID);
                     }
                 } catch (NullPointerException e) {
-                    e.printStackTrace();
+                    logger.error(String.valueOf(e));
                 }
             }
         }
@@ -180,7 +176,7 @@ public class LobbyRestController {
                     return lobbyservice.lobbyBeitretenZufaellig(attributeObject.toString());
                 }
             } catch (NullPointerException e) {
-                e.printStackTrace();
+                logger.error(String.valueOf(e));
             }
         }
         return nichtEingeloggtLobbyFehlerMessage;
@@ -226,7 +222,7 @@ public class LobbyRestController {
                     return lobbyservice.setSpielerlimit(lobbyId, spielerlimit, attributeObject.toString());
                 }
             } catch (NullPointerException e) {
-                e.printStackTrace();
+                logger.error(String.valueOf(e));
             }
         }
         return nichtEingeloggtLobbyFehlerMessage;
@@ -251,7 +247,7 @@ public class LobbyRestController {
                     return lobbyservice.setPrivacy(lobbyId, istPrivat, attributeObject.toString());
                 }
             } catch (NullPointerException e) {
-                e.printStackTrace();
+                logger.error(String.valueOf(e));
             }
         }
         return nichtEingeloggtLobbyFehlerMessage;
@@ -276,7 +272,7 @@ public class LobbyRestController {
                     return lobbyservice.setHost(lobbyId, host, attributeObject.toString());
                 }
             } catch (NullPointerException e) {
-                e.printStackTrace();
+                logger.error(String.valueOf(e));
             }
         }
         return nichtEingeloggtLobbyFehlerMessage;
@@ -300,8 +296,8 @@ public class LobbyRestController {
                 if (attributeObject != null) {
                     return lobbyservice.removeSpieler(lobbyId, zuEntfernendSpieler, attributeObject.toString());
                 }
-            } catch (NullPointerException n) {
-                n.printStackTrace();
+            } catch (NullPointerException e) {
+                logger.error(String.valueOf(e));
             }
 
         }
@@ -327,7 +323,7 @@ public class LobbyRestController {
                     return lobbyservice.setLevel(lobbyId, levelID, attributeObject.toString());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(String.valueOf(e));
             }
 
         }
