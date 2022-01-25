@@ -151,7 +151,7 @@ public class Lobby {
             Spieler iterSpieler = teilnehmerliste.get(i);
             punkteTabelle = String.format("%s%s: %s</br>",punkteTabelle, iterSpieler.getName(),iterSpieler.getScore());
         }
-        htmlScoreString = String.format("</br>%sDu hast %s:%s Minuten gebraucht.", punkteTabelle, minutes, sekundes);
+        htmlScoreString = String.format("</br>%sIhr habt %s:%s Minuten gebraucht.", punkteTabelle, minutes, sekundes);
     }
 
 }

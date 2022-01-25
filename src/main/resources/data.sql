@@ -35,10 +35,10 @@ INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (5, 'gltf/models_embedded/Box_regular.gltf', 'NPC', 3);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (6, 'gltf/models_embedded/door.gltf', 'Tuer-Horizontal', 4);
+VALUES (6, 'gltf/models_embedded/doorVertikal.gltf', 'Tuer-Horizontal', 4);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (7, 'gltf/models_embedded/door.gltf', 'Tuer-Vertikal', 4);
+VALUES (7, 'gltf/models_embedded/doorHorizontal.gltf', 'Tuer-Vertikal', 4);
 
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
