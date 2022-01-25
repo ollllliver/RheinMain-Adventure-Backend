@@ -43,7 +43,7 @@ public class BenutzerController {
     /**
      * Get Anfrage auf die Benutzerroute
      *
-     * @return liefert eine Liste mit allen Nutzern aus der Datenbank falls erfolgreich, sonst Fehler
+     * @return liefert eine Liste mit allen Nutzern aus der Datenbank falls erfolgreich, sonst ResponseEntity UNAUTHORIZED
      */
     @GetMapping("/benutzer")
     public ResponseEntity<List<Benutzer>> alleBenutzer() {
@@ -64,9 +64,9 @@ public class BenutzerController {
     /**
      * Get Anfrage, die prüft ob ein Nutzer bereits eingeloggt ist
      *
-     * @param m                    Model, in dem das Attribut mit eingeloggt Status gesetzt wird
-     * @param loggedinbenutzername ist der im Model zwingend enthaltene Benutzername
-     * @return gefunden Nutzer falls einer eingeloggt, sonst null
+     * @param m        Model in dem das Attribut eingeloggt gesetzt wird
+     * @param loggedinbenutzername ist der im Model zwingend enthaltene Benutzername, uebergeben aus Frontend
+     * @return gefundener Nutzer falls einer eingeloggt, sonst null und NO_CONTENT status
      */
     @GetMapping("/benutzer/check")
     public ResponseEntity<Benutzer> testObEingeloggt(Model m, @ModelAttribute(LOGGEDIN_BENUTZERNAME) String loggedinbenutzername) {
@@ -86,7 +86,7 @@ public class BenutzerController {
      * Post Anfrage zum Registrieren des Benutzers
      *
      * @param benutzer liefert die übermittelten Daten aus dem Formular
-     * @return registrierte Benutzer falls erfolgreich, sonst null
+     * @return registrierter Benutzer falls erfolgreich, sonst null
      */
     @PostMapping("/benutzer/register")
     public ResponseEntity<Benutzer> registrieren(@RequestBody BenutzerPOJO benutzer) {
@@ -130,7 +130,7 @@ public class BenutzerController {
      *
      * @param m        Model in dem das Attribut mit eingeloggt Status entfernt wird
      * @param benutzer übermittelte Daten des Nutzers der ausgeloggt werden soll
-     * @return ausgeloggten Nutzer falls erfolgreich, sonst Fehler
+     * @return ausgeloggten Nutzer falls erfolgreich, sonst BenutzerNichtGefundenException
      */
     @PostMapping("/benutzer/logout")
     public ResponseEntity<Benutzer> logout(Model m, @RequestBody BenutzerPOJO benutzer) {
@@ -145,8 +145,10 @@ public class BenutzerController {
     }
 
     /**
+     * Get Anfrage fuer alle vom Nutzer erstellten Level in einer Liste
+     * 
      * @param benutzername benutzername von dem die Level angefragt werden
-     * @return alle vom Nutzer erstellten Level in einer List
+     * @return alle vom Nutzer erstellten Level in einer List<Level>
      */
     @GetMapping(value = "/benutzer/level/{benutzername}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Level> getLevelVonBenutzername(@PathVariable String benutzername) {
