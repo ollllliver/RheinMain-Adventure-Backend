@@ -47,9 +47,9 @@ public class SpielerController {
      * Stomp Mapping für das interagieren mit Objecten (Tuer und Schluessel), senden
      * ein Update Packet an alle im Frontend die auf die LobbyID subscribt haben
      *
-     * @param position
-     * @param lobbyID
-     * @param objectName
+     * @param stompPacker beinhaltet Stompnachricht mit Spielerposition x/y und Spielername
+     * @param lobbyID 
+     * @param objectName beinhaltet Objekttyp
      * @return SchluesselUpdater mit den Benötigten Daten zum verarbeiten im
      * Frontend (Interaktion, anzSchluess, Koordinaten des Objects)
      * @throws Exception

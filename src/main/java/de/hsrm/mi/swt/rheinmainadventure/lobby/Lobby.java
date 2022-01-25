@@ -29,6 +29,7 @@ public class Lobby {
      * @param lobbyID         einmalige LobbyID für eine Lobby
      * @param teilnehmerliste leere Liste der teilnehmer
      * @param host            ein Spieler der der host der Lobby ist
+     * @param defaultlevel    beinhaltet defaultLevel
      */
     public Lobby(String lobbyID, List<Spieler> teilnehmerliste, Spieler host, Level defaultlevel) {
         this.lobbyID = lobbyID;
