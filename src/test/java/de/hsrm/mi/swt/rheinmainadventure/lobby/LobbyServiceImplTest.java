@@ -6,7 +6,6 @@ import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliar;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliartyp;
 import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
 import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
-import de.hsrm.mi.swt.rheinmainadventure.messaging.LobbyMessage;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
 import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
