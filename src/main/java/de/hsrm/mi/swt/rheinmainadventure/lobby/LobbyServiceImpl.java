@@ -180,7 +180,6 @@ public class LobbyServiceImpl implements LobbyService {
                     // per STOMP Service allen Nutzern die auf diese Aktuelle lobbyID
                     // Subscribed sind eine Fehlermeldung per Publish senden und im Frontend
                     // abfangen.
-                    // @Chand das wuerde jetzt so gehen:
                     broker.convertAndSend(TOPICLOB + lobby.getlobbyID(),
                             new LobbyMessage(NachrichtenCode.LOBBYZEIT_ABGELAUFEN, true));
                     // Das sendet an alle, die in der Lobby eingeschrieben sind die message

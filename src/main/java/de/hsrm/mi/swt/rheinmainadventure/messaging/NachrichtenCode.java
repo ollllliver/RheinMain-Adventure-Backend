@@ -20,6 +20,10 @@ public enum NachrichtenCode {
     LOBBY_VOLL, LOBBY_NICHT_GEFUNDEN, KEINE_LOBBY_FREI, BEREITS_IN_ANDERER_LOBBY,
 
     // Lobby Einstellungsänderungen Antworten:
-    NEUE_EINSTELLUNGEN, KEINE_BERECHTIGUNG
+    NEUE_EINSTELLUNGEN, KEINE_BERECHTIGUNG,
+
+    // Nicht eingeloggt/ loggedinBenutzername Attribut nicht gesetzt
+
+    NICHT_EINGELOGGT
 
 }
