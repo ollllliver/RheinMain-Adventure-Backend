@@ -41,50 +41,57 @@ INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (7, 'gltf/models_embedded/doorVertikal.gltf', 'Tuer-Vertikal', 4);
 
 
-INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-40, 5, 3, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-41, 4, 3, 0, 20);
+VALUES (-40, 14, 22, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-42, 3, 3, 0, 20);
+VALUES (-41, 3, 0, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-43, 2, 3, 0, 20);
+VALUES (-42, 5, 0, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-44, 1, 3, 0, 20);
+VALUES (-43, 5, 1, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-45, 0, 3, 0, 20);
+VALUES (-44, 5, 2, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-46, 0, 0, 0, 20);
+VALUES (-45, 4, 3, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-47, 1, 0, 0, 20);
+VALUES (-46, 3, 3, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-48, 2, 0, 0, 20);
+VALUES (-47, 2, 3, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-49, 3, 0, 7, 20);
+VALUES (-48, 1, 3, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-50, 5, 0, 0, 20);
+VALUES (-49, 1, 1, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-51, 8, 8, 3, 20);
+VALUES (-50, 2, 1, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-52, 0, 6, 2, 20);
+VALUES (-51, 3, 1, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-53, 4, 0, 0, 20);
+VALUES (-52, 1, 4, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-54, 1, 1, 4, 20);
+VALUES (-54, 0, 5, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-55, 1, 2, 4, 20);
+VALUES (-53, 2, 0, 2, 20);
+
+INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
+VALUES (-57, 0, 4, 3, 20);
+
+INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
+VALUES (-55, 4, 0, 4, 20);
+
+INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
+VALUES (-56, 0, 3, 7, 20);
