@@ -69,7 +69,7 @@ INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobi
 VALUES (-48, 2, 0, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-49, 3, 0, 6, 20);
+VALUES (-49, 3, 0, 7, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
 VALUES (-50, 5, 0, 0, 20);
