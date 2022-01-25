@@ -1,22 +1,20 @@
 package de.hsrm.mi.swt.rheinmainadventure.spiel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.hsrm.mi.swt.rheinmainadventure.model.SchluesselUpdate;
 import org.junit.jupiter.api.Test;
 
-import de.hsrm.mi.swt.rheinmainadventure.model.SchluesselUpdate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SchluesselUpdateTest {
+class SchluesselUpdateTest {
 
     private SchluesselUpdate u;
 
     @Test
-    public void updaterTest(){
+    void updaterTest() {
         u = new SchluesselUpdate("Tuer", 2, "{4;4}");
         assertEquals("Tuer", u.getObjectName());
         assertEquals(2, u.getAnzSchluessel());
-        assertEquals("{4;4]}", u.getKoordinatenArray());
+        assertEquals("{4;4}", u.getKoordinatenArray());
     }
     
 }
