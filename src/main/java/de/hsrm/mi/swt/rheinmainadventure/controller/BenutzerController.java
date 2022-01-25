@@ -57,7 +57,7 @@ public class BenutzerController {
             return new ResponseEntity<>(list, HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -89,17 +89,17 @@ public class BenutzerController {
      * @return registrierte Benutzer falls erfolgreich, sonst null
      */
     @PostMapping("/benutzer/register")
-    public ResponseEntity<Benutzer> registrieren(@RequestBody Benutzer benutzer) {
+    public ResponseEntity<Benutzer> registrieren(@RequestBody BenutzerPOJO benutzer) {
         if (benutzerService.findeBenutzer(benutzer.getBenutzername()) == null) {
-            try {
-                logger.info("Nutzer wird registriert");
-                benutzerService.registriereBenutzer(benutzer);
-                return new ResponseEntity<>(benutzer, HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(benutzer, HttpStatus.NO_CONTENT);
-            }
+
+            logger.info("Nutzer wird registriert");
+            Benutzer benutzerEntity = new Benutzer(benutzer.getBenutzername(), benutzer.getPasswort());
+            benutzerService.registriereBenutzer(benutzerEntity);
+            return new ResponseEntity<>(benutzerEntity, HttpStatus.OK);
+
+        } else {
+            throw new FalscheAnmeldeDatenException("Benutzername bereits vergeben" + benutzer.getBenutzername());
         }
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -118,10 +118,10 @@ public class BenutzerController {
                 logger.info("Session attribut gesetzt -> Nutzer eingeloggt");
                 return new ResponseEntity<>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
             } else {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                throw new FalscheAnmeldeDatenException("Falsche Anmeldedaten fuer" + benutzer.getBenutzername());
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new FalscheAnmeldeDatenException("Falsche Anmeldedaten fuer" + benutzer.getBenutzername());
         }
     }
 
@@ -140,7 +140,7 @@ public class BenutzerController {
             logger.info("Session attribut leer gesetzt -> Nutzer ausgeloggt");
             return new ResponseEntity<>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            throw new BenutzerNichtGefundenException("Nutzer nicht gefunden" + benutzer);
         }
     }
 
