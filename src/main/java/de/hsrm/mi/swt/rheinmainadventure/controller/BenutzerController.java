@@ -56,7 +56,7 @@ public class BenutzerController {
             return new ResponseEntity<>(list, HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -96,9 +96,8 @@ public class BenutzerController {
             } catch (Exception e) {
                 return new ResponseEntity<>(benutzer, HttpStatus.NO_CONTENT);
             }
-        } else {
-            throw new FalscheAnmeldeDatenException("Benutzername bereits vergeben"+ benutzer.getBenutzername());
         }
+        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -117,10 +116,10 @@ public class BenutzerController {
                 logger.info("Session attribut gesetzt -> Nutzer eingeloggt");
                 return new ResponseEntity<>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
             } else {
-                throw new FalscheAnmeldeDatenException("Falsche Anmeldedaten fuer"+ benutzer.getBenutzername());
+                return new ResponseEntity<>(benutzer, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            throw new FalscheAnmeldeDatenException("Falsche Anmeldedaten fuer"+ benutzer.getBenutzername());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -139,7 +138,7 @@ public class BenutzerController {
             logger.info("Session attribut leer gesetzt -> Nutzer ausgeloggt");
             return new ResponseEntity<>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
         } else {
-            throw new BenutzerNichtGefundenException("Nutzer nicht gefunden"+ benutzer);
+            return new ResponseEntity<>(benutzer, HttpStatus.UNAUTHORIZED);
         }
     }
 
