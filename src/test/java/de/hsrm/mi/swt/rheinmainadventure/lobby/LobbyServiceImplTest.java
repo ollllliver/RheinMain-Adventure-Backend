@@ -1,6 +1,17 @@
 package de.hsrm.mi.swt.rheinmainadventure.lobby;
 
+import de.hsrm.mi.swt.rheinmainadventure.entities.Benutzer;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliar;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Mobiliartyp;
+import de.hsrm.mi.swt.rheinmainadventure.entities.Raum;
+import de.hsrm.mi.swt.rheinmainadventure.entities.RaumMobiliar;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.IntBenutzerRepo;
+import de.hsrm.mi.swt.rheinmainadventure.repositories.MobiliarRepository;
+import de.hsrm.mi.swt.rheinmainadventure.spiel.LevelService;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,22 +19,68 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.transaction.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class LobbyServiceImplTest {
     Logger logger = LoggerFactory.getLogger(LobbyServiceImplTest.class);
 
     @Autowired
     LobbyService lobbyService;
+    @Autowired
+    private IntBenutzerRepo benutzerRepository;
+    @Autowired
+    private MobiliarRepository mobiliarRepository;
+    @Autowired
+    private LevelService levelService;
 
     public boolean containsName(final List<Spieler> list, final String name) {
         return list.stream().filter(o -> o.getName().equals(name)).findFirst().isPresent();
+    }
+    
+    /**
+     * Vorher ein von JPA verwaltetes Demolevel erstellen.
+     */
+    @BeforeEach
+    @Transactional
+    void setUp() {
+        Benutzer ersteller = new Benutzer("Glogomir", "Strings");
+        benutzerRepository.save(ersteller);
+
+
+        Mobiliar rein = new Mobiliar("Box", "static/gltf/models_embedded/Box_regular.gltf", Mobiliartyp.EINGANG);
+        Mobiliar raus = new Mobiliar("Box", "static/gltf/models_embedded/Box_regular.gltf", Mobiliartyp.AUSGANG);
+        Mobiliar ente = new Mobiliar("Ente", "static/gltf/duck_embedded/Duck.gltf", Mobiliartyp.NPC);
+
+        mobiliarRepository.save(rein);
+        mobiliarRepository.save(raus);
+        mobiliarRepository.save(ente);
+
+        Raum raum = new Raum(0, new ArrayList<>());
+
+        RaumMobiliar raumMobiliar1 = new RaumMobiliar(rein, raum, 4, 5);
+        RaumMobiliar raumMobiliar2 = new RaumMobiliar(raus, raum, 4, 6);
+        raum.getRaumMobiliar().add(raumMobiliar1);
+        raum.getRaumMobiliar().add(raumMobiliar2);
+
+        List<Raum> raume = new ArrayList<>();
+        raume.add(raum);
+
+        Level level = new Level("Test-Level", "Test-Beschreibung", (byte) 5, raume);
+
+        levelService.bearbeiteLevel("Glogomir", level);
     }
 
     /* Test für joinen bei bereits voller lobby */
@@ -89,26 +146,27 @@ class LobbyServiceImplTest {
         lobbyService.starteCountdown(lobbyID);
         TimeUnit.SECONDS.sleep(11);
         assertTrue(chandsLobby.getIstGestartet());
-        /*
-         * TODO: TEST für später: Spielstart-übermittlung Test
-         * Nur Host kann spiel Starten. (Also als nicht host starten versuchen und soll
-         * nicht klappen) <- muss noch implementiert werden
-         * mit voller lobby starten
-         */
+
     }
 
-    /*
-     * Prueft ob eine Lobby nach dem Timeout noch Exsistiert. OHNE REST ANSTOSS
-     * Hierfuer muss im Backend der Timeout auf 15 Sekunden und nicht 10 Minuten
-     * gesetzt werden.
+    /**
+     * Prueft ob nach beenden des Spiels ob die Ansicht zur Lobby geswitched wurde
+     * @throws InterruptedException
+     * @throws Exception
      */
     @Test
-    void testTimeout() throws Exception {
-        Lobby chandsLobby = lobbyService.lobbyErstellen("Chand");
+    void testZurueckZurLobby() throws InterruptedException{
+        Lobby testLobby = lobbyService.lobbyErstellen("Hanzo");
 
-        assertNotNull(chandsLobby);
-        TimeUnit.SECONDS.sleep(16);
-        assertNotNull(lobbyService.getLobbyById(chandsLobby.getlobbyID()));
+        lobbyService.joinLobbybyId(testLobby.getlobbyID(), "Hanzo");
+        lobbyService.starteCountdown(testLobby.getlobbyID());
+        TimeUnit.SECONDS.sleep(11);
+        assertTrue(testLobby.getIstGestartet());
+
+        String response = lobbyService.zurueckZurLobby(testLobby.getlobbyID()).getPayload();
+
+        assertEquals("Spiel beendet. Kehre zurück zur Lobby", response);
+        assertFalse(testLobby.getIstGestartet());
     }
 
 }

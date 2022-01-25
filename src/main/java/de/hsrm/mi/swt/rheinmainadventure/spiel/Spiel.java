@@ -4,13 +4,13 @@ import de.hsrm.mi.swt.rheinmainadventure.entities.Level;
 import de.hsrm.mi.swt.rheinmainadventure.lobby.Lobby;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 
-import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.List;
 
 public class Spiel {
 
     private final String spielID;
-    private final Timestamp startZeitpunkt;
+    private final LocalTime startZeitpunkt;
     private final Level level;
     private List<Spieler> spielerListe;
     private int anzSchluessel;
@@ -19,7 +19,7 @@ public class Spiel {
         this.spielID = lobby.getlobbyID();
         this.level = lobby.getGewaehlteKarte();
         this.spielerListe = spielerListe;
-        this.startZeitpunkt = new Timestamp(System.currentTimeMillis());
+        this.startZeitpunkt = LocalTime.now();
         this.anzSchluessel = 0;
     }
 
@@ -35,7 +35,7 @@ public class Spiel {
         this.spielerListe = teilnehmerliste;
     }
 
-    public Timestamp getStartZeitpunkt() {
+    public LocalTime getStartZeitpunkt() {
         return startZeitpunkt;
     }
 

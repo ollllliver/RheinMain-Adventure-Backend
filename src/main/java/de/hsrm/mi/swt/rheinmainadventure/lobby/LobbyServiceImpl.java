@@ -16,6 +16,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -178,8 +180,7 @@ public class LobbyServiceImpl implements LobbyService {
                     // per STOMP Service allen Nutzern die auf diese Aktuelle lobbyID
                     // Subscribed sind eine Fehlermeldung per Publish senden und im Frontend
                     // abfangen.
-                    // @Chand das wuerde jetzt so gehen:
-                    broker.convertAndSend(TOPICUEB + lobby.getlobbyID(),
+                    broker.convertAndSend(TOPICLOB + lobby.getlobbyID(),
                             new LobbyMessage(NachrichtenCode.LOBBYZEIT_ABGELAUFEN, true));
                     // Das sendet an alle, die in der Lobby eingeschrieben sind die message
                     // LOBBYZEIT_ABGELAUFEN
@@ -191,8 +192,8 @@ public class LobbyServiceImpl implements LobbyService {
             }
 
         };
-        // timer.schedule(task, 15 * 1000); // für Testing auf 5 Sekunden setzen.
-        timer.schedule(task, 10 * 60 * 1000L);
+        //timer.schedule(task, 5 * 1000); // für Testing auf 5 Sekunden setzen.
+        timer.schedule(task, 10 * (long) 60 * 1000);
     }
 
     /**
@@ -419,6 +420,10 @@ public class LobbyServiceImpl implements LobbyService {
         Spiel spiel = spielService.getSpielByLobbyId(lobbyId);
         spielService.alleSpiele().remove(spiel);
         logger.info("Spiel beendent: {}", spiel);
+
+        Duration dauer = Duration.between(spiel.getStartZeitpunkt(), LocalTime.now());
+        lobby.setHtmlScoreString(dauer.toMinutes(), dauer.toSeconds() % 60);
+
         lobby.setIstGestartet(false);
 
         return new LobbyMessage(NachrichtenCode.BEENDE_SPIEL, false, "Spiel beendet. Kehre zurück zur Lobby");
@@ -435,5 +440,11 @@ public class LobbyServiceImpl implements LobbyService {
             return res;
         }
         return new LobbyMessage(NachrichtenCode.KEINE_BERECHTIGUNG, true);
+    }
+
+    @Override
+    public LobbyMessage getScoreByLobbyId(String lobbyId) {
+        Lobby lobby = getLobbyById(lobbyId);
+        return new LobbyMessage(NachrichtenCode.SCORE, false, lobby.getHtmlScoreString());
     }
 }

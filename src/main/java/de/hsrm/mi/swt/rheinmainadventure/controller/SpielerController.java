@@ -43,33 +43,68 @@ public class SpielerController {
         return spielService.positionsAktualisierung(spieler, pos);
     }
 
-    @MessageMapping("/topic/spiel/{lobbyID}/key")
+    /**
+     * Stomp Mapping für das interagieren mit Objecten (Tuer und Schluessel), senden
+     * ein Update Packet an alle im Frontend die auf die LobbyID subscribt haben
+     *
+     * @param position
+     * @param lobbyID
+     * @param objectName
+     * @return SchluesselUpdater mit den Benötigten Daten zum verarbeiten im
+     * Frontend (Interaktion, anzSchluess, Koordinaten des Objects)
+     * @throws Exception
+     */
+    @MessageMapping("/topic/spiel/{lobbyID}/{objectName}")
     @SendTo("/topic/spiel/{lobbyID}/schluessel")
-    public SchluesselUpdate schluesselEingesammelt(@Payload String position, @DestinationVariable String lobbyID) {
-        logger.info("ES wurde interagiert mit Index: {}", position);
-        spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
-        logger.info("Anzahl Schluessel in Spiel {} betraegt {}", lobbyID, spielService.findeSpiel(lobbyID).getAnzSchluessel());
-        return new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
-    }
+    public SchluesselUpdate schluesselEingesammelt(@Payload String stompPacket, @DestinationVariable String lobbyID,
+                                                   @DestinationVariable String objectName) {
+        // TODO enum erstellen für interagierNamen
 
-    @MessageMapping("/topic/spiel/{lobbyID}/tuer")
-    @SendTo("/topic/spiel/{lobbyID}/schluessel")
-    public SchluesselUpdate tuerOEffnen(@Payload String position, @DestinationVariable String lobbyID) {
-        //TODO payload richtig abfangen
-        SchluesselUpdate update = new SchluesselUpdate(spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
-        if (spielService.findeSpiel(lobbyID).getAnzSchluessel() == 0) {
-            logger.info("Du brauchst erst einen Schlüssel");
-            return update;
-        } else {
-            logger.info("{} wird aufgeschlossen", position);
-            spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
-            logger.info("Anzahl Schluessel in Spiel {} betraegt {}", lobbyID,
-                    spielService.findeSpiel(lobbyID).getAnzSchluessel());
+        String[] splitStompPacket = stompPacket.split(";");
+        String posX = splitStompPacket[0];
+        String posZ = splitStompPacket[1];
+        String spielerName = splitStompPacket[2];
+        String position = posX + ";" + posZ;
+        logger.info("Spieler {} möchte mit Schlüssel auf Position {} interagieren", spielerName, position);
 
+        if (objectName.equals("Schlüssel")) {
+            // Wenn mit Schlüssel interagiert wird, wird der Counter hochgesetzt und das
+            spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
+            logger.info("Anzahl Schluessel in Spiel {} betraegt {} Spieler {} erhält 10 Punkte",
+                    lobbyID, spielService.findeSpiel(lobbyID).getAnzSchluessel(), spielerName);
+            // Update Packet verschickt
+            SchluesselUpdate update = new SchluesselUpdate(objectName,
+                    spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
+            // Score von dem Spieler dessen name mitgegeben wurde erhoehen
+            spielService.scoreErhoehen(spielService.getSpieler(lobbyID, spielerName), 10);
+            logger.info("SpielerScore: {}", spielService.getSpieler(lobbyID, spielerName).getScore());
             return update;
         }
+        if (objectName.equals("Tür")) {
+            // Wenn SchluesselAnzahl größer 0, wird der Counter verringert und darf die Tuer
+            // geöffnet werden...
+            if (spielService.findeSpiel(lobbyID).getAnzSchluessel() > 0) {
+                logger.info("ES wurde interagiert mit Object: {}", objectName);
+                spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
+                logger.info("Anzahl Schluessel in Spiel {} betraegt {}",
+                        lobbyID, spielService.findeSpiel(lobbyID).getAnzSchluessel());
+                // Score von dem Spieler dessen name mitgegeben wurde erhoehen
+                spielService.scoreErhoehen(spielService.getSpieler(lobbyID, spielerName), 5);
+                logger.info("SpielerScore: {}", spielService.getSpieler(lobbyID, spielerName).getScore());
+                return new SchluesselUpdate(objectName, spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
+                // ... wenn nicht soll das Frontend den Warnungstext setzten
+            } else {
+                return new SchluesselUpdate("Warnung", spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
+
+            }
+
+        }
+
+        return null;
 
     }
+
+    // @MessageMapping("/topic/spiel/{lobbyID}/{objectName}")
 
     /**
      * @param msg     ist die Nachricht, welche vom Frontend als reference vermittelt wird

@@ -20,6 +20,7 @@ import java.util.List;
 @RestController
 public class BenutzerController {
 
+    public static final String LOGGEDIN_BENUTZERNAME = "loggedinBenutzername";
     @Autowired
     IntBenutzerRepo benutzerRepo;
 
@@ -56,25 +57,26 @@ public class BenutzerController {
             return new ResponseEntity<>(list, HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
     /**
      * Get Anfrage, die prüft ob ein Nutzer bereits eingeloggt ist
      *
-     * @param m Model, in dem das Attribut mit eingeloggt Status gesetzt wird
+     * @param m                    Model, in dem das Attribut mit eingeloggt Status gesetzt wird
+     * @param loggedinbenutzername ist der im Model zwingend enthaltene Benutzername
      * @return gefunden Nutzer falls einer eingeloggt, sonst null
      */
     @GetMapping("/benutzer/check")
-    public ResponseEntity<Benutzer> testObEingeloggt(Model m) {
-        Benutzer check = benutzerService.findeBenutzer(m.getAttribute("loggedinBenutzername").toString());
+    public ResponseEntity<Benutzer> testObEingeloggt(Model m, @ModelAttribute(LOGGEDIN_BENUTZERNAME) String loggedinbenutzername) {
+        Benutzer check = benutzerService.findeBenutzer(loggedinbenutzername);
         if (check != null) {
             logger.info("Nutzer mit gesetzten Sessionattribut gefunden");
             return new ResponseEntity<>(check, HttpStatus.OK);
         } else {
             logger.info("Session attribut leer gesetzt");
-            m.addAttribute("loggedinBenutzername", "");
+            m.addAttribute(LOGGEDIN_BENUTZERNAME, "");
 
             return new ResponseEntity<>(check, HttpStatus.NO_CONTENT);
         }
@@ -87,17 +89,17 @@ public class BenutzerController {
      * @return registrierte Benutzer falls erfolgreich, sonst null
      */
     @PostMapping("/benutzer/register")
-    public ResponseEntity<Benutzer> registrieren(@RequestBody Benutzer benutzer) {
+    public ResponseEntity<Benutzer> registrieren(@RequestBody BenutzerPOJO benutzer) {
         if (benutzerService.findeBenutzer(benutzer.getBenutzername()) == null) {
-            try {
-                logger.info("Nutzer wird registriert");
-                benutzerService.registriereBenutzer(benutzer);
-                return new ResponseEntity<>(benutzer, HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(benutzer, HttpStatus.NO_CONTENT);
-            }
+
+            logger.info("Nutzer wird registriert");
+            Benutzer benutzerEntity = new Benutzer(benutzer.getBenutzername(), benutzer.getPasswort());
+            benutzerService.registriereBenutzer(benutzerEntity);
+            return new ResponseEntity<>(benutzerEntity, HttpStatus.OK);
+
+        } else {
+            throw new FalscheAnmeldeDatenException("Benutzername bereits vergeben" + benutzer.getBenutzername());
         }
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -108,18 +110,18 @@ public class BenutzerController {
      * @return eingeloggten Nutzer falls erfolgreich, sonst Fehler
      */
     @PostMapping("/benutzer/login")
-    public ResponseEntity<Benutzer> login(Model m, @RequestBody Benutzer benutzer) {
+    public ResponseEntity<Benutzer> login(Model m, @RequestBody BenutzerPOJO benutzer) {
         try {
             if (benutzerService.pruefeLogin(benutzer.getBenutzername(), benutzer.getPasswort())) {
-                m.addAttribute("loggedinBenutzername", benutzer.getBenutzername());
+                m.addAttribute(LOGGEDIN_BENUTZERNAME, benutzer.getBenutzername());
                 m.addAttribute("aktuelleLobby", "");
                 logger.info("Session attribut gesetzt -> Nutzer eingeloggt");
                 return new ResponseEntity<>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
             } else {
-                return new ResponseEntity<>(benutzer, HttpStatus.UNAUTHORIZED);
+                throw new FalscheAnmeldeDatenException("Falsche Anmeldedaten fuer" + benutzer.getBenutzername());
             }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new FalscheAnmeldeDatenException("Falsche Anmeldedaten fuer" + benutzer.getBenutzername());
         }
     }
 
@@ -131,28 +133,28 @@ public class BenutzerController {
      * @return ausgeloggten Nutzer falls erfolgreich, sonst Fehler
      */
     @PostMapping("/benutzer/logout")
-    public ResponseEntity<Benutzer> logout(Model m, @RequestBody Benutzer benutzer) {
+    public ResponseEntity<Benutzer> logout(Model m, @RequestBody BenutzerPOJO benutzer) {
         if ((benutzerRepo.findByBenutzername(benutzer.getBenutzername())) != null) {
-            m.addAttribute("loggedinBenutzername", "");
+            m.addAttribute(LOGGEDIN_BENUTZERNAME, "");
             m.addAttribute("aktuelleLobby", "");
             logger.info("Session attribut leer gesetzt -> Nutzer ausgeloggt");
             return new ResponseEntity<>(benutzerRepo.findByBenutzername(benutzer.getBenutzername()), HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<>(benutzer, HttpStatus.UNAUTHORIZED);
+            throw new BenutzerNichtGefundenException("Nutzer nicht gefunden" + benutzer);
         }
     }
 
+    /**
+     * @param benutzername benutzername von dem die Level angefragt werden
+     * @return alle vom Nutzer erstellten Level in einer List
+     */
     @GetMapping(value = "/benutzer/level/{benutzername}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Level> getLevelVonBenutzername(@PathVariable String benutzername) {
         Benutzer angefragerNutzer = benutzerService.findeBenutzer(benutzername);
         if (angefragerNutzer != null) {
             return angefragerNutzer.getErstellteLevel();
         } else {
-            return null;
+            throw new BenutzerNichtGefundenException(benutzername + " nicht gefunden");
         }
-        /*
-           TESTWEISE
-           TODO: Fehler fangen falls nutzer nicht existiert
-         */
     }
 }

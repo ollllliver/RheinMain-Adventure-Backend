@@ -11,7 +11,7 @@ INSERT INTO benutzer (benutzer_id, benutzername, passwort)
 VALUES (17, 'Oliver', 'Oliver');
 
 INSERT INTO level (level_id, name, beschreibung, bewertung, benutzer_id, ist_freigegeben)
-VALUES (1, 'Wubbos wahnwitzige Wunderwelt', 'Abenteuer in den Niederlanden', 17, 10, false);
+VALUES (1, 'Wubbos wahnwitzige Wunderwelt', 'Abenteuer in den Niederlanden', 17, 10, true);
 
 INSERT INTO raum (raum_id, raum_index, level_level_id)
 VALUES (20, 0, 1);
@@ -23,7 +23,7 @@ INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (1, '', 'Weg', null);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (2, 'gltf/models_embedded/Weg.gltf', 'Start', 0);
+VALUES (2, '', 'Start', 0);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (3, 'gltf/duck_embedded/Duck.gltf', 'Ziel', 1);
@@ -35,10 +35,10 @@ INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
 VALUES (5, 'gltf/models_embedded/Box_regular.gltf', 'NPC', 3);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (6, 'gltf/models_embedded/door.gltf', 'Tuer-Horizontal', 4);
+VALUES (6, 'gltf/models_embedded/doorHorizontal.gltf', 'Tuer-Horizontal', 4);
 
 INSERT INTO mobiliar (mobiliar_id, modelluri, name, mobiliartyp)
-VALUES (7, 'gltf/models_embedded/door.gltf', 'Tuer-Vertikal', 4);
+VALUES (7, 'gltf/models_embedded/doorVertikal.gltf', 'Tuer-Vertikal', 4);
 
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
@@ -69,7 +69,7 @@ INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobi
 VALUES (-48, 2, 0, 0, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
-VALUES (-49, 3, 0, 6, 20);
+VALUES (-49, 3, 0, 7, 20);
 
 INSERT INTO raum_mobiliar (raum_mobiliar_id, positionx, positiony, mobiliar_mobiliar_id, raum_raum_id)
 VALUES (-50, 5, 0, 0, 20);
