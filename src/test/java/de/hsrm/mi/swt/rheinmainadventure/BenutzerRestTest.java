@@ -114,7 +114,7 @@ class BenutzerRestTest {
                                .content(TESTLOGINJSON)
                                .contentType(MediaType.APPLICATION_JSON)
                )
-               .andExpect(status().is5xxServerError());
+               .andExpect(status().is4xxClientError());
    }
  
    @Test
