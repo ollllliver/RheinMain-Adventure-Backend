@@ -1,10 +1,11 @@
 package de.hsrm.mi.swt.rheinmainadventure.model;
 
 /**
- * Spielerklasse für die Lobbys. Hat nix mit LogIn zu tun! Ein Spieler wird dann
- * erstellt, wenn er einer Lobby hinzugefügt werden soll. Er nutzt nur quasi
- * zufällig praktischerweise den eingeloggten Nutzernamen des Benutzers, ist
- * aber UNABHÄNGIG vom Benutzer.
+ * Spielerklasse für die Lobbys (Hat nix mit LogIn zu tun!)
+ * 
+ * Eine Spieler Instanz wird dann erstellt, wenn ein Spieler einer Lobby
+ * hinzugefügt werden soll. Er nutzt den Nutzernamen des eingeloggten
+ * Benutzers
  */
 public class Spieler {
     private String name;
