@@ -7,7 +7,6 @@ import de.hsrm.mi.swt.rheinmainadventure.model.Position;
 import de.hsrm.mi.swt.rheinmainadventure.model.SchluesselUpdate;
 import de.hsrm.mi.swt.rheinmainadventure.model.Spieler;
 import de.hsrm.mi.swt.rheinmainadventure.spiel.SpielService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,18 +46,18 @@ public class SpielerController {
     /**
      * Stomp Mapping für das interagieren mit Objecten (Tuer und Schluessel), senden
      * ein Update Packet an alle im Frontend die auf die LobbyID subscribt haben
-     * 
+     *
      * @param position
      * @param lobbyID
      * @param objectName
      * @return SchluesselUpdater mit den Benötigten Daten zum verarbeiten im
-     *         Frontend (Interaktion, anzSchluess, Koordinaten des Objects)
+     * Frontend (Interaktion, anzSchluess, Koordinaten des Objects)
      * @throws Exception
      */
     @MessageMapping("/topic/spiel/{lobbyID}/{objectName}")
     @SendTo("/topic/spiel/{lobbyID}/schluessel")
     public SchluesselUpdate schluesselEingesammelt(@Payload String stompPacket, @DestinationVariable String lobbyID,
-            @DestinationVariable String objectName) {
+                                                   @DestinationVariable String objectName) {
         // TODO enum erstellen für interagierNamen
 
         String[] splitStompPacket = stompPacket.split(";");
@@ -72,13 +71,13 @@ public class SpielerController {
             // Wenn mit Schlüssel interagiert wird, wird der Counter hochgesetzt und das
             spielService.anzahlSchluesselErhoehen(spielService.findeSpiel(lobbyID));
             logger.info("Anzahl Schluessel in Spiel {} betraegt {} Spieler {} erhält 10 Punkte",
-                        lobbyID, spielService.findeSpiel(lobbyID).getAnzSchluessel(), spielerName);
+                    lobbyID, spielService.findeSpiel(lobbyID).getAnzSchluessel(), spielerName);
             // Update Packet verschickt
             SchluesselUpdate update = new SchluesselUpdate(objectName,
                     spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
             // Score von dem Spieler dessen name mitgegeben wurde erhoehen
             spielService.scoreErhoehen(spielService.getSpieler(lobbyID, spielerName), 10);
-            logger.info("SpielerScore: {}",spielService.getSpieler(lobbyID, spielerName).getScore());
+            logger.info("SpielerScore: {}", spielService.getSpieler(lobbyID, spielerName).getScore());
             return update;
         }
         if (objectName.equals("Tür")) {
@@ -88,10 +87,10 @@ public class SpielerController {
                 logger.info("ES wurde interagiert mit Object: {}", objectName);
                 spielService.anzahlSchluesselVerringern(spielService.findeSpiel(lobbyID));
                 logger.info("Anzahl Schluessel in Spiel {} betraegt {}",
-                            lobbyID, spielService.findeSpiel(lobbyID).getAnzSchluessel());
+                        lobbyID, spielService.findeSpiel(lobbyID).getAnzSchluessel());
                 // Score von dem Spieler dessen name mitgegeben wurde erhoehen
                 spielService.scoreErhoehen(spielService.getSpieler(lobbyID, spielerName), 5);
-                logger.info("SpielerScore: {}",spielService.getSpieler(lobbyID, spielerName).getScore());
+                logger.info("SpielerScore: {}", spielService.getSpieler(lobbyID, spielerName).getScore());
                 return new SchluesselUpdate(objectName, spielService.findeSpiel(lobbyID).getAnzSchluessel(), position);
                 // ... wenn nicht soll das Frontend den Warnungstext setzten
             } else {

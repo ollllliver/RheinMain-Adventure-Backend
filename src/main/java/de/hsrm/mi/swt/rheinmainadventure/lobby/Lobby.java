@@ -147,9 +147,9 @@ public class Lobby {
 
     public void setHtmlScoreString(long minutes, long sekundes) {
         String punkteTabelle = "";
-        for (int i=0; i<teilnehmerliste.size();i++){
+        for (int i = 0; i < teilnehmerliste.size(); i++) {
             Spieler iterSpieler = teilnehmerliste.get(i);
-            punkteTabelle = String.format("%s%s: %s</br>",punkteTabelle, iterSpieler.getName(),iterSpieler.getScore());
+            punkteTabelle = String.format("%s%s: %s</br>", punkteTabelle, iterSpieler.getName(), iterSpieler.getScore());
         }
         htmlScoreString = String.format("</br>%sIhr habt %s:%s Minuten gebraucht.", punkteTabelle, minutes, sekundes);
     }

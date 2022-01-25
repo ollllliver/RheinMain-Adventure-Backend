@@ -151,8 +151,7 @@ class BenutzerTests {
         u2.setPasswort("anderespasswort");
 
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
-            Benutzer managed2 = benutzerrepo.save(u2);
-            assertThat(managed2).isEqualTo(u2);
+            benutzerrepo.save(u2);
         });
 
         assertThat(benutzerrepo.count()).isEqualTo(1);

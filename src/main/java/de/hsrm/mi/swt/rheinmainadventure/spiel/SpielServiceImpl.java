@@ -151,7 +151,6 @@ public class SpielServiceImpl implements SpielService {
 
     /**
      * Methode um den Score eines bestimmten Spielers zu erhoehen
-     * 
      */
 
     @Override
@@ -162,7 +161,6 @@ public class SpielServiceImpl implements SpielService {
 
     /**
      * Methode um den Score eines Spielers zu bekommen
-     * 
      */
     @Override
     public int spielerScore(Spieler spieler) {

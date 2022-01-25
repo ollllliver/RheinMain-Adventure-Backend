@@ -4,8 +4,6 @@ package de.hsrm.mi.swt.rheinmainadventure.model;
  * Klasse die aus der anzahl Schluesseln in einer bestimmten Lobby und den
  * Koordinaten des interagierten Objectes besteht. Dient als Packet, welches
  * allen Subscribern im Frontend geschickt wird.
- * 
- * 
  */
 
 public class SchluesselUpdate {
