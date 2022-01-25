@@ -24,18 +24,17 @@ import java.util.List;
 @RequestMapping(value = {"/api/lobby/*"})
 @SessionAttributes(names = {"loggedinBenutzername", "aktuelleLobby"})
 public class LobbyRestController {
+    private static final String LOGGEDINBENUTZERNAME = "loggedinBenutzername";
+    private static final String AKTUELLELOBBY = "aktuelleLobby";
+    private static final LobbyMessage nichtEingeloggtLobbyFehlerMessage = new LobbyMessage(NachrichtenCode.NICHT_EINGELOGGT, true);
     // Hier ist die REST Schnittstelle fuer /api/lobby/... Jede REST Anfrage auf
     // diese Domain geht hierueber und wird in dieser Klasse bearbeitet.
     // Auf die Lobbyinstanzen kann ueber den LobbyService zugegriffen werden
     // (autowired).
     Logger logger = LoggerFactory.getLogger(LobbyRestController.class);
-    private final static String LOGGEDINBENUTZERNAME = "loggedinBenutzername";
-    private final static String AKTUELLELOBBY = "aktuelleLobby";
-    private final static LobbyMessage nichtEingeloggtLobbyFehlerMessage = new LobbyMessage(NachrichtenCode.NICHT_EINGELOGGT, true);
     private boolean modelAttributeGefunden = false;
-    private LobbyMessage tempLobbyMessage = new LobbyMessage();
     private Object attributeObject = null;
-    
+
 
     @Autowired
     private LobbyService lobbyservice;
@@ -61,29 +60,29 @@ public class LobbyRestController {
      * @return LobbyMessage mit Nachrichtencode
      */
     @PostMapping(value = "/join/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public LobbyMessage lobbyBeitretenByID(@PathVariable String lobbyId,@ModelAttribute(AKTUELLELOBBY) String aktuelleLobby,Model m) {
-        
+    public LobbyMessage lobbyBeitretenByID(@PathVariable String lobbyId, @ModelAttribute(AKTUELLELOBBY) String aktuelleLobby, Model m) {
+
         if (aktuelleLobby.equals("") || aktuelleLobby.equals(lobbyId)) {
             modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);
             attributeObject = null;
-            if (modelAttributeGefunden){
-                try{
+            if (modelAttributeGefunden) {
+                try {
                     attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
-                    if (attributeObject != null){
-                        String joa = String.format("POST /api/lobby/join/%n", attributeObject.toString());
+                    if (attributeObject != null) {
+                        String joa = String.format("POST /api/lobby/join/%n", attributeObject);
                         logger.info(joa);
-                        tempLobbyMessage = lobbyservice.joinLobbybyId(lobbyId, attributeObject.toString());
+                        LobbyMessage tempLobbyMessage = lobbyservice.joinLobbybyId(lobbyId, attributeObject.toString());
                         if (!tempLobbyMessage.getIstFehler()) {
                             m.addAttribute(AKTUELLELOBBY, tempLobbyMessage.getPayload());
                         }
                         return tempLobbyMessage;
                     }
-                }catch(NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
-                } 
+                }
             }
         }
-        return nichtEingeloggtLobbyFehlerMessage;          
+        return nichtEingeloggtLobbyFehlerMessage;
     }
 
     /**
@@ -94,26 +93,26 @@ public class LobbyRestController {
      * @return LobbyMessage mit Nachrichtencode
      */
     @DeleteMapping(value = "/leave/{lobbyId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m,@ModelAttribute(AKTUELLELOBBY) String aktuelleLobby) {
+    public LobbyMessage verlasseLobby(@PathVariable String lobbyId, Model m, @ModelAttribute(AKTUELLELOBBY) String aktuelleLobby) {
         String nice = String.format("DELETE /api/lobby/leave/%n", attributeObject.toString());
         logger.info(nice);
         modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);
         attributeObject = null;
-            if (modelAttributeGefunden){
-                try{
-                    attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
-                    if (attributeObject != null){
-                        String joa = String.format("USER %n will die Lobby verlassen", attributeObject.toString());
-                        logger.info(joa);
-                        if (!aktuelleLobby.equals("")) {
-                            m.addAttribute(AKTUELLELOBBY, "");
-                        }
-                        return lobbyservice.spielerVerlaesstLobby(lobbyId, attributeObject.toString());
+        if (modelAttributeGefunden) {
+            try {
+                attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
+                if (attributeObject != null) {
+                    String joa = String.format("USER %n will die Lobby verlassen", attributeObject);
+                    logger.info(joa);
+                    if (!aktuelleLobby.equals("")) {
+                        m.addAttribute(AKTUELLELOBBY, "");
                     }
-                }catch(NullPointerException e){
-                    e.printStackTrace();
-                } 
+                    return lobbyservice.spielerVerlaesstLobby(lobbyId, attributeObject.toString());
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
+        }
         return nichtEingeloggtLobbyFehlerMessage;
     }
 
@@ -125,26 +124,26 @@ public class LobbyRestController {
      * @return neu erstellte Lobby
      */
     @PostMapping(value = "neu", produces = MediaType.APPLICATION_JSON_VALUE)
-    public LobbyMessage neueLobbyErstellen(Model m,@ModelAttribute(AKTUELLELOBBY) String aktuelleLobby) {
+    public LobbyMessage neueLobbyErstellen(Model m, @ModelAttribute(AKTUELLELOBBY) String aktuelleLobby) {
         // GET /api/lobby/neu - erstellen einer neuen Lobby ueber den LobbyService
         // zurueckgesendet wird die neu erstellte Lobbyinstanz, damit das Frontend auf
         // die Lobbyseite mit der im Backend erstellten LobbyID weiterleidten kann.
         if (aktuelleLobby.equals("")) {
             modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);
             attributeObject = null;
-            if (modelAttributeGefunden){
-                try{
+            if (modelAttributeGefunden) {
+                try {
                     attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
-                    if (attributeObject != null){
-                        String joa = String.format("POST /api/lobby/neu  Von : %n", attributeObject.toString());
+                    if (attributeObject != null) {
+                        String joa = String.format("POST /api/lobby/neu  Von : %n", attributeObject);
                         logger.info(joa);
                         String lobbyID = lobbyservice.lobbyErstellen(attributeObject.toString())
                                 .getlobbyID();
                         return new LobbyMessage(NachrichtenCode.NEUE_LOBBY, false, lobbyID);
                     }
-                }catch(NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
-                } 
+                }
             }
         }
         return new LobbyMessage(NachrichtenCode.BEREITS_IN_ANDERER_LOBBY, true, aktuelleLobby);
@@ -165,6 +164,7 @@ public class LobbyRestController {
 
     /**
      * Laesst einen Spieler einer Zufaelligen Lobby joinen.
+     *
      * @param m Model aus dem der Nutzername ausgelesen wird.
      * @return
      */
@@ -173,20 +173,22 @@ public class LobbyRestController {
     public LobbyMessage lobbyBeitretenZufaellig(Model m) {
         modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);
         attributeObject = null;
-        if (modelAttributeGefunden){
-            try{
+        if (modelAttributeGefunden) {
+            try {
                 attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
-                if (attributeObject != null){
+                if (attributeObject != null) {
                     return lobbyservice.lobbyBeitretenZufaellig(attributeObject.toString());
                 }
-            }catch(NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
-            } 
+            }
         }
         return nichtEingeloggtLobbyFehlerMessage;
     }
+
     /**
      * Initialisiert den Spielstart einer Lobby
+     *
      * @param lobbyId ID der Lobby die gestartet werden soll
      * @return
      */
@@ -194,8 +196,10 @@ public class LobbyRestController {
     public LobbyMessage startGame(@PathVariable String lobbyId) {
         return lobbyservice.starteCountdown(lobbyId);
     }
+
     /**
      * Setzt das SessionAttribut "aktuelleLobby" auf leer.
+     *
      * @param m Model dessen Sessionattribut "aktuelleLobby" genutzt wird
      */
     @PostMapping("/reset")
@@ -215,15 +219,15 @@ public class LobbyRestController {
     public LobbyMessage patchSpielerlimit(@PathVariable String lobbyId, @RequestBody int spielerlimit, Model m) {
         modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);
         attributeObject = null;
-        if (modelAttributeGefunden){
-            try{
+        if (modelAttributeGefunden) {
+            try {
                 attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
-                if (attributeObject != null){
+                if (attributeObject != null) {
                     return lobbyservice.setSpielerlimit(lobbyId, spielerlimit, attributeObject.toString());
                 }
-            }catch(NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
-            } 
+            }
         }
         return nichtEingeloggtLobbyFehlerMessage;
     }
@@ -240,15 +244,15 @@ public class LobbyRestController {
     public LobbyMessage patchPrivacy(@PathVariable String lobbyId, @RequestBody Boolean istPrivat, Model m) {
         modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);
         attributeObject = null;
-        if (modelAttributeGefunden){
-            try{
+        if (modelAttributeGefunden) {
+            try {
                 attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
-                if (attributeObject != null){
+                if (attributeObject != null) {
                     return lobbyservice.setPrivacy(lobbyId, istPrivat, attributeObject.toString());
                 }
-            }catch(NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
-            }  
+            }
         }
         return nichtEingeloggtLobbyFehlerMessage;
     }
@@ -265,13 +269,13 @@ public class LobbyRestController {
     public LobbyMessage patchHost(@PathVariable String lobbyId, @RequestBody Spieler host, Model m) {
         modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);
         attributeObject = null;
-        if (modelAttributeGefunden){
-            try{
+        if (modelAttributeGefunden) {
+            try {
                 attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
-                if (attributeObject != null){
+                if (attributeObject != null) {
                     return lobbyservice.setHost(lobbyId, host, attributeObject.toString());
                 }
-            }catch(NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
         }
@@ -287,19 +291,19 @@ public class LobbyRestController {
      * @return LobbyMessage mit information über Erfolg/Misserfolg
      */
     @DeleteMapping("/{lobbyId}/teilnehmer")
-    public LobbyMessage deleteTeilnehmer(@PathVariable String lobbyId, @RequestBody Spieler zuEntfernendSpieler,Model m) {
-        modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);                       
+    public LobbyMessage deleteTeilnehmer(@PathVariable String lobbyId, @RequestBody Spieler zuEntfernendSpieler, Model m) {
+        modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);
         attributeObject = null;
-        if (modelAttributeGefunden){
-            try{
+        if (modelAttributeGefunden) {
+            try {
                 attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
-                if (attributeObject != null){
+                if (attributeObject != null) {
                     return lobbyservice.removeSpieler(lobbyId, zuEntfernendSpieler, attributeObject.toString());
                 }
-            }catch(NullPointerException n){
+            } catch (NullPointerException n) {
                 n.printStackTrace();
             }
-            
+
         }
         return nichtEingeloggtLobbyFehlerMessage;
     }
@@ -316,27 +320,27 @@ public class LobbyRestController {
     public LobbyMessage patchLevel(@PathVariable String lobbyId, @RequestBody Long levelID, Model m) {
         modelAttributeGefunden = m.containsAttribute(LOGGEDINBENUTZERNAME);
         attributeObject = null;
-        if (modelAttributeGefunden){
-            try{
+        if (modelAttributeGefunden) {
+            try {
                 attributeObject = m.getAttribute(LOGGEDINBENUTZERNAME);
-                if (attributeObject != null){
+                if (attributeObject != null) {
                     return lobbyservice.setLevel(lobbyId, levelID, attributeObject.toString());
                 }
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            
+
         }
         return nichtEingeloggtLobbyFehlerMessage;
     }
 
     /**
      * Bekommen des Lobby Scores seit letzter Spielbeendung.
-     * 
+     *
      * @param lobbyId der Lobby
      */
     @GetMapping("/{lobbyId}/score")
-    public LobbyMessage getScore(@PathVariable String lobbyId){
+    public LobbyMessage getScore(@PathVariable String lobbyId) {
         return lobbyservice.getScoreByLobbyId(lobbyId);
     }
 }

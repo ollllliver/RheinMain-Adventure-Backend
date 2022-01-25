@@ -193,7 +193,7 @@ public class LobbyServiceImpl implements LobbyService {
 
         };
         //timer.schedule(task, 5 * 1000); // für Testing auf 5 Sekunden setzen.
-        timer.schedule(task, 10 * (long)60 * 1000);
+        timer.schedule(task, 10 * (long) 60 * 1000);
     }
 
     /**
@@ -421,8 +421,8 @@ public class LobbyServiceImpl implements LobbyService {
         spielService.alleSpiele().remove(spiel);
         logger.info("Spiel beendent: {}", spiel);
 
-        Duration dauer = Duration.between(spiel.getStartZeitpunkt(), LocalTime.now());        
-        lobby.setHtmlScoreString(dauer.toMinutes(), dauer.toSeconds()%60);
+        Duration dauer = Duration.between(spiel.getStartZeitpunkt(), LocalTime.now());
+        lobby.setHtmlScoreString(dauer.toMinutes(), dauer.toSeconds() % 60);
 
         lobby.setIstGestartet(false);
 
