@@ -74,12 +74,11 @@ public class SpielServiceImpl implements SpielService {
     }
 
     /**
-     * Methode zum aktualisieren der Spielerposition
+     * Methode zum Aktualisieren der Spielerposition
      *
-     * @param spieler  übermittelter Spieler, dessen Position aktualisiert werden
-     *                 soll
-     * @param position neue Position die an den Spieler übermittelt werden soll
-     * @return Spieler mit aktualisierten positionierungs Koordinaten
+     * @param spieler  übermittelter Spieler, dessen Position aktualisiert werden soll
+     * @param position neue Position, die an den Spieler übermittelt werden soll
+     * @return Spieler mit aktualisierten Positionierungs-Koordinaten
      */
     @Override
     public Spieler positionsAktualisierung(Spieler spieler, Position position) {
@@ -88,9 +87,9 @@ public class SpielServiceImpl implements SpielService {
     }
 
     /**
-     * Methode welche den ausgwählten Spieler zurück gibt
+     * Methode welche den ausgewählten Spieler zurückgibt
      *
-     * @param spielID die id des Spielers, welcher zurück gegeben werden soll
+     * @param spielID die id des Spielers, welcher zurückgegeben werden soll
      * @param name    der Name des Spielers
      * @return den ausgewählten Spieler
      */
@@ -107,7 +106,7 @@ public class SpielServiceImpl implements SpielService {
     }
 
     /**
-     * Methode zum erhöhen der Schlüsselanzahl im Spiel
+     * Methode zum Erhöhen der Schlüsselanzahl im Spiel
      *
      * @param spiel aktuelles Spiel, in welchem der Zähler der gefundenen Schlüssel erhöht wird
      * @return gibt die aktuelle Anzahl an gefundenen Schlüsseln zurück
@@ -133,10 +132,10 @@ public class SpielServiceImpl implements SpielService {
     }
 
     /**
-     * Methode zum finden eines SPiels
+     * Methode zum Finden eines Spiels
      *
-     * @param lobbyID , da lobbyID = spielID
-     * @return das gewünschte SPiel
+     * @param lobbyID da lobbyID = spielID
+     * @return das gewünschte Spiel
      */
 
     @Override
@@ -152,7 +151,6 @@ public class SpielServiceImpl implements SpielService {
     /**
      * Methode um den Score eines bestimmten Spielers zu erhoehen
      */
-
     @Override
     public int scoreErhoehen(Spieler spieler, int score) {
         spieler.setScore(score);

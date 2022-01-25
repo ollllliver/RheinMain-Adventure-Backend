@@ -298,7 +298,7 @@ public class LobbyServiceImpl implements LobbyService {
      * Laesst einen Spieler einer zufaelligen freien Lobby beitreten
      *
      * @param spielername Name des spielers der einer zufaelligen Lobby beitritt
-     * @retun Gibt einene LobbyMessage mit dem ergebnis des beitretens zurueck
+     * @return Gibt einene LobbyMessage mit dem ergebnis des beitretens zurueck
      */
     @Override
     public LobbyMessage lobbyBeitretenZufaellig(String spielername) {
@@ -318,12 +318,13 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     /**
-     * Überprüft, ob der anfragende Spiler Änderungen an der Lobby vornehmen darf
+     * Überprüft, ob der anfragende Spieler Änderungen an der Lobby vornehmen darf
      * (wenn man Host ist) und setzt dann das spielerlimit der Lobby auf den
      * mitgegebenen Wert.
      *
      * @param id           der Lobby, um die es geht
      * @param spielerlimit neuer Wert für das Spielerlimit
+     * @param spielerName  Wird benötigt um zu prüfen, ob diese Anweisung vom Host der Lobby kam
      * @return LobbyMessage mit Information über den Ausgang der Anfrage
      */
     @Override
@@ -338,7 +339,7 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     /**
-     * Überprüft, ob anfragende Spiler Änderungen an der Lobby vornehmen darf
+     * Überprüft, ob anfragende Spieler Änderungen an der Lobby vornehmen darf
      * (wenn man Host ist) und setzt dann die Flag istPrivat um.
      *
      * @param id          der Lobby, um die es geht
@@ -430,7 +431,7 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     /**
-     * Überprüft, ob anfragender Spiler Änderungen an der Lobby vornehmen darf
+     * Überprüft, ob anfragender Spieler Änderungen an der Lobby vornehmen darf
      * (wenn man Host ist) und setzt dann das gewählte Level neu.
      * 
      * @param lobbyId Die id der Lobby deren gewähltes Level gewechselt werden soll

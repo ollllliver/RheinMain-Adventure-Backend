@@ -19,7 +19,7 @@ import java.util.*;
 /**
  * Rest Controller für /api/level/*
  * <p>
- * Der LevelRestController bietet die meissten Funktionen des LevelServices bequem per REST-API an, sodass das Frontend
+ * Der LevelRestController bietet die meisten Funktionen des LevelServices bequem per REST-API an, sodass das Frontend
  * komfortabel mit der Datenhaltung in der Datenbank interagieren kann.
  */
 @RestController
@@ -240,6 +240,7 @@ public class LevelRestController {
      * @param benutzername wird nicht benötigt, ist jedoch aus Gründen der Einheitlichkeit noch da.
      * @param levelID      Die Level-Id, zu dem der neue Raum gespeichert werden soll.
      * @param raumindex    Der Raum-Index aus dem gesuchten Level.
+     * @param raumPOJO     Der einfache Raum aus dem Frontend, mit dem zu verarbeitenden Rauminhalt.
      */
     @PutMapping(value = "/api/level/einfach/{benutzername}/{levelID}/{raumindex}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void putEinfachenRauminhalt(@PathVariable String benutzername,
